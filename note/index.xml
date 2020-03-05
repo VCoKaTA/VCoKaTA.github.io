@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Notes on SomethingCM</title>
-    <link>https://SomethingCM.github.io/note/</link>
-    <description>Recent content in Notes on SomethingCM</description>
+    <title>Notes on VCoKaTA</title>
+    <link>VCoKaTA.github.io/note/</link>
+    <description>Recent content in Notes on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 04 May 2015 17:54:54 +0800</lastBuildDate>
     
-	<atom:link href="https://SomethingCM.github.io/note/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="VCoKaTA.github.io/note/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>django部署在正式环境问题</title>
-      <link>https://SomethingCM.github.io/note/django03/</link>
+      <link>VCoKaTA.github.io/note/django03/</link>
       <pubDate>Mon, 04 May 2015 17:54:54 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/django03/</guid>
+      <guid>VCoKaTA.github.io/note/django03/</guid>
       <description> django网站发布到正式环境，debug设置为true，出现400错误 django DEBUG=False 在django的settings中. 将DEBUG 设置为False. 会出现 提示DEBUG为False时,必须设置settings.ALLOWED_HOSTS . ALLOWED_HOSTS = [ &#39;.example.com&#39;, # Allow domain and subdomains &#39;.example.com.&#39;, # Also allow FQDN and subdomains ] 或者您需要设置所有的均可访问.那么可以这样设置. ALLOWED_HOSTS = [&#39;*&#39;] 任何用户均可以访问. 然后再访问下.恢复正常. 相关django官方文档. https://docs.djangoproject.com/en/1.9/ref/settings/  </description>
     </item>
     
     <item>
       <title>django数据库字符集问题</title>
-      <link>https://SomethingCM.github.io/note/django01/</link>
+      <link>VCoKaTA.github.io/note/django01/</link>
       <pubDate>Wed, 29 Apr 2015 17:37:49 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/django01/</guid>
+      <guid>VCoKaTA.github.io/note/django01/</guid>
       <description>建库设置字符集默认为utf8
 create database 数据库名 character set utf8;
 我的环境是ubantu 1.在终端输入命令 vim /etc/mysql/my.cnf在打开的文件中 找到［client]在下面加入 default-character-set=utf8
@@ -34,10 +34,10 @@ create database 数据库名 character set utf8;
     
     <item>
       <title>pyhtn tab 补齐</title>
-      <link>https://SomethingCM.github.io/note/tab/</link>
+      <link>VCoKaTA.github.io/note/tab/</link>
       <pubDate>Sun, 26 Apr 2015 09:01:02 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/tab/</guid>
+      <guid>VCoKaTA.github.io/note/tab/</guid>
       <description>新手学习python，经常要使用python命令行查找一些不熟悉的使用方法等等，但是python命令行下没有自带tab补全的功能,这里也是百度一下记录笔记
 vi /usr/local/lib/python2.7/dist-packages/tab.py #!/usr/bin/env python # python startup file import sys import readline import rlcompleter import atexit import os # tab completion readline.parse_and_bind(&#39;tab: complete&#39;) # history file histfile = os.path.join(os.environ[&#39;HOME&#39;], &#39;.pythonhistory&#39;) try: readline.read_history_file(histfile) except IOError: pass atexit.register(readline.write_history_file, histfile) del os, histfile, readline, rlcompleter  测试
 &amp;gt;&amp;gt;&amp;gt; import tab &amp;gt;&amp;gt;&amp;gt; import os &amp;gt;&amp;gt;&amp;gt; os. Display all 249 possibilities? (y or n) os.EX_CANTCREAT os.ST_NOSUID os._spawnvef( os.getlogin( os.seteuid( os.EX_CONFIG os.ST_RDONLY os.abort( os.getpgid( os.setgid( os.</description>
@@ -45,19 +45,19 @@ vi /usr/local/lib/python2.7/dist-packages/tab.py #!/usr/bin/env python # python 
     
     <item>
       <title>django安装</title>
-      <link>https://SomethingCM.github.io/note/django02/</link>
+      <link>VCoKaTA.github.io/note/django02/</link>
       <pubDate>Wed, 22 Apr 2015 17:43:28 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/django02/</guid>
+      <guid>VCoKaTA.github.io/note/django02/</guid>
       <description>centos下 python 安装  wget http://www.python.org/ftp/python/2.7.3/Python-2.7.3.tgz tar -zxvf Python-2.7.3.tgz cd Python-2.7.3 ./configure make &amp;amp;&amp;amp; make install ln -s /usr/local/bin/python2.7 /usr/bin/python -f python -V  django 安装  wget https://www.djangoproject.com/download/1.3.7/tarball/ tar -zxvf Django-1.3.7.tar.gz $ cd Django-1.3.7 cd Django-1.3.7 python setup.py install git clone git://github.com/django-debug-toolbar/django-debug-toolbar.git python setup.py install  安装mysql yum install MySQL-python yum install mysql-server yum install mysql-client  ubuntu下 Ubuntu中安装python 复制代码代码如下: sudo apt-get install update sudo apt-get install python  python扩展包 在python中可以使用easy_install和pip安装python拓展但推荐使用pip，在stackoverflow看到个帖子： Don&#39;t use easy_install, unless you like stabbing yourself in the face.</description>
     </item>
     
     <item>
       <title>装饰器</title>
-      <link>https://SomethingCM.github.io/note/decorator/</link>
+      <link>VCoKaTA.github.io/note/decorator/</link>
       <pubDate>Wed, 15 Apr 2015 17:28:47 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/decorator/</guid>
+      <guid>VCoKaTA.github.io/note/decorator/</guid>
       <description>由于函数也是一个对象，而且函数对象可以被赋值给变量，所以，通过变量也能调用该函数。
 &amp;gt;&amp;gt;&amp;gt; def now(): ... print &#39;2013-12-25&#39; ... &amp;gt;&amp;gt;&amp;gt; f = now &amp;gt;&amp;gt;&amp;gt; f() 2013-12-25  函数对象有一个name属性，可以拿到函数的名字：
 &amp;gt;&amp;gt;&amp;gt; now.__name__ &#39;now&#39; &amp;gt;&amp;gt;&amp;gt; f.__name__ &#39;now&#39;  现在，假设我们要增强now()函数的功能，比如，在函数调用前后自动打印日志，但又不希望修改now()函数的定义，这种在代码运行期间动态增加功能的方式，称之为“装饰器”（Decorator）。
@@ -73,10 +73,10 @@ def log(text): def decorator(func): def wrapper(*args, **kw): print &#39;%s %s()
     
     <item>
       <title>sorted</title>
-      <link>https://SomethingCM.github.io/note/sorted/</link>
+      <link>VCoKaTA.github.io/note/sorted/</link>
       <pubDate>Mon, 13 Apr 2015 17:27:03 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/sorted/</guid>
+      <guid>VCoKaTA.github.io/note/sorted/</guid>
       <description>排序算法 排序也是在程序中经常用到的算法。无论使用冒泡排序还是快速排序，排序的核心是比较两个元素的大小。如果是数字，我们可以直接比较，但如果是字符串或者两个dict呢？直接比较数学上的大小是没有意义的，因此，比较的过程必须通过函数抽象出来。通常规定，对于两个元素x和y，如果认为x &amp;lt; y，则返回-1，如果认为x == y，则返回0，如果认为x &amp;gt; y，则返回1，这样，排序算法就不用关心具体的比较过程，而是根据比较结果直接排序。
 Python内置的sorted()函数就可以对list进行排序：
 &amp;gt;&amp;gt;&amp;gt; sorted([36, 5, 12, 9, 21]) [5, 9, 12, 21, 36]  此外，sorted()函数也是一个高阶函数，它还可以接收一个比较函数来实现自定义的排序。比如，如果要倒序排序，我们就可以自定义一个reversed_cmp函数：
@@ -88,10 +88,10 @@ def reversed_cmp(x, y): if x &amp;gt; y: return -1 if x &amp;lt; y: return 1 ret
     
     <item>
       <title>filter</title>
-      <link>https://SomethingCM.github.io/note/filter/</link>
+      <link>VCoKaTA.github.io/note/filter/</link>
       <pubDate>Fri, 10 Apr 2015 17:24:36 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/filter/</guid>
+      <guid>VCoKaTA.github.io/note/filter/</guid>
       <description>Python内建的filter()函数用于过滤序列。
 和map()类似，filter()也接收一个函数和一个序列。和map()不同的时，filter()把传入的函数依次作用于每个元素，然后根据返回值是True还是False决定保留还是丢弃该元素。
 例如，在一个list中，删掉偶数，只保留奇数，可以这么写：
@@ -101,10 +101,10 @@ def not_empty(s): return s and s.strip() filter(not_empty, [&#39;A&#39;, &#39;&#
     
     <item>
       <title>map/reduce</title>
-      <link>https://SomethingCM.github.io/note/map_reduce/</link>
+      <link>VCoKaTA.github.io/note/map_reduce/</link>
       <pubDate>Fri, 10 Apr 2015 17:20:29 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/map_reduce/</guid>
+      <guid>VCoKaTA.github.io/note/map_reduce/</guid>
       <description>Python内建了map()和reduce()函数。
 如果你读过Google的那篇大名鼎鼎的论文“MapReduce: Simplified Data Processing on Large Clusters”，你就能大概明白map/reduce的概念。
 我们先看map。map()函数接收两个参数，一个是函数，一个是序列，map将传入的函数依次作用到序列的每个元素，并把结果作为新的list返回。
@@ -117,37 +117,37 @@ L = [] for n in [1, 2, 3, 4, 5, 6, 7, 8, 9]: L.append(f(n)) print L  的确可�
     
     <item>
       <title>生成器</title>
-      <link>https://SomethingCM.github.io/note/generator/</link>
+      <link>VCoKaTA.github.io/note/generator/</link>
       <pubDate>Thu, 02 Apr 2015 17:17:57 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/generator/</guid>
+      <guid>VCoKaTA.github.io/note/generator/</guid>
       <description>通过列表生成式，我们可以直接创建一个列表。但是，受到内存限制，列表容量肯定是有限的。而且，创建一个包含100万个元素的列表，不仅占用很大的存储空间，如果我们仅仅需要访问前面几个元素，那后面绝大多数元素占用的空间都白白浪费了。 所以，如果列表元素可以按照某种算法推算出来，那我们是否可以在循环的过程中不断推算出后续的元素呢？这样就不必创建完整的list，从而节省大量的空间。在Python中，这种一边循环一边计算的机制，称为生成器（Generator）。 要创建一个generator，有很多种方法。第一种方法很简单，只要把一个列表生成式的[]改成()，就创建了一个generator： &amp;gt;&amp;gt;&amp;gt; L = [x * x for x in range(10)] &amp;gt;&amp;gt;&amp;gt; L [0, 1, 4, 9, 16, 25, 36, 49, 64, 81] &amp;gt;&amp;gt;&amp;gt; g = (x * x for x in range(10)) &amp;gt;&amp;gt;&amp;gt; g &amp;lt;generator object &amp;lt;genexpr&amp;gt; at 0x104feab40&amp;gt; 创建L和g的区别仅在于最外层的[]和()，L是一个list，而g是一个generator。 我们可以直接打印出list的每一个元素，但我们怎么打印出generator的每一个元素呢？ 如果要一个一个打印出来，可以通过generator的next()方法： &amp;gt;&amp;gt;&amp;gt; g.next() 0 &amp;gt;&amp;gt;&amp;gt; g.next() 1 &amp;gt;&amp;gt;&amp;gt; g.next() 4 &amp;gt;&amp;gt;&amp;gt; g.next() 9 &amp;gt;&amp;gt;&amp;gt; g.next() 16 &amp;gt;&amp;gt;&amp;gt; g.next() 25 &amp;gt;&amp;gt;&amp;gt; g.next() 36 &amp;gt;&amp;gt;&amp;gt; g.next() 49 &amp;gt;&amp;gt;&amp;gt; g.</description>
     </item>
     
     <item>
       <title>列表生成式</title>
-      <link>https://SomethingCM.github.io/note/interation01/</link>
+      <link>VCoKaTA.github.io/note/interation01/</link>
       <pubDate>Fri, 20 Mar 2015 17:16:12 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/interation01/</guid>
+      <guid>VCoKaTA.github.io/note/interation01/</guid>
       <description>列表生成式即List Comprehensions，是Python内置的非常简单却强大的可以用来创建list的生成式。 举个例子，要生成list [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]可以用range(1, 11)： &amp;gt;&amp;gt;&amp;gt; range(1, 11) [1, 2, 3, 4, 5, 6, 7, 8, 9, 10] 但如果要生成[1x1, 2x2, 3x3, ..., 10x10]怎么做？方法一是循环： &amp;gt;&amp;gt;&amp;gt; L = [] &amp;gt;&amp;gt;&amp;gt; for x in range(1, 11): ... L.append(x * x) ... &amp;gt;&amp;gt;&amp;gt; L [1, 4, 9, 16, 25, 36, 49, 64, 81, 100] 但是循环太繁琐，而列表生成式则可以用一行语句代替循环生成上面的list： &amp;gt;&amp;gt;&amp;gt; [x * x for x in range(1, 11)] [1, 4, 9, 16, 25, 36, 49, 64, 81, 100] 写列表生成式时，把要生成的元素x * x放到前面，后面跟for循环，就可以把list创建出来，十分有用，多写几次，很快就可以熟悉这种语法。 for循环后面还可以加上if判断，这样我们就可以筛选出仅偶数的平方： &amp;gt;&amp;gt;&amp;gt; [x * x for x in range(1, 11) if x % 2 == 0] [4, 16, 36, 64, 100] 还可以使用两层循环，可以生成全排列： &amp;gt;&amp;gt;&amp;gt; [m + n for m in &#39;ABC&#39; for n in &#39;XYZ&#39;] [&#39;AX&#39;, &#39;AY&#39;, &#39;AZ&#39;, &#39;BX&#39;, &#39;BY&#39;, &#39;BZ&#39;, &#39;CX&#39;, &#39;CY&#39;, &#39;CZ&#39;] 三层和三层以上的循环就很少用到了。 运用列表生成式，可以写出非常简洁的代码。例如，列出当前目录下的所有文件和目录名，可以通过一行代码实现： &amp;gt;&amp;gt;&amp;gt; import os # 导入os模块，模块的概念后面讲到 &amp;gt;&amp;gt;&amp;gt; [d for d in os.</description>
     </item>
     
     <item>
       <title>迭代</title>
-      <link>https://SomethingCM.github.io/note/interation/</link>
+      <link>VCoKaTA.github.io/note/interation/</link>
       <pubDate>Thu, 12 Mar 2015 17:12:55 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/interation/</guid>
+      <guid>VCoKaTA.github.io/note/interation/</guid>
       <description>如果给定一个list或tuple，我们可以通过for循环来遍历这个list或tuple，这种遍历我们称为迭代（Iteration）。 在Python中，迭代是通过for ... in来完成的，而很多语言比如C或者Java，迭代list是通过下标完成的，比如Java代码： for (i=0; i&amp;lt;list.length; i++) { n = list[i]; } 可以看出，Python的for循环抽象程度要高于Java的for循环，因为Python的for循环不仅可以用在list或tuple上，还可以作用在其他可迭代对象上。 list这种数据类型虽然有下标，但很多其他数据类型是没有下标的，但是，只要是可迭代对象，无论有无下标，都可以迭代，比如dict就可以迭代： &amp;gt;&amp;gt;&amp;gt; d = {&#39;a&#39;: 1, &#39;b&#39;: 2, &#39;c&#39;: 3} &amp;gt;&amp;gt;&amp;gt; for key in d: ... print key ... a c b 因为dict的存储不是按照list的方式顺序排列，所以，迭代出的结果顺序很可能不一样。 默认情况下，dict迭代的是key。如果要迭代value，可以用for value in d.itervalues()，如果要同时迭代key和value，可以用for k, v in d.iteritems()。 由于字符串也是可迭代对象，因此，也可以作用于for循环： &amp;gt;&amp;gt;&amp;gt; for ch in &#39;ABC&#39;: ... print ch ... A B C 所以，当我们使用for循环时，只要作用于一个可迭代对象，for循环就可以正常运行，而我们不太关心该对象究竟是list还是其他数据类型。 那么，如何判断一个对象是可迭代对象呢？方法是通过collections模块的Iterable类型判断： &amp;gt;&amp;gt;&amp;gt; from collections import Iterable &amp;gt;&amp;gt;&amp;gt; isinstance(&#39;abc&#39;, Iterable) # str是否可迭代 True &amp;gt;&amp;gt;&amp;gt; isinstance([1,2,3], Iterable) # list是否可迭代 True &amp;gt;&amp;gt;&amp;gt; isinstance(123, Iterable) # 整数是否可迭代 False 最后一个小问题，如果要对list实现类似Java那样的下标循环怎么办？Python内置的enumerate函数可以把一个list变成索引-元素对，这样就可以在for循环中同时迭代索引和元素本身： &amp;gt;&amp;gt;&amp;gt; for i, value in enumerate([&#39;A&#39;, &#39;B&#39;, &#39;C&#39;]): .</description>
     </item>
     
     <item>
       <title>关于python</title>
-      <link>https://SomethingCM.github.io/note/py/</link>
+      <link>VCoKaTA.github.io/note/py/</link>
       <pubDate>Mon, 21 Jul 2014 16:28:05 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/note/py/</guid>
+      <guid>VCoKaTA.github.io/note/py/</guid>
       <description> python简介 Python是著名的“龟叔”Guido van Rossum在1989年圣诞节期间，为了打发无聊的圣诞节而编写的一个编程语言。 现在，全世界差不多有600多种编程语言，但流行的编程语言也就那么20来种。如果你听说过TIOBE排行榜，你就能知道编程语言的大致流行程度。这是最近10年最常用的10种编程语言的变化图：  总的来说，这几种编程语言各有千秋。C语言是可以用来编写操作系统的贴近硬件的语言，所以，C语言适合开发那些追求运行速度、充分发挥硬件性能的程序。而Python是用来编写应用程序的高级编程语言。 当你用一种语言开始作真正的软件开发时，你除了编写代码外，还需要很多基本的已经写好的现成的东西，来帮助你加快开发进度。比如说，要编写一个电子邮件客户端，如果先从最底层开始编写网络协议相关的代码，那估计一年半载也开发不出来。高级编程语言通常都会提供一个比较完善的基础代码库，让你能直接调用，比如，针对电子邮件协议的SMTP库，针对桌面环境的GUI库，在这些已有的代码库的基础上开发，一个电子邮件客户端几天就能开发出来。 Python就为我们提供了非常完善的基础代码库，覆盖了网络、文件、GUI、数据库、文本等大量内容，被形象地称作“内置电池（batteries included）”。用Python开发，许多功能不必从零编写，直接使用现成的即可。 除了内置的库外，Python还有大量的第三方库，也就是别人开发的，供你直接使用的东西。当然，如果你开发的代码通过很好的封装，也可以作为第三方库给别人使用。 许多大型网站就是用Python开发的，例如YouTube、Instagram，还有国内的豆瓣。很多大公司，包括Google、Yahoo等，甚至NASA（美国航空航天局）都大量地使用Python。 龟叔给Python的定位是“优雅”、“明确”、“简单”，所以Python程序看上去总是简单易懂，初学者学Python，不但入门容易，而且将来深入下去，可以编写那些非常非常复杂的程序。 总的来说，Python的哲学就是简单优雅，尽量写容易看明白的代码，尽量写少的代码。如果一个资深程序员向你炫耀他写的晦涩难懂、动不动就几万行的代码，你可以尽情地嘲笑他。 那Python适合开发哪些类型的应用呢？ 首选是网络应用，包括网站、后台服务等等； 其次是许多日常需要的小工具，包括系统管理员需要的脚本任务等等； 另外就是把其他语言开发的程序再包装起来，方便使用。 最后说说Python的缺点。 任何编程语言都有缺点，Python也不例外。优点说过了，那Python有哪些缺点呢？ 第一个缺点就是运行速度慢，和C程序相比非常慢，因为Python是解释型语言，你的代码在执行时会一行一行地翻译成CPU能理解的机器码，这个翻译过程非常耗时，所以很慢。而C程序是运行前直接编译成CPU能执行的机器码，所以非常快。 但是大量的应用程序不需要这么快的运行速度，因为用户根本感觉不出来。例如开发一个下载MP3的网络应用程序，C程序的运行时间需要0.001秒，而Python程序的运行时间需要0.1秒，慢了100倍，但由于网络更慢，需要等待1秒，你想，用户能感觉到1.001秒和1.1秒的区别吗？这就好比F1赛车和普通的出租车在北京三环路上行驶的道理一样，虽然F1赛车理论时速高达400公里，但由于三环路堵车的时速只有20公里，因此，作为乘客，你感觉的时速永远是20公里。 不要在意程序运行速度 第二个缺点就是代码不能加密。如果要发布你的Python程序，实际上就是发布源代码，这一点跟C语言不同，C语言不用发布源代码，只需要把编译后的机器码（也就是你在Windows上常见的xxx.exe文件）发布出去。要从机器码反推出C代码是不可能的，所以，凡是编译型的语言，都没有这个问题，而解释型的语言，则必须把源码发布出去。 这个缺点仅限于你要编写的软件需要卖给别人挣钱的时候。好消息是目前的互联网时代，靠卖软件授权的商业模式越来越少了，靠网站和移动应用卖服务的模式越来越多了，后一种模式不需要把源码给别人。 再说了，现在如火如荼的开源运动和互联网自由开放的精神是一致的，互联网上有无数非常优秀的像Linux一样的开源代码，我们千万不要高估自己写的代码真的有非常大的“商业价值”。那些大公司的代码不愿意开放的更重要的原因是代码写得太烂了，一旦开源，就没人敢用他们的产品了。  python解释器 当我们编写Python代码时，我们得到的是一个包含Python代码的以.py为扩展名的文本文件。要运行代码，就需要Python解释器去执行.py文件。 由于整个Python语言从规范到解释器都是开源的，所以理论上，只要水平够高，任何人都可以编写Python解释器来执行Python代码（当然难度很大）。事实上，确实存在多种Python解释器。 CPython 当我们从Python官方网站下载并安装好Python 2.7后，我们就直接获得了一个官方版本的解释器：CPython。这个解释器是用C语言开发的，所以叫CPython。在命令行下运行python就是启动CPython解释器。 CPython是使用最广的Python解释器。教程的所有代码也都在CPython下执行。 IPython IPython是基于CPython之上的一个交互式解释器，也就是说，IPython只是在交互方式上有所增强，但是执行Python代码的功能和CPython是完全一样的。好比很多国产浏览器虽然外观不同，但内核其实都是调用了IE。 CPython用&amp;gt;&amp;gt;&amp;gt;作为提示符，而IPython用In [序号]:作为提示符。 PyPy PyPy是另一个Python解释器，它的目标是执行速度。PyPy采用JIT技术，对Python代码进行动态编译（注意不是解释），所以可以显著提高Python代码的执行速度。 绝大部分Python代码都可以在PyPy下运行，但是PyPy和CPython有一些是不同的，这就导致相同的Python代码在两种解释器下执行可能会有不同的结果。如果你的代码要放到PyPy下执行，就需要了解PyPy和CPython的不同点。 Jython Jython是运行在Java平台上的Python解释器，可以直接把Python代码编译成Java字节码执行。 IronPython IronPython和Jython类似，只不过IronPython是运行在微软.Net平台上的Python解释器，可以直接把Python代码编译成.Net的字节码。 小结 Python的解释器很多，但使用最广泛的还是CPython。如果要和Java或.Net平台交互，最好的办法不是用Jython或IronPython，而是通过网络调用来交互，确保各程序之间的独立性。 本教程的所有代码只确保在CPython 2.7版本下运行。请务必在本地安装CPython（也就是从Python官方网站下载的安装程序）。 此外，教程还内嵌一个IPython的Web版本，用来在浏览器内练习执行一些Python代码。要注意两者功能一样，输入的代码一样，但是提示符有所不同。另外，不是所有代码都能在Web版本的IPython中执行，出于安全原因，很多操作（比如文件操作）是受限的，所以有些代码必须在本地环境执行代码。  </description>
     </item>
     

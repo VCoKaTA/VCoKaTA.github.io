@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>samba on SomethingCM</title>
-    <link>https://SomethingCM.github.io/categories/samba/</link>
-    <description>Recent content in samba on SomethingCM</description>
+    <title>samba on VCoKaTA</title>
+    <link>VCoKaTA.github.io/categories/samba/</link>
+    <description>Recent content in samba on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Sun, 23 Mar 2014 09:40:15 +0800</lastBuildDate>
     
-	<atom:link href="https://SomethingCM.github.io/categories/samba/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="VCoKaTA.github.io/categories/samba/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>samba安装</title>
-      <link>https://SomethingCM.github.io/target/samba/</link>
+      <link>VCoKaTA.github.io/target/samba/</link>
       <pubDate>Sun, 23 Mar 2014 09:40:15 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/target/samba/</guid>
+      <guid>VCoKaTA.github.io/target/samba/</guid>
       <description>一. samba的安装: centos yum -y install samba samba-client samba-common systemctl start smb ubuntu sudo apt-get install samba // (sudo get temp root auth) sudo apt-get install smbfs  二. 创建共享目录: mkdir /home/john/share sudo chmod 777 /home/john/ share 说明：john为你的ubuntu的用户名；share你可以随便起个名字做为共享文件夹  三. 创建Samba配置文件： 1. 保存现有的配置文件 cp /etc/samba/smb.conf /etc/samba/smb.conf.bak 2.修改现配置文件 vim /etc/samba/smb.conf 在smb.conf最后添加 [share] path = /home/john/ share available = yes browseable = yes public = yes writable = yes valid users = myname create mask = 0700 directory mask =0700 force user =nobody force group = nogroup 说明：valid users = myname　这个myname是自己起的，后面在添加用户名时就是添加的这个； 另外这个[share]名字也是可以随便起的，这个是你在windows下访问时显示的名字； 在windows下 \\162.</description>
     </item>
     

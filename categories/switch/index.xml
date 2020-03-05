@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>switch on SomethingCM</title>
-    <link>https://SomethingCM.github.io/categories/switch/</link>
-    <description>Recent content in switch on SomethingCM</description>
+    <title>switch on VCoKaTA</title>
+    <link>VCoKaTA.github.io/categories/switch/</link>
+    <description>Recent content in switch on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 25 Feb 2016 15:44:06 +0800</lastBuildDate>
     
-	<atom:link href="https://SomethingCM.github.io/categories/switch/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="VCoKaTA.github.io/categories/switch/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>论晚上被吵睡不着</title>
-      <link>https://SomethingCM.github.io/page/switch/</link>
+      <link>VCoKaTA.github.io/page/switch/</link>
       <pubDate>Thu, 25 Feb 2016 15:44:06 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/page/switch/</guid>
+      <guid>VCoKaTA.github.io/page/switch/</guid>
       <description>因为在公司宿舍住，难免会遇到半夜比较吵的人，公司宿舍也是豆腐渣工程，连地板都不隔音，可以想象有多薄，本人睡眠质量一直不好，楼下有两奇葩，下班回来都是已过十二点就开始，第一个喜欢开yy唱歌，可能是个主播，（第二职业，关键尼玛是男的，是男的不说，还唱那么难听），第二个爱玩游戏，打游戏很正常，边打边骂人（哎，一直觉得爱骂人的都是那些技术比较菜的人，老骂别人没配合好他，只能说不怕神一样的对手，就怕你这猪一样的队友），鉴于这些都是对网络实时性要求比较高的程序，为了不影响其他用户用网，就写了个小程序，在程序中设定延时时间，没多长时间断网几秒（楼层交换机的权限是找同事要的，本来想做个限速的了，但是交换机比较老，不支持，幸好支持端口起宕） 下面程序介绍 下载一个cisco的包ciscolib-0.1.tar.gz（思科的交换机） tar -zxf ciscolib-0.1.tar.gz cd ciscolib-0.1 python setup.py build python setup.py install cat switch.py #!/usr/bin/env python #conding:utf-8 import time import ciscolib IP=&#39;ip&#39; #交换机地址 PASSWORD=&amp;quot;cisco&amp;quot; USERNAME=&amp;quot;&amp;quot; ENABLE_PW=&amp;quot;cisco&amp;quot; cmd = [&#39;configure t&#39;,&#39;interface f0/1&#39;,&#39;shutdown&#39;,&#39;no shutdown&#39;] try: sw = ciscolib.Device(IP,PASSWORD,ENABLE_PW) count = 0 sw.connect() while (count &amp;lt; 1000): time.sleep(5) sw.enable(ENABLE_PW) sw.cmd(cmd[0]) sw.cmd(cmd[1]) sw.cmd(cmd[2]) time.sleep(2) sw.cmd(cmd[3]) count += 1 sw.disconnect() except Exception as e: print e #注意超时时间，sleep是不是超过交换机超时时间, 这样实时性要求比较强的程序会有很大影响，如果没影响可以调节端口duwn的时间 设置一个定时任务，每天晚上十二点开始执行，大部分人这个时候都睡觉了，个别奇葩除外 这样就可以好好睡觉了  </description>
     </item>
     

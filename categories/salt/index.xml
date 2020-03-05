@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>salt on SomethingCM</title>
-    <link>https://SomethingCM.github.io/categories/salt/</link>
-    <description>Recent content in salt on SomethingCM</description>
+    <title>salt on VCoKaTA</title>
+    <link>VCoKaTA.github.io/categories/salt/</link>
+    <description>Recent content in salt on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Mon, 09 Mar 2015 09:40:15 +0800</lastBuildDate>
     
-	<atom:link href="https://SomethingCM.github.io/categories/salt/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="VCoKaTA.github.io/categories/salt/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>saltstack基础知识</title>
-      <link>https://SomethingCM.github.io/target/salt02/</link>
+      <link>VCoKaTA.github.io/target/salt02/</link>
       <pubDate>Mon, 09 Mar 2015 09:40:15 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/target/salt02/</guid>
+      <guid>VCoKaTA.github.io/target/salt02/</guid>
       <description>基础阶段 客户端配置好master地址后重启服务，在master段查看 [root@centosXnode1 ~]# salt-key -L Accepted Keys: Denied Keys: Unaccepted Keys: node01.cs1cloud.internal node02.cs1cloud.internal Rejected Keys:  接受客户端node01，node02 [root@centosXnode1 ~]# salt-key -a node01.cs1cloud.internal （a指定node节点名添加，A添加所以） The following keys are going to be accepted: Unaccepted Keys: node01.cs1cloud.internal Proceed? [n/Y] y Key for minion node01.cs1cloud.internal accepted. [root@centosXnode1 ~]# salt-key -L Accepted Keys: node01.cs1cloud.internal Denied Keys: Unaccepted Keys: node02.cs1cloud.internal Rejected Keys: [root@centosXnode1 ~]# salt-key -A The following keys are going to be accepted: Unaccepted Keys: node02.</description>
     </item>
     

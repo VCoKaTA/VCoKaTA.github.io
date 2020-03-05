@@ -1,150 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>Openstacks on SomethingCM</title>
-    <link>https://SomethingCM.github.io/openstack/</link>
-    <description>Recent content in Openstacks on SomethingCM</description>
+    <title>Openstacks on VCoKaTA</title>
+    <link>VCoKaTA.github.io/openstack/</link>
+    <description>Recent content in Openstacks on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Fri, 22 Jul 2016 16:32:22 +0800</lastBuildDate>
+    <lastBuildDate>Thu, 24 Dec 2015 16:41:00 +0800</lastBuildDate>
     
-	<atom:link href="https://SomethingCM.github.io/openstack/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="VCoKaTA.github.io/openstack/index.xml" rel="self" type="application/rss+xml" />
     
-    
-    <item>
-      <title>Openstack本地迁移Ceph</title>
-      <link>https://SomethingCM.github.io/openstack/service6/</link>
-      <pubDate>Fri, 22 Jul 2016 16:32:22 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/service6/</guid>
-      <description>背景：
-openstack上线了ceph存储，创建虚拟机和云硬盘都基于ceph卷进行存储和创建，但是之前openstack用的是本地存储，有一些虚拟机部署维护的人早不在了，缺失相应的文档信息，然而短时间还不能下线这些虚拟机，所以需要进行迁移
-1、生成数据盘 查看实例的磁盘信息： [root@compute2 data]#ls /var/lib/nova/instances/77cf7371-c4d6-4a36-906b-58c45ad1595e console.log disk disk.info libvirt.xml [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# qemu-img info disk image: disk file format: qcow2 virtual size: 30G (32212254720 bytes) disk size: 3.9G cluster_size: 65536 backing file: /var/lib/nova/instances/_base/e4b92c00fbe4c3228d9f8dd64c7bf8b8b9700eda Format specific information: compat: 1.1 lazy refcounts: false 发现磁盘格式为qcow2，磁盘逻辑大小为30G，实际大小为3.9G。由于disk是基于base来增量存储数据的，。所以，disk实例大小很小，。现在需要将增量数据和base数据进行合并 [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# qemu-img convert -p -f qcow2 disk -O qcow2 /tmp/disk-boot.img (100.00/100%) [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# ll -h /tmp/disk-boot.img -rw-r--r-- 1 root root 5.0G Oct 20 16:53 /tmp/disk-boot.img [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# qemu-img info disk-boot.</description>
-    </item>
-    
-    <item>
-      <title>Openstack利用ceph备份恢复</title>
-      <link>https://SomethingCM.github.io/openstack/service5/</link>
-      <pubDate>Wed, 20 Jul 2016 15:20:14 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/service5/</guid>
-      <description>背景：
-最初ceph集群全是sas盘，没有设置bucket区分，使用的默认bucket。后期又加了一批ssd的盘，分出sas和ssd bucket。那么问题来了，最初的虚拟机和volume都建在默认的bucket，当我迁移老的instaces或者操作老的volumes时报错，最后发现是ceph新建bucket引起的，所以我们需要利用ceph的备份倒入功能实现迁移
-1、备份恢复系统盘 [root@controller2 ~]# nova list --all-tenants|grep 10.200.41.35 | 574da876-89bd-463c-90eb-cc65ea0c8977 | zookeeper-01 | 4f93d0bc683d484d9c1f01fd14c0c7e3 | ACTIVE | - | Running | vlan241=10.200.41.35 | [root@contorller2 ceph]# rbd ls vms|grep 574da876-89bd-463c-90eb-cc65ea0c8977 574da876-89bd-463c-90eb-cc65ea0c8977_disk 倒出系统盘 rbd export -p vms 574da876-89bd-463c-90eb-cc65ea0c8977_disk /tmp/vm1.bk 新建一个虚拟机zookeeper-01new，查询的uid为26bb3815-3cb1-425a-aa96-2dc6fc9fcefe 使用备份的vm1.bk覆盖关机的26bb3815-3cb1-425a-aa96-2dc6fc9fcefe rbd rm -p volumes 26bb3815-3cb1-425a-aa96-2dc6fc9fcefe_disk #删除新建机器的文件 rbd import -p vms /tmp/vm1.bk 26bb3815-3cb1-425a-aa96-2dc6fc9fcefe_disk #恢复备份的vm到新建的机器文件  2、备份恢复volumes [root@controller2 ~]# nova show 574da876-89bd-463c-90eb-cc65ea0c8977 +--------------------------------------+----------------------------------------------------------+ | Property | Value | +--------------------------------------+----------------------------------------------------------+ | OS-DCF:diskConfig | AUTO | | OS-EXT-AZ:availability_zone | nova | | OS-EXT-SRV-ATTR:host | compute8 | | OS-EXT-SRV-ATTR:hypervisor_hostname | compute8 | | OS-EXT-SRV-ATTR:instance_name | instance-00000074 | | OS-EXT-STS:power_state | 1 | | OS-EXT-STS:task_state | - | | OS-EXT-STS:vm_state | active | | OS-SRV-USG:launched_at | 2016-07-05T01:27:26.</description>
-    </item>
-    
-    <item>
-      <title>Openstack节点故障维护</title>
-      <link>https://SomethingCM.github.io/openstack/service4/</link>
-      <pubDate>Fri, 01 Jul 2016 14:43:37 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/service4/</guid>
-      <description>1、计划中的维护 　举例：需要升级某一个计算节点的硬件配置，需要将计算节点上的虚拟机迁移后在对其进行操作，分为两种情况。 1.1 云系统使用了共享存储 a. 获取虚拟机列表：nova list --host compute01 --all-tenant b. 将每个虚拟机迁移至另一台计算节点：nova live-migration &amp;lt;uuid&amp;gt; compute02-node-Name c. 停止nova-compute服务：stop nova-compute d. 维护工作完成以后，启动服务：start nova-compute e. 确认服务正常启动和AMQP正常连接：status nova-comput grep AMQP /var/log/nova-compute f. 将虚拟机迁移回来 1.2 云系统没有使用共享存储 将上述迁移命令改为：nova live-migration --block-migrate &amp;lt;uuid&amp;gt; compute02-node-Name  2、虚拟机实例启动故障 　2.1 意外关闭可能会出现磁盘分区错误，需要对root分区进行fsck，此时使用VNC连接虚拟机即可完成修复。 2.2 libvirt的XML错误：nova reboot --hard &amp;lt;uuid&amp;gt;  3、从故障实例中恢复数据 　故障：虚拟机正常运行，SSH无法链接，VNC控制台显示kernel panic错误 恢复数据： a. 使用virsh list查看故障实例的ID，假设ID为30 实例名为instance-30 b. 挂起实例：virsh suspend 30 c. 将qemu-nbd设备链接到磁盘上： cd /var/lib/nova/instance/instance-30 qemu-nbd -c /dev/nbd0 `pwd`/disk d.</description>
-    </item>
-    
-    <item>
-      <title>Openstack修改虚拟机ip</title>
-      <link>https://SomethingCM.github.io/openstack/service3/</link>
-      <pubDate>Sun, 12 Jun 2016 13:41:49 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/service3/</guid>
-      <description>1、查找你要修改ip地址的网卡id 本文修改ip地址为192.168.111.11的网卡： [root@controller1 ~]# neutron port-list  2、允许ip地址为192.168.111.12通过 [root@controller1 ~]# neutron port-update 83cfe62e-b9bc-4b77-8938-10d8f45d836c --allowed-address-pairs type=dict list=true ip_address=192.168.111.12  3、进入mysql数据库，修改数据 mysql&amp;gt; use neutron; Reading table information for completion of table and column names You can turn off this feature to get a quicker startup with -A Database changed mysql&amp;gt; select * from ipallocations where port_id=&#39;83cfe62e-b9bc-4b77-8938-10d8f45d836c&#39;; 该port_id是之前查找的网卡id +--------------------------------------+----------------+--------------------------------------+--------------------------------------+ | port_id | ip_address | subnet_id | network_id | +--------------------------------------+----------------+--------------------------------------+--------------------------------------+ | 83cfe62e-b9bc-4b77-8938-10d8f45d836c | 192.</description>
-    </item>
-    
-    <item>
-      <title>Openstack命令指定ip创建虚拟机</title>
-      <link>https://SomethingCM.github.io/openstack/service1/</link>
-      <pubDate>Fri, 10 Jun 2016 00:00:13 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/service1/</guid>
-      <description>用户环境变量 [root@controller1 ~]# . hjhd 1.先查询已有的子网，确定哪个是要分配固定ip的子网 [root@controller1 ~]# neutron subnet-list +--------------------------------------+------+--------------+-----------------------------------------------+ | id | name | cidr | allocation_pools | +--------------------------------------+------+--------------+-----------------------------------------------+ | 053276b0-8ac8-404c-855e-4f69ad444f82 | 81 | 10.8.81.0/24 | {&amp;quot;start&amp;quot;: &amp;quot;10.8.81.10&amp;quot;, &amp;quot;end&amp;quot;: &amp;quot;10.8.81.250&amp;quot;} | | 13adf1b0-79da-452a-8b0a-5bae98020e0c | 80 | 10.8.80.0/25 | {&amp;quot;start&amp;quot;: &amp;quot;10.8.80.2&amp;quot;, &amp;quot;end&amp;quot;: &amp;quot;10.8.80.126&amp;quot;} | +--------------------------------------+------+--------------+-----------------------------------------------+ 使用哪个镜像 [root@controller1 ~]# openstack image list +--------------------------------------+----------------------+--------+ | ID | Name | Status | +--------------------------------------+----------------------+--------+ | 5fda0890-c1bc-4a0b-ba03-a5eb6c6c7ca2 | Ubuntu-16.04-desktop | active | | 5535faf5-7625-45d4-a074-39a3746445b3 | CentOS-6.</description>
-    </item>
-    
-    <item>
-      <title>Openstack之扩缩容迁移</title>
-      <link>https://SomethingCM.github.io/openstack/service2/</link>
-      <pubDate>Wed, 01 Jun 2016 10:50:30 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/service2/</guid>
-      <description>问题：虚拟机扩缩容或迁移的时候失败！
-执行的大致过程 1.向nova-api发送请求 2.nova-api发送消息（nova-api发送消息，迁移这个instance，执行的方法是resize_instance，而非是migrate，migrate实际上是由resize操作实现的） 3.nova-scheduler执行调度 4.nova-scheduler发送消息 5.nova-compute执行操作  热迁移需要shared storage，冷迁移不要求源和目标节点必须共享存储，如果有共享存储也可以，但需要计算节点之间需要配置nova用户无密码访问
-$ usermod -s /bin/bash nova $ su - nova nova@compute01:~$ mkdir -p -m 700 .ssh nova@compute01:~$ cat &amp;gt; .ssh/config &amp;lt;&amp;lt;EOF Host * StrictHostKeyChecking no UserKnownHostsFile=/dev/null EOF nova@compute01:~$ ssh-keygen -f id_rsa -b 1024 -P &amp;quot;&amp;quot; nova@compute01:~$ scp /var/lib/nova/.ssh/id_rsa.pub root@compute01:/var/lib/nova/.ssh/authorized_keys nova@compute01:~$ scp /var/lib/nova/.ssh/id_rsa.pub root@{其他计算节点}:/var/lib/nova/.ssh/authorized_keys nova@compute01:~$ scp /var/lib/nova/.ssh/* root@{其他计算节点}:/var/lib/nova/.ssh/ 所有计算节点上执行 sudo chown -R nova:nova /var/lib/nova/ sudo chmod 700 /var/lib/nova/.ssh sudo chmod 600 /var/lib/nova/.ssh/authorized_keys chmod 600 /var/lib/nova/.</description>
-    </item>
-    
-    <item>
-      <title>Openstack集群配置记录</title>
-      <link>https://SomethingCM.github.io/openstack/ha4/</link>
-      <pubDate>Thu, 19 May 2016 22:56:58 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/ha4/</guid>
-      <description>openstack版本很多，配置项也会略有不同，这里主要备份下测试环境泡通mitaka的配置
-keystone [root@controller1 ~]# cat /etc/keystone/keystone.conf |grep -v &#39;^$&#39;|grep -v &#39;^#&#39; [DEFAULT] admin_token = 273b0cd900d70893002f [assignment] [auth] [cache] memcache_servers = 10.6.0.11:11211,10.6.0.12:11211,10.6.0.13:11211 enabled = true backend = oslo_cache.memcache_pool [catalog] [cors] [cors.subdomain] [credential] [database] connection = mysql://keystone:pwkeystone@10.6.0.10/keystone [domain_config] [endpoint_filter] [endpoint_policy] [eventlet_server] [eventlet_server_ssl] [federation] [fernet_tokens] [identity] [identity_mapping] [kvs] [ldap] [matchmaker_redis] [memcache] [oauth1] [os_inherit] [oslo_messaging_amqp] [oslo_messaging_notifications] [oslo_messaging_rabbit] [oslo_middleware] [oslo_policy] [paste_deploy] [policy] [resource] [revoke] [role] [saml] [shadow_users] [signing] [ssl] [token] provider = fernet driver = memcache_pool caching = true [tokenless_auth] [trust] keystone-manage fernet_setup --keystone-user keystone --keystone-group keystone fernet-keys控制节点1拷贝到其他控制节点 scp /etc/keystone/fernet-keys controller2:/etc/keystone/fernet-keys/ chown -R keystone:keystone /etc/keystone/fernet-keys  glance [root@controller1 ~]# cat /etc/glance/glance-api.</description>
-    </item>
-    
-    <item>
-      <title>Openstack项目架构</title>
-      <link>https://SomethingCM.github.io/openstack/structure/</link>
-      <pubDate>Fri, 18 Mar 2016 09:29:37 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/structure/</guid>
-      <description> 物理架构  还有一张图是ceph与计算节点分离的，其实也差不多，就没放上来了。 公司要节约经费，所以计算节点和存储节点放一起。如果你们经费足够还是建议分开放，因为计算节点虚拟机跑多了，多多少少会出问题，容易宕机，很不幸我有一部分机器有点不稳定，有几个计算节点老是宕机，来来回回换了好多东西，就差整机都换了（我那批机器是惠普380GEN9系列），还是建议买dell的机器，感觉比惠普靠谱点。 如果你的ceph节点足够多，一台或几台ceph节点宕机不影响整个集群，ceph节点可以和计算节点混合使用。 如果你考虑使用ceph和计算混用，你要注意计算节点要给ceph节点预留内存和cpu，一般一个osd节点给2G内存1core资源就可以了。 还有一个比较重要的是ceph网络最好使用万兆交换机，千兆交换机不出问题还好，ceph节点宕机数据同步是一件非常痛苦的事，想想如果一个ceph节点有10T数据需要同步，按理论最快速度同步，一天也别想同步完。  软件组成 </description>
-    </item>
-    
-    <item>
-      <title>Openstack集群之数据库</title>
-      <link>https://SomethingCM.github.io/openstack/ha2/</link>
-      <pubDate>Sun, 13 Mar 2016 17:22:29 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/ha2/</guid>
-      <description>官方推荐数据库mariadb 1、环境 系统centos7.2 三台主机 firewalld disable selinux disable 192.168.173.24 192.168.173.22 192.168.173.23 vim /etc/yum.repos.d/Galera.repo [mariadb] name = MariaDB Galera Cluster baseurl = http://yum.mariadb.org/5.5.50/centos7-amd64/ gpgkey = https://yum.mariadb.org/RPM-GPG-KEY-MariaDB gpgcheck = 1 skip_if_unavailable = 1  2、安装MariaDB yum -y install MariaDB-Galera-server galera MariaDB-client rsync 配置文件 vim /etc/my.cnf [mysqld] datadir=/var/lib/mysql socket=/var/lib/mysql/mysql.sock user=mysql binlog_format=ROW bind-address=192.168.173.22 # InnoDB Configuration default_storage_engine=innodb innodb_autoinc_lock_mode=2 innodb_flush_log_at_trx_commit=0 innodb_buffer_pool_size=122M # # # Galera Cluster Configuration wsrep_provider= /usr/lib64/galera/libgalera_smm.so wsrep_provider_options=&amp;quot;pc.recovery=TRUE;gcache.size=300M&amp;quot; wsrep_cluster_name=&amp;quot;openstack_cluster&amp;quot; wsrep_cluster_address=&amp;quot;gcomm://192.168.173.23,192.168.173.24&amp;quot; wsrep_sst_method=rsync 其他两台也做相应的配置 初始化只能在一台机器上执行，其他机器后期启动数据库就可以了 service mysql start --wsrep-new-cluster 日志 tail -f /var/lib/mysql/host-192-168-173-22.</description>
-    </item>
-    
-    <item>
-      <title>数据库haproxy健康检查</title>
-      <link>https://SomethingCM.github.io/openstack/ha3/</link>
-      <pubDate>Sun, 13 Mar 2016 17:22:29 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/ha3/</guid>
-      <description>在系统上开一个mysql的服务端口，haproxy去检查这个端口判断数据库是否正常
-1、安装软件 yum install -y xinetd.x86_64 1.Create a configuration file for clustercheck at /etc/sysconfig/clustercheck: MYSQL_USERNAME=&amp;quot;check_user&amp;quot; MYSQL_PASSWORD=&amp;quot;my_clustercheck_password&amp;quot; MYSQL_HOST=&amp;quot;localhost&amp;quot; MYSQL_PORT=&amp;quot;3306&amp;quot; 安装与官网有出入，以上不用配置，这接把用户名密码写入脚本 /usr/bin/clustercheck [root@test-controller1 ~]# cat /usr/bin/clustercheck |grep -v &#39;#&#39; #!/bin/bash if [[ $1 == &#39;-h&#39; || $1 == &#39;--help&#39; ]];then echo &amp;quot;Usage: $0 &amp;lt;user&amp;gt; &amp;lt;pass&amp;gt; &amp;lt;available_when_donor=0|1&amp;gt; &amp;lt;log_file&amp;gt; &amp;lt;available_when_readonly=0|1&amp;gt; &amp;lt;defaults_extra_file&amp;gt;&amp;quot; exit fi if [ -e &amp;quot;/var/tmp/clustercheck.disabled&amp;quot; ]; then echo -en &amp;quot;HTTP/1.1 503 Service Unavailable\r\n&amp;quot; echo -en &amp;quot;Content-Type: text/plain\r\n&amp;quot; echo -en &amp;quot;Connection: close\r\n&amp;quot; echo -en &amp;quot;Content-Length: 51\r\n&amp;quot; echo -en &amp;quot;\r\n&amp;quot; echo -en &amp;quot;Percona XtraDB Cluster Node is manually disabled.</description>
-    </item>
-    
-    <item>
-      <title>Openstack集群之Vip高可用</title>
-      <link>https://SomethingCM.github.io/openstack/ha1/</link>
-      <pubDate>Thu, 10 Mar 2016 16:59:47 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/ha1/</guid>
-      <description>openstack高可用官方推荐组件：Pacemaker+corosync+haproxy
-环境 系统centos7.2 三台主机 firewalld disable selinux disable 10.6.0.11 test-controller1 10.6.0.12 test-controller2 10.6.0.13 test-controller3  1.安装软件 相关软件 pacemaker pcs corosync fence-agents resource-agents libqb0 yum install pcs pacemaker corosync fence-agents-all resource-agents -y  2.启动pcsd服务 systemctl enable pcsd systemctl start pcsd  3.创建集群用户 安装pcsd时默认创建了用户hacluster 修改密码在所有集群节点上 echo &#39;Openstackcloud@#haproxy&#39; | passwd --stdin hacluster 集群各节点之间进行认证 [root@test-controller2 ~]# pcs cluster auth test-controller1 test-controller2 test-controller3 -u hacluster -p Openstackcloud@#haproxy --force test-controller3: Authorized test-controller2: Authorized test-controller1: Authorized 创建并启动名为openstack-cluste 的集群，其中controller1 controller2 为集群成员 [root@test-controller2 ~]# pcs cluster setup --force --name openstack-cluster test-controller1 test-controller2 test-controller3  4.</description>
-    </item>
-    
-    <item>
-      <title>Cobbler</title>
-      <link>https://SomethingCM.github.io/openstack/first/</link>
-      <pubDate>Tue, 01 Mar 2016 04:15:04 +0800</pubDate>
-      
-      <guid>https://SomethingCM.github.io/openstack/first/</guid>
-      <description>工欲善其事必先利其器
-openstack集群选择用yum安装，为了减小对外网的依赖，并保证软件版本的一致性，所以打算在本地建一个yum源，建yum源的方式有很多，我这里选择cobbler。下面介绍安装cobbler  官方文档: http://cobbler.github.io/manuals/quickstart/
-1、cobbler介绍  Cobbler是一个Linux服务器快速网络安装的服务，而且在经过调整也可以支持网络安装windows。 该工具使用python开发，小巧轻便（才15k行python代码），可以通过网络启动(PXE)的方式来快速安装、重装物理服务器和虚拟机，同时还可以管理DHCP，DNS，TFTP、RSYNC以及yum仓库、构造系统ISO镜像。 Cobbler可以使用命令行方式管理，也提供了基于Web的界面管理工具(cobbler-web)，还提供了API接口，可以方便二次开发使用。 Cobbler是较早前的kickstart的升级版，优点是比较容易配置，还自带web界面比较易于管理。 Cobbler内置了一个轻量级配置管理系统，但它也支持和其它配置管理系统集成，如Puppet，暂时不支持SaltStack。 Cobbler客户端Koan支持虚拟机安装和操作系统重新安装，使重装系统更便捷。  2、本地环境 Centos7 selinux disabled systemctl disable firewalld  3、安装部署cobbler 安装一个epel源 rpm -ivh http://mirrors.aliyun.com/epel/epel-release-latest-7.noarch.rpm 安装软件 [root@node1 ~]# yum install cobbler cobbler-web dhcp tftp-server pykickstart httpd xinetd -y 错误Delta RPMs disabled because /usr/bin/applydeltarpm not installed yum provides &#39;*/applydeltarpm&#39; yum install deltarpm [root@node1 ~]# systemctl start cobblerd [root@node1 ~]# systemctl status cobblerd cobblerd.service - Cobbler Helper Daemon Loaded: loaded (/usr/lib/systemd/system/cobblerd.</description>
-    </item>
     
     <item>
       <title>openstack 学习安装</title>
-      <link>https://SomethingCM.github.io/openstack/easy_install/</link>
+      <link>VCoKaTA.github.io/openstack/easy_install/</link>
       <pubDate>Thu, 24 Dec 2015 16:41:00 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/openstack/easy_install/</guid>
+      <guid>VCoKaTA.github.io/openstack/easy_install/</guid>
       <description>Openstack不是经常安装，过一段时间就会忘记，所以做个安装笔记，以后忘记通过笔记可以快速记起来  1 openstack环境介绍 官方文档： http://docs.openstack.org  1.1 openstack各个服务的功能详解：    服务名称 项目名称 描述     Dashbiard Horizon 基于openstack API接口使用diango开发的web管理   compute Nova 通过虚拟化技术提供计算资源池   Networking Neutron 实现了虚拟机的网络资源管理   storage(存储)     Object Storage Swift 对象存储，适用于&amp;rdquo;一次写入，多次读取&amp;rdquo;   Block Storage Cinder 块存储，提供存储资源池   Shared Services(共享服务)     Identity Service Keystone 认证管理   Image Service Glance 提供虚拟镜像的注册和存储管理   Telemetry Ceilometer 提供监控和数据采集、计量服务   Higher-level services(高层服务)     Orchestration Heat 自动化部署的组件   Database Service Trove 提供数据库应用服务    2 环境： 两台centos7.</description>
     </item>
     
     <item>
       <title>KVM学习笔记</title>
-      <link>https://SomethingCM.github.io/openstack/kvm/</link>
+      <link>VCoKaTA.github.io/openstack/kvm/</link>
       <pubDate>Fri, 02 Oct 2015 09:40:15 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/openstack/kvm/</guid>
+      <guid>VCoKaTA.github.io/openstack/kvm/</guid>
       <description>1.环境 我是在VMware下面做的实验 一台centos7的虚拟机 selinux disabled iptables -F 查询是否支持虚拟化 inter的cpu：vmx AMD的cpu：svm [root@kvm-node1 ~]``# grep -E &amp;quot;svm|vmx&amp;quot; /proc/cpuinfo ` flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave avx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave a* vx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust`  2.</description>
     </item>
     

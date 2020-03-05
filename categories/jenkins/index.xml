@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>jenkins on SomethingCM</title>
-    <link>https://SomethingCM.github.io/categories/jenkins/</link>
-    <description>Recent content in jenkins on SomethingCM</description>
+    <title>jenkins on VCoKaTA</title>
+    <link>VCoKaTA.github.io/categories/jenkins/</link>
+    <description>Recent content in jenkins on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 23 Feb 2016 10:27:29 +0800</lastBuildDate>
     
-	<atom:link href="https://SomethingCM.github.io/categories/jenkins/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="VCoKaTA.github.io/categories/jenkins/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>gitlab &#43; jenkins&#43;salt持续集成</title>
-      <link>https://SomethingCM.github.io/target/git_jen/</link>
+      <link>VCoKaTA.github.io/target/git_jen/</link>
       <pubDate>Tue, 23 Feb 2016 10:27:29 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/target/git_jen/</guid>
+      <guid>VCoKaTA.github.io/target/git_jen/</guid>
       <description>目的： 主要是了解持续集成方面的知识，分析gitlab的对于svn的优势，了解gitlab和jenkins的原理，再配合脚本和salt做一个简易的持续集成。
 环境 我使用三台机器做测试： 三台机器系统都是centos7，selinux disabled，iptables disabled 192.168.46.66 jenkins salt-master 192.168.46.82 gitlab 192.168.46.105 nginx salt-minion  该测试大致过程  通过提交代码到gitlab触发jenkins构建，jenkins调用脚本打包程序，通过salt分发包，并通过salt部署包
 1 安装  1.1 安装jenkins 官网安装文档：https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins#InstallingJenkins-Unix%2FLinuxInstallation 我装的稳定版本： 1.1.1 添加Jenkins的源（repository）: wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key yum install jenkins 1.1.2 安装/检查JDK [root@localhost jenkins]# yum install java -y [root@localhost jenkins]# java -version openjdk version &amp;quot;1.8.0_71&amp;quot; OpenJDK Runtime Environment (build 1.8.0_71-b15) OpenJDK 64-Bit Server VM (build 25.71-b15, mixed mode) 1.1.3 安装Jenkins： [root@localhost jenkins]#yum install jenkins 遇到错误 Delta RPMs disabled because /usr/bin/applydeltarpm not installed.</description>

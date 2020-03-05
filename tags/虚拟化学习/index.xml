@@ -1,31 +1,31 @@
 <?xml version="1.0" encoding="utf-8" standalone="yes" ?>
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
-    <title>虚拟化学习 on SomethingCM</title>
-    <link>https://SomethingCM.github.io/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0/</link>
-    <description>Recent content in 虚拟化学习 on SomethingCM</description>
+    <title>虚拟化学习 on VCoKaTA</title>
+    <link>VCoKaTA.github.io/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0/</link>
+    <description>Recent content in 虚拟化学习 on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Fri, 02 Oct 2015 09:40:15 +0800</lastBuildDate>
     
-	<atom:link href="https://SomethingCM.github.io/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="VCoKaTA.github.io/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>KVM学习笔记</title>
-      <link>https://SomethingCM.github.io/openstack/kvm/</link>
+      <link>VCoKaTA.github.io/openstack/kvm/</link>
       <pubDate>Fri, 02 Oct 2015 09:40:15 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/openstack/kvm/</guid>
+      <guid>VCoKaTA.github.io/openstack/kvm/</guid>
       <description>1.环境 我是在VMware下面做的实验 一台centos7的虚拟机 selinux disabled iptables -F 查询是否支持虚拟化 inter的cpu：vmx AMD的cpu：svm [root@kvm-node1 ~]``# grep -E &amp;quot;svm|vmx&amp;quot; /proc/cpuinfo ` flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave avx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave a* vx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust`  2.</description>
     </item>
     
     <item>
       <title>KVM学习笔记</title>
-      <link>https://SomethingCM.github.io/target/kvm/</link>
+      <link>VCoKaTA.github.io/target/kvm/</link>
       <pubDate>Fri, 02 Oct 2015 09:40:15 +0800</pubDate>
       
-      <guid>https://SomethingCM.github.io/target/kvm/</guid>
+      <guid>VCoKaTA.github.io/target/kvm/</guid>
       <description>1.环境 我是在VMware下面做的实验 一台centos7的虚拟机 selinux disabled iptables -F 查询是否支持虚拟化 inter的cpu：vmx AMD的cpu：svm [root@kvm-node1 ~]``# grep -E &amp;quot;svm|vmx&amp;quot; /proc/cpuinfo ` flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave avx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave a* vx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust`  2.</description>
     </item>
     
