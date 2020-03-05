@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>docker on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/docker/</link>
+    <description>Recent content in docker on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 31 Dec 2015 13:25:08 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/docker/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>docker web化管理</title>
+      <link>https://SomethingCM.github.io/target/first/</link>
+      <pubDate>Thu, 31 Dec 2015 13:25:08 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/first/</guid>
+      <description>背景 目前很多公司都在使用docker，docker也是一种趋势，我们公司也在使用docker，所以我也跟着学习使用docker，根据基本需求，结合api做了一个web程序  1 实验环境 本次试验使用两台实体机做模拟docker集群，一台虚拟机做docker镜像服务器，一台虚拟机做web管理机 系统软件环境及版本： selinux disabled iptables -F 三台docker机器系统使用centos7.1，两台模拟机群docker机软件docker+pipework+openswitch+etcd+dhcp，docker镜像服务器跑了一个registry容器提供镜像服务 Web管理机使用ubuntu，python+django+uwsgi  、
+程序流程图 2原理 通过web界面创建删除容器和镜像，web服务器通过api操作三台docker机器，创建容器时通过dhcp获取ip，pipework给容器附上获取的ip，并把容器信息写入etcd库中，由于容器重启后ip消失，我通过监控脚本给启动没有ip的容器重新附上ip。容器支持ssh，有好处也有风险。 网络这块我是用交换机提供的网段，容器使用的ip和实体机在同一valn，你也可以一个集群使用一个valn，这里我是用同一valn。容器ip可以从交换机dhcp获取，不懂交换机，我直接用一台docker实体机起了dhcp服务，为该段提供dhcp服务。  3安装 3.1 docker集群节点 两台机器软件一样，我就以AB区别,软件基本一样，A多了一个dhcp，没有使用交换机提供dhcp  3.1.1安装openswitch： 如果后期不想在docker集群中划分vlan，可以使用系统自带的brctl命令创建桥接网卡，下面创建桥接网卡的脚本相应的变一下，ovs-vsctl改为brctl yum install gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool wget http://openvswitch.org/releases/openvswitch-2.3.1.tar.gz tar zxvf openvswitch-2.3.1.tar.gz mkdir -p ~/rpmbuild/SOURCES cp openvswitch-2.3.1.tar.gz ~/rpmbuild/SOURCES/ sed &#39;s/openvswitch-kmod, //g&#39; openvswitch-2.3.1/rhel/openvswitch.spec &amp;gt; openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec rpmbuild -bb --without check openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec #之后会在~/rpmbuild/RPMS/x86_64/里有2个文件 -rw-rw-r-- 1 ovswitch ovswitch 2013688 Jan 15 03:20 openvswitch-2.</description>
+    </item>
+    
+  </channel>
+</rss>

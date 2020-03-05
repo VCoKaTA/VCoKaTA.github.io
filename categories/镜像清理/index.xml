@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>镜像清理 on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/%E9%95%9C%E5%83%8F%E6%B8%85%E7%90%86/</link>
+    <description>Recent content in 镜像清理 on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 19 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/%E9%95%9C%E5%83%8F%E6%B8%85%E7%90%86/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s Harbor镜像清理</title>
+      <link>https://SomethingCM.github.io/k8s/harbor2/</link>
+      <pubDate>Fri, 19 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/harbor2/</guid>
+      <description>每个项目我只保留最近10个镜像 cat harbor_del.py #! /usr/bin/env python # -*- coding:utf-8 -*- import json import requests from pprint import pprint url=&amp;quot;xxx.xxx.xxx.7&amp;quot; username=&amp;quot;admin&amp;quot; password=&amp;quot;xxx&amp;quot; def get_projects(): try: r = requests.get(&amp;quot;https://&amp;quot;+url+&amp;quot;/api/projects&amp;quot;, auth=(username,password),headers={&amp;quot;Content-Type&amp;quot;: &amp;quot;application/json&amp;quot;}, verify=False) return r.json() except Exception as e: print(str(e)) def get_project_info(pro_id): try: r = requests.get(&amp;quot;https://&amp;quot;+url+&amp;quot;/api/repositories&amp;quot;, auth=(username,password),params={&amp;quot;project_id&amp;quot;:pro_id},headers={&amp;quot;Content-Type&amp;quot;: &amp;quot;application/json&amp;quot;}, verify=False) return r.json() except Exception as e: print(str(e)) def del_0_size_repos(repo_name): del_reps=[] r = requests.get(&amp;quot;https://&amp;quot;+url+&amp;quot;/api/repositories/&amp;quot;+repo_name+&amp;quot;/tags&amp;quot;, auth=(username,password),headers={&amp;quot;Content-Type&amp;quot;: &amp;quot;application/json&amp;quot;}, verify=False) tags = r.json() for i in tags: if i[&#39;size&#39;] == 0: rr=requests.</description>
+    </item>
+    
+  </channel>
+</rss>

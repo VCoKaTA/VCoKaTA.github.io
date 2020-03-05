@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>本地迁Ceph on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/%E6%9C%AC%E5%9C%B0%E8%BF%81ceph/</link>
+    <description>Recent content in 本地迁Ceph on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 22 Jul 2016 16:32:22 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/%E6%9C%AC%E5%9C%B0%E8%BF%81ceph/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Openstack本地迁移Ceph</title>
+      <link>https://SomethingCM.github.io/openstack/service6/</link>
+      <pubDate>Fri, 22 Jul 2016 16:32:22 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/openstack/service6/</guid>
+      <description>背景：
+openstack上线了ceph存储，创建虚拟机和云硬盘都基于ceph卷进行存储和创建，但是之前openstack用的是本地存储，有一些虚拟机部署维护的人早不在了，缺失相应的文档信息，然而短时间还不能下线这些虚拟机，所以需要进行迁移
+1、生成数据盘 查看实例的磁盘信息： [root@compute2 data]#ls /var/lib/nova/instances/77cf7371-c4d6-4a36-906b-58c45ad1595e console.log disk disk.info libvirt.xml [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# qemu-img info disk image: disk file format: qcow2 virtual size: 30G (32212254720 bytes) disk size: 3.9G cluster_size: 65536 backing file: /var/lib/nova/instances/_base/e4b92c00fbe4c3228d9f8dd64c7bf8b8b9700eda Format specific information: compat: 1.1 lazy refcounts: false 发现磁盘格式为qcow2，磁盘逻辑大小为30G，实际大小为3.9G。由于disk是基于base来增量存储数据的，。所以，disk实例大小很小，。现在需要将增量数据和base数据进行合并 [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# qemu-img convert -p -f qcow2 disk -O qcow2 /tmp/disk-boot.img (100.00/100%) [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# ll -h /tmp/disk-boot.img -rw-r--r-- 1 root root 5.0G Oct 20 16:53 /tmp/disk-boot.img [root@compute2 77cf7371-c4d6-4a36-906b-58c45ad1595e]# qemu-img info disk-boot.</description>
+    </item>
+    
+  </channel>
+</rss>

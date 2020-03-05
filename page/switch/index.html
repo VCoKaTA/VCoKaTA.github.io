@@ -1,0 +1,156 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="论晚上被吵睡不着">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>论晚上被吵睡不着 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div class="container">
+	<div class="row">
+		<div class="col-md-offset-1 col-md-10">
+			<h3>论晚上被吵睡不着</h3>
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-offset-1 col-md-10">
+			<br>
+			<pre><code>因为在公司宿舍住，难免会遇到半夜比较吵的人，公司宿舍也是豆腐渣工程，连地板都不隔音，可以想象有多薄，本人睡眠质量一直不好，楼下有两奇葩，下班回来都是已过十二点就开始，第一个喜欢开yy唱歌，可能是个主播，（第二职业，关键尼玛是男的，是男的不说，还唱那么难听），第二个爱玩游戏，打游戏很正常，边打边骂人（哎，一直觉得爱骂人的都是那些技术比较菜的人，老骂别人没配合好他，只能说不怕神一样的对手，就怕你这猪一样的队友），鉴于这些都是对网络实时性要求比较高的程序，为了不影响其他用户用网，就写了个小程序，在程序中设定延时时间，没多长时间断网几秒（楼层交换机的权限是找同事要的，本来想做个限速的了，但是交换机比较老，不支持，幸好支持端口起宕）
+
+下面程序介绍
+下载一个cisco的包ciscolib-0.1.tar.gz（思科的交换机）
+
+tar -zxf ciscolib-0.1.tar.gz
+cd ciscolib-0.1
+python setup.py build
+python setup.py install
+
+
+cat switch.py
+#!/usr/bin/env python
+#conding:utf-8
+import time
+import ciscolib
+
+IP='ip' #交换机地址
+PASSWORD=&quot;cisco&quot;
+USERNAME=&quot;&quot;
+ENABLE_PW=&quot;cisco&quot;
+
+cmd = ['configure t','interface f0/1','shutdown','no shutdown']
+try:
+    sw = ciscolib.Device(IP,PASSWORD,ENABLE_PW)
+    count = 0
+    sw.connect()
+    while (count &lt; 1000):
+        time.sleep(5)
+        sw.enable(ENABLE_PW)
+        sw.cmd(cmd[0])
+        sw.cmd(cmd[1])
+        sw.cmd(cmd[2])
+        time.sleep(2)
+        sw.cmd(cmd[3])
+        count += 1
+    sw.disconnect()
+except Exception as e:
+    print e
+#注意超时时间，sleep是不是超过交换机超时时间,
+这样实时性要求比较强的程序会有很大影响，如果没影响可以调节端口duwn的时间
+设置一个定时任务，每天晚上十二点开始执行，大部分人这个时候都睡觉了，个别奇葩除外
+这样就可以好好睡觉了
+</code></pre>
+
+		</div>
+	</div>
+	<div class="row">
+		<div class="col-md-12">
+			<hr>
+		</div>
+	</div>
+</div>
+
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+

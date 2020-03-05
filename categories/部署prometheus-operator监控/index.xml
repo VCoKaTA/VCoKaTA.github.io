@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署Prometheus-operator监控 on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2prometheus-operator%E7%9B%91%E6%8E%A7/</link>
+    <description>Recent content in 部署Prometheus-operator监控 on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2prometheus-operator%E7%9B%91%E6%8E%A7/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署8.5（部署 Prometheus-operator监控）</title>
+      <link>https://SomethingCM.github.io/k8s/k8s8.5/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/k8s8.5/</guid>
+      <description>Prometheus Operator不同于Prometheus，Prometheus Operator是 CoreOS 开源的一套用于管理在 Kubernetes 集群上的 Prometheus 控制器，它是为了简化在 Kubernetes 上部署、管理和运行 Prometheus 和 Alertmanager 集群。
+官方提供的架构图
+kubernetes也在官方的github上关于使用prometheus监控的建议： 地址：https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/prometheus  1、相关服务说明 　Operator： Operator 资源会根据自定义资源（Custom Resource Definition / CRDs）来部署和管理 Prometheus Server，同时监控这些自定义资源事件的变化来做相应的处理，是整个系统的控制中心。 Prometheus： Prometheus 资源是声明性地描述 Prometheus 部署的期望状态。 Prometheus Server： Operator 根据自定义资源 Prometheus 类型中定义的内容而部署的 Prometheus Server 集群，这些自定义资源可以看作是用来管理 Prometheus Server 集群的 StatefulSets 资源。 ServiceMonitor： ServiceMonitor 也是一个自定义资源，它描述了一组被 Prometheus 监控的 targets 列表。该资源通过 Labels 来选取对应的 Service Endpoint，让 Prometheus Server 通过选取的 Service 来获取 Metrics 信息。 Service： Service 资源主要用来对应 Kubernetes 集群中的 Metrics Server Pod，来提供给 ServiceMonitor 选取让 Prometheus Server 来获取信息。简单的说就是 Prometheus 监控的对象，例如之前了解的 Node Exporter Service、Mysql Exporter Service 等等。 Alertmanager： Alertmanager 也是一个自定义资源类型，由 Operator 根据资源描述内容来部署 Alertmanager 集群  2、下载部署 2.</description>
+    </item>
+    
+  </channel>
+</rss>

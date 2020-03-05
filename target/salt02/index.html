@@ -1,0 +1,1362 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="saltstack基础知识">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>saltstack基础知识 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/salt">salt</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/salt">salt</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h4 id="基础阶段">基础阶段</h4>
+
+<h6 id="客户端配置好master地址后重启服务-在master段查看">客户端配置好master地址后重启服务，在master段查看</h6>
+
+<pre><code>[root@centosXnode1 ~]# salt-key -L
+Accepted Keys:
+Denied Keys:
+Unaccepted Keys:
+node01.cs1cloud.internal
+node02.cs1cloud.internal
+Rejected Keys:
+</code></pre>
+
+<h6 id="接受客户端node01-node02">接受客户端node01，node02</h6>
+
+<pre><code>[root@centosXnode1 ~]# salt-key -a node01.cs1cloud.internal     （a指定node节点名添加，A添加所以）
+The following keys are going to be accepted:
+Unaccepted Keys:
+node01.cs1cloud.internal
+Proceed? [n/Y] y
+Key for minion node01.cs1cloud.internal accepted.
+[root@centosXnode1 ~]# salt-key -L
+Accepted Keys:
+node01.cs1cloud.internal
+Denied Keys:
+Unaccepted Keys:
+node02.cs1cloud.internal
+Rejected Keys:
+[root@centosXnode1 ~]# salt-key -A
+The following keys are going to be accepted:
+Unaccepted Keys:
+node02.cs1cloud.internal
+Proceed? [n/Y] y
+Key for minion node02.cs1cloud.internal accepted.
+[root@centosXnode1 ~]# salt-key -L
+Accepted Keys:
+node01.cs1cloud.internal
+node02.cs1cloud.internal
+Denied Keys:
+Unaccepted Keys:
+Rejected Keys:
+</code></pre>
+
+<h6 id="简单的测试">简单的测试</h6>
+
+<pre><code>你可以从master 使用一个内置命令 test.ping 来测试他们之间的连接
+[root@centosXnode1 ~]# salt '*'  test.ping
+node02.cs1cloud.internal:
+    True
+node01.cs1cloud.internal:
+    True
+</code></pre>
+
+<h6 id="测试与外网的连接">测试与外网的连接</h6>
+
+<pre><code>[root@centosXnode1 ~]# salt '*' cmd.run &quot;ping -c 4 baidu.com&quot;
+node01.cs1cloud.internal:
+    PING baidu.com (111.13.101.208) 56(84) bytes of data.
+    64 bytes from 111.13.101.208: icmp_seq=1 ttl=53 time=6.26 ms
+    64 bytes from 111.13.101.208: icmp_seq=2 ttl=53 time=4.91 ms
+    64 bytes from 111.13.101.208: icmp_seq=3 ttl=53 time=4.47 ms
+    64 bytes from 111.13.101.208: icmp_seq=4 ttl=53 time=4.36 ms
+
+    --- baidu.com ping statistics ---
+    4 packets transmitted, 4 received, 0% packet loss, time 3009ms
+    rtt min/avg/max/mdev = 4.364/5.002/6.264/0.760 ms
+node02.cs1cloud.internal:
+    PING baidu.com (123.125.114.144) 56(84) bytes of data.
+    64 bytes from 123.125.114.144: icmp_seq=1 ttl=53 time=4.10 ms
+    64 bytes from 123.125.114.144: icmp_seq=2 ttl=53 time=4.11 ms
+    64 bytes from 123.125.114.144: icmp_seq=3 ttl=53 time=4.33 ms
+    64 bytes from 123.125.114.144: icmp_seq=4 ttl=53 time=4.56 ms
+
+    --- baidu.com ping statistics ---
+    4 packets transmitted, 4 received, 0% packet loss, time 3009ms
+    rtt min/avg/max/mdev = 4.103/4.279/4.568/0.205 ms
+</code></pre>
+
+<h6 id="查看磁盘使用情况">查看磁盘使用情况</h6>
+
+<pre><code>[root@centosXnode1 ~]# salt '*' disk.usage
+node01.cs1cloud.internal:
+    ----------
+    /:
+        ----------
+        1K-blocks:
+            18375548
+        available:
+            15841896
+        capacity:
+            10%
+        filesystem:
+            /dev/vda3
+        used:
+            1600228
+    /boot:
+        ----------
+        1K-blocks:
+            198337
+        available:
+            156116
+        capacity:
+            18%
+        filesystem:
+            /dev/vda1
+        used:
+            31981
+    /dev/shm:
+        ----------
+        1K-blocks:
+            1961464
+        available:
+            1961452
+        capacity:
+            1%
+        filesystem:
+            tmpfs
+        used:
+            12
+node02.cs1cloud.internal:
+    ----------
+    /:
+        ----------
+        1K-blocks:
+            18375548
+        available:
+            15850208
+        capacity:
+            10%
+        filesystem:
+            /dev/vda3
+        used:
+            1591916
+    /boot:
+        ----------
+        1K-blocks:
+            198337
+        available:
+            156116
+        capacity:
+            18%
+        filesystem:
+            /dev/vda1
+        used:
+            31981
+    /dev/shm:
+        ----------
+        1K-blocks:
+            1961464
+        available:
+            1961452
+        capacity:
+            1%
+        filesystem:
+            tmpfs
+        used:
+            12
+</code></pre>
+
+<h6 id="salt更多命令及手册">salt更多命令及手册</h6>
+
+<pre><code>salt '*' sys.doc 输出结果太多
+</code></pre>
+
+<h6 id="安装软件">安装软件</h6>
+
+<pre><code>[root@centosXnode1 ~]# salt '*' pkg.install vim
+node02.cs1cloud.internal:
+    ----------
+    vim-common:
+        ----------
+        new:
+            2:7.4.629-5.el6
+        old:
+            2:7.2.411-1.8.el6
+    vim-enhanced:
+        ----------
+        new:
+            2:7.4.629-5.el6
+        old:
+            2:7.2.411-1.8.el6
+    vim-filesystem:
+        ----------
+        new:
+            2:7.4.629-5.el6
+        old:
+node01.cs1cloud.internal:
+    ----------
+    vim-common:
+        ----------
+        new:
+            2:7.4.629-5.el6
+        old:
+            2:7.2.411-1.8.el6
+    vim-enhanced:
+        ----------
+        new:
+            2:7.4.629-5.el6
+        old:
+            2:7.2.411-1.8.el6
+    vim-filesystem:
+        ----------
+        new:
+            2:7.4.629-5.el6
+        old:
+</code></pre>
+
+<h6 id="查看网络">查看网络</h6>
+
+<p>[root@centosXnode1 ~]# salt &lsquo;*&rsquo; network.interfaces
+    node02.cs1cloud.internal:
+        &mdash;&mdash;&mdash;-
+        eth0:
+            &mdash;&mdash;&mdash;-
+            hwaddr:
+                06:37:c8:00:01:fd
+            inet:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      192.168.46.66
+                  broadcast:
+                      192.168.46.255
+                  label:
+                      eth0
+                  netmask:
+                      255.255.255.0
+            inet6:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      fe80::437:c8ff:fe00:1fd
+                  prefixlen:
+                      64
+                  scope:
+                      link
+            up:
+                True
+        lo:
+            &mdash;&mdash;&mdash;-
+            hwaddr:
+                00:00:00:00:00:00
+            inet:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      127.0.0.1
+                  broadcast:
+                      None
+                  label:
+                      lo
+                  netmask:
+                      255.0.0.0
+            inet6:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      ::1
+                  prefixlen:
+                      128
+                  scope:
+                      host
+            up:
+                True
+    node01.cs1cloud.internal:
+        &mdash;&mdash;&mdash;-
+        eth0:
+            &mdash;&mdash;&mdash;-
+            hwaddr:
+                06:8b:4e:00:01:ef
+            inet:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      192.168.46.52
+                  broadcast:
+                      192.168.46.255
+                  label:
+                      eth0
+                  netmask:
+                      255.255.255.0
+            inet6:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      fe80::48b:4eff:fe00:1ef
+                  prefixlen:
+                      64
+                  scope:
+                      link
+            up:
+                True
+        lo:
+            &mdash;&mdash;&mdash;-
+            hwaddr:
+                00:00:00:00:00:00
+            inet:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      127.0.0.1
+                  broadcast:
+                      None
+                  label:
+                      lo
+                  netmask:
+                      255.0.0.0
+            inet6:
+                |_
+                  &mdash;&mdash;&mdash;-
+                  address:
+                      ::1
+                  prefixlen:
+                      128
+                  scope:
+                      host
+            up:
+                True</p>
+
+<h6 id="状态文件">状态文件</h6>
+
+<pre><code>[root@centosXnode1 base]# vim /srv/salt/apache.sls
+apache-install:
+  pkg.installed:
+    - names:
+      - httpd
+      - httpd-devel
+
+apache-service:
+  service.running:
+    - name: httpd
+    - enable: True
+    - reload: True
+[root@centosXnode1 salt]# salt &quot;*&quot; state.sls apache
+node02.cs1cloud.internal:
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd
+      Result: True
+     Comment: The following packages were installed/updated: httpd
+     Started: 16:05:18.612653
+    Duration: 24053.225 ms
+     Changes:   
+              ----------
+              apr-util-ldap:
+                  ----------
+                  new:
+                      1.3.9-3.el6_0.1
+                  old:
+              httpd:
+                  ----------
+                  new:
+                      2.2.15-47.el6.centos.3
+                  old:
+              httpd-tools:
+                  ----------
+                  new:
+                      2.2.15-47.el6.centos.3
+                  old:
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd-devel
+      Result: True
+     Comment: The following packages were installed/updated: httpd-devel
+     Started: 16:05:42.671046
+    Duration: 23504.069 ms
+     Changes:   
+              ----------
+              apr-devel:
+                  ----------
+                  new:
+                      1.3.9-5.el6_2
+                  old:
+              apr-util-devel:
+                  ----------
+                  new:
+                      1.3.9-3.el6_0.1
+                  old:
+              cyrus-sasl:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+                      2.1.23-13.el6_3.1
+              cyrus-sasl-devel:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+              cyrus-sasl-lib:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+                      2.1.23-13.el6_3.1
+              cyrus-sasl-plain:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+                      2.1.23-13.el6_3.1
+              db4:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+                      4.7.25-17.el6
+              db4-cxx:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+              db4-devel:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+              db4-utils:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+                      4.7.25-17.el6
+              expat-devel:
+                  ----------
+                  new:
+                      2.0.1-11.el6_2
+                  old:
+              httpd-devel:
+                  ----------
+                  new:
+                      2.2.15-47.el6.centos.3
+                  old:
+              openldap:
+                  ----------
+                  new:
+                      2.4.40-7.el6_7
+                  old:
+                      2.4.23-31.el6
+              openldap-devel:
+                  ----------
+                  new:
+                      2.4.40-7.el6_7
+                  old:
+----------
+          ID: apache-service
+    Function: service.running
+        Name: httpd
+      Result: True
+     Comment: Service httpd has been enabled, and is running
+     Started: 16:06:06.199913
+    Duration: 344.373 ms
+     Changes:   
+              ----------
+              httpd:
+                  True
+
+Summary
+------------
+Succeeded: 3 (changed=3)
+Failed:    0
+------------
+Total states run:     3
+node01.cs1cloud.internal:
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd
+      Result: True
+     Comment: The following packages were installed/updated: httpd
+     Started: 16:05:18.771553
+    Duration: 20378.443 ms
+     Changes:   
+              ----------
+              apr-util-ldap:
+                  ----------
+                  new:
+                      1.3.9-3.el6_0.1
+                  old:
+              httpd:
+                  ----------
+                  new:
+                      2.2.15-47.el6.centos.3
+                  old:
+              httpd-tools:
+                  ----------
+                  new:
+                      2.2.15-47.el6.centos.3
+                  old:
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd-devel
+      Result: True
+     Comment: The following packages were installed/updated: httpd-devel
+     Started: 16:05:39.155398
+    Duration: 43757.68 ms
+     Changes:   
+              ----------
+              apr-devel:
+                  ----------
+                  new:
+                      1.3.9-5.el6_2
+                  old:
+              apr-util-devel:
+                  ----------
+                  new:
+                      1.3.9-3.el6_0.1
+                  old:
+              cyrus-sasl:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+                      2.1.23-13.el6_3.1
+              cyrus-sasl-devel:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+              cyrus-sasl-lib:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+                      2.1.23-13.el6_3.1
+              cyrus-sasl-plain:
+                  ----------
+                  new:
+                      2.1.23-15.el6_6.2
+                  old:
+                      2.1.23-13.el6_3.1
+              db4:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+                      4.7.25-17.el6
+              db4-cxx:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+              db4-devel:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+              db4-utils:
+                  ----------
+                  new:
+                      4.7.25-20.el6_7
+                  old:
+                      4.7.25-17.el6
+              expat-devel:
+                  ----------
+                  new:
+                      2.0.1-11.el6_2
+                  old:
+              httpd-devel:
+                  ----------
+                  new:
+                      2.2.15-47.el6.centos.3
+                  old:
+              openldap:
+                  ----------
+                  new:
+                      2.4.40-7.el6_7
+                  old:
+                      2.4.23-31.el6
+              openldap-devel:
+                  ----------
+                  new:
+                      2.4.40-7.el6_7
+                  old:
+----------
+          ID: apache-service
+    Function: service.running
+        Name: httpd
+      Result: True
+     Comment: Service httpd has been enabled, and is running
+     Started: 16:06:22.934046
+    Duration: 250.165 ms
+     Changes:   
+              ----------
+              httpd:
+                  True
+
+Summary
+------------
+Succeeded: 3 (changed=3)
+Failed:    0
+------------
+Total states run:     3
+
+当然你不可能写n个安装文件，执行n次，这样就没有意义了
+
+编辑 /etc/salt/master 文件
+file_roots:
+  base:
+    - /srv/salt
+[root@centosXnode1 salt]# mv apache.sls base/
+
+[root@centosXnode1 salt]# vi top.sls
+base:
+  '*':
+    - base.apache
+[root@centosXnode1 salt]# salt '*' state.highstate
+node02.cs1cloud.internal:
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd
+      Result: True
+     Comment: Package httpd is already installed
+     Started: 16:13:56.870265
+    Duration: 733.233 ms
+     Changes:   
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd-devel
+      Result: True
+     Comment: Package httpd-devel is already installed
+     Started: 16:13:57.603843
+    Duration: 0.714 ms
+     Changes:   
+----------
+          ID: apache-service
+    Function: service.running
+        Name: httpd
+      Result: True
+     Comment: The service httpd is already running
+     Started: 16:13:57.605386
+    Duration: 34.214 ms
+     Changes:   
+
+Summary
+------------
+Succeeded: 3
+Failed:    0
+------------
+Total states run:     3
+node01.cs1cloud.internal:
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd
+      Result: True
+     Comment: Package httpd is already installed
+     Started: 16:13:57.316745
+    Duration: 918.705 ms
+     Changes:   
+----------
+          ID: apache-install
+    Function: pkg.installed
+        Name: httpd-devel
+      Result: True
+     Comment: Package httpd-devel is already installed
+     Started: 16:13:58.235752
+    Duration: 0.731 ms
+     Changes:   
+----------
+          ID: apache-service
+    Function: service.running
+        Name: httpd
+      Result: True
+     Comment: The service httpd is already running
+     Started: 16:13:58.237376
+    Duration: 40.583 ms
+     Changes:   
+
+Summary
+------------
+Succeeded: 3
+Failed:    0
+------------
+Total states run:     3
+</code></pre>
+
+<h6 id="grains">grains</h6>
+
+<pre><code>查看grains分类
+[root@centosXnode1 base]# salt '*' grains.ls
+node01.cs1cloud.internal:
+    - SSDs
+    - biosreleasedate
+    - biosversion
+    - cpu_flags
+    - cpu_model
+    - cpuarch
+    - domain
+    - fqdn
+    - fqdn_ip4
+    - fqdn_ip6
+    - gpus
+    - host
+    - hwaddr_interfaces
+    - id
+    - init
+    - ip4_interfaces
+    - ip6_interfaces
+    - ip_interfaces
+    - ipv4
+    - ipv6
+    - kernel
+    - kernelrelease
+    - locale_info
+    - localhost
+    - lsb_distrib_codename
+    - lsb_distrib_id
+    - lsb_distrib_release
+    - machine_id
+    - manufacturer
+    - master
+    - mdadm
+    - mem_total
+    - nodename
+    - num_cpus
+    - num_gpus
+    - os
+    - os_family
+    - osarch
+    - oscodename
+    - osfinger
+    - osfullname
+    - osmajorrelease
+    - osrelease
+    - osrelease_info
+    - path
+    - productname
+    - ps
+    - pythonexecutable
+    - pythonpath
+    - pythonversion
+    - saltpath
+    - saltversion
+    - saltversioninfo
+    - selinux
+    - server_id
+    - shell
+    - uuid
+    - virtual
+    - zmqversion
+node02.cs1cloud.internal:
+    - SSDs
+    - biosreleasedate
+    - biosversion
+    - cpu_flags
+    - cpu_model
+    - cpuarch
+    - domain
+    - fqdn
+    - fqdn_ip4
+    - fqdn_ip6
+    - gpus
+    - host
+    - hwaddr_interfaces
+    - id
+    - init
+    - ip4_interfaces
+    - ip6_interfaces
+    - ip_interfaces
+    - ipv4
+    - ipv6
+    - kernel
+    - kernelrelease
+    - locale_info
+    - localhost
+    - lsb_distrib_codename
+    - lsb_distrib_id
+    - lsb_distrib_release
+    - machine_id
+    - manufacturer
+    - master
+    - mdadm
+    - mem_total
+    - nodename
+    - num_cpus
+    - num_gpus
+    - os
+    - os_family
+    - osarch
+    - oscodename
+    - osfinger
+    - osfullname
+    - osmajorrelease
+    - osrelease
+    - osrelease_info
+    - path
+    - productname
+    - ps
+    - pythonexecutable
+    - pythonpath
+    - pythonversion
+    - saltpath
+    - saltversion
+    - saltversioninfo
+    - selinux
+    - server_id
+    - shell
+    - uuid
+    - virtual
+    - zmqversion
+
+查看grains所有信息
+[root@centosXnode1 base]# salt '*' grains.items
+node01.cs1cloud.internal:
+    ----------
+    SSDs:
+    biosreleasedate:
+        01/01/2007
+    biosversion:
+        0.5.1
+    cpu_flags:
+        - fpu
+        - de
+        - pse
+        - tsc
+        - msr
+        - pae
+        - mce
+        - cx8
+        - apic
+        - sep
+        - mtrr
+        - pge
+        - mca
+        - cmov
+        - pse36
+        - clflush
+        - mmx
+        - fxsr
+        - sse
+        - sse2
+        - syscall
+        - nx
+        - lm
+        - unfair_spinlock
+        - pni
+        - cx16
+        - hypervisor
+        - lahf_lm
+    cpu_model:
+        QEMU Virtual CPU version (cpu64-rhel6)
+    cpuarch:
+        x86_64
+    domain:
+        cs1cloud.internal
+    fqdn:
+        node01.cs1cloud.internal
+    fqdn_ip4:
+        - 192.168.46.52
+    fqdn_ip6:
+    gpus:
+        |_
+          ----------
+          model:
+              GD 5446
+          vendor:
+              unknown
+    host:
+        node01
+    hwaddr_interfaces:
+        ----------
+        eth0:
+            06:8b:4e:00:01:ef
+        lo:
+            00:00:00:00:00:00
+    id:
+        node01.cs1cloud.internal
+    init:
+        upstart
+    ip4_interfaces:
+        ----------
+        eth0:
+            - 192.168.46.52
+        lo:
+            - 127.0.0.1
+    ip6_interfaces:
+        ----------
+        eth0:
+            - fe80::48b:4eff:fe00:1ef
+        lo:
+            - ::1
+    ip_interfaces:
+        ----------
+        eth0:
+            - 192.168.46.52
+            - fe80::48b:4eff:fe00:1ef
+        lo:
+            - 127.0.0.1
+            - ::1
+    ipv4:
+        - 127.0.0.1
+        - 192.168.46.52
+    ipv6:
+        - ::1
+        - fe80::48b:4eff:fe00:1ef
+    kernel:
+        Linux
+    kernelrelease:
+        2.6.32-358.el6.x86_64
+    locale_info:
+        ----------
+        defaultencoding:
+            UTF8
+        defaultlanguage:
+            en_US
+        detectedencoding:
+            UTF-8
+    localhost:
+        node01
+    lsb_distrib_codename:
+        Final
+    lsb_distrib_id:
+        CentOS
+    lsb_distrib_release:
+        6.4
+    machine_id:
+        ccb106f6149b02e75480561400000038
+    manufacturer:
+        Red Hat
+    master:
+        192.168.46.105
+    mdadm:
+    mem_total:
+        1782
+    nodename:
+        node01
+    num_cpus:
+        2
+    num_gpus:
+        1
+    os:
+        CentOS
+    os_family:
+        RedHat
+    osarch:
+        x86_64
+    oscodename:
+        Final
+    osfinger:
+        CentOS-6
+    osfullname:
+        CentOS
+    osmajorrelease:
+        6
+    osrelease:
+        6.4
+    osrelease_info:
+        - 6
+        - 4
+    path:
+        /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
+    productname:
+        KVM
+    ps:
+        ps -efH
+    pythonexecutable:
+        /usr/bin/python2.6
+    pythonpath:
+        - /usr/bin
+        - /usr/lib64/python26.zip
+        - /usr/lib64/python2.6
+        - /usr/lib64/python2.6/plat-linux2
+        - /usr/lib64/python2.6/lib-tk
+        - /usr/lib64/python2.6/lib-old
+        - /usr/lib64/python2.6/lib-dynload
+        - /usr/lib64/python2.6/site-packages
+        - /usr/lib64/python2.6/site-packages/gtk-2.0
+        - /usr/lib/python2.6/site-packages
+    pythonversion:
+        - 2
+        - 6
+        - 6
+        - final
+        - 0
+    saltpath:
+        /usr/lib/python2.6/site-packages/salt
+    saltversion:
+        2015.8.7
+    saltversioninfo:
+        - 2015
+        - 8
+        - 7
+        - 0
+    selinux:
+        ----------
+        enabled:
+            False
+        enforced:
+            Disabled
+    server_id:
+        701712520
+    shell:
+        /bin/bash
+    uuid:
+        cf557172-7831-4c2d-85ea-89b375e9c93c
+    virtual:
+        kvm
+    zmqversion:
+        4.0.5
+node02.cs1cloud.internal:
+    ----------
+    SSDs:
+    biosreleasedate:
+        01/01/2007
+    biosversion:
+        0.5.1
+    cpu_flags:
+        - fpu
+        - de
+        - pse
+        - tsc
+        - msr
+        - pae
+        - mce
+        - cx8
+        - apic
+        - sep
+        - mtrr
+        - pge
+        - mca
+        - cmov
+        - pse36
+        - clflush
+        - mmx
+        - fxsr
+        - sse
+        - sse2
+        - syscall
+        - nx
+        - lm
+        - unfair_spinlock
+        - pni
+        - cx16
+        - hypervisor
+        - lahf_lm
+    cpu_model:
+        QEMU Virtual CPU version (cpu64-rhel6)
+    cpuarch:
+        x86_64
+    domain:
+        cs1cloud.internal
+    fqdn:
+        node02.cs1cloud.internal
+    fqdn_ip4:
+        - 192.168.46.66
+    fqdn_ip6:
+    gpus:
+        |_
+          ----------
+          model:
+              GD 5446
+          vendor:
+              unknown
+    host:
+        node02
+    hwaddr_interfaces:
+        ----------
+        eth0:
+            06:37:c8:00:01:fd
+        lo:
+            00:00:00:00:00:00
+    id:
+        node02.cs1cloud.internal
+    init:
+        upstart
+    ip4_interfaces:
+        ----------
+        eth0:
+            - 192.168.46.66
+        lo:
+            - 127.0.0.1
+    ip6_interfaces:
+        ----------
+        eth0:
+            - fe80::437:c8ff:fe00:1fd
+        lo:
+            - ::1
+    ip_interfaces:
+        ----------
+        eth0:
+            - 192.168.46.66
+            - fe80::437:c8ff:fe00:1fd
+        lo:
+            - 127.0.0.1
+            - ::1
+    ipv4:
+        - 127.0.0.1
+        - 192.168.46.66
+    ipv6:
+        - ::1
+        - fe80::437:c8ff:fe00:1fd
+    kernel:
+        Linux
+    kernelrelease:
+        2.6.32-358.el6.x86_64
+    locale_info:
+        ----------
+        defaultencoding:
+            UTF8
+        defaultlanguage:
+            en_US
+        detectedencoding:
+            UTF-8
+    localhost:
+        node02
+    lsb_distrib_codename:
+        Final
+    lsb_distrib_id:
+        CentOS
+    lsb_distrib_release:
+        6.4
+    machine_id:
+        ccb106f6149b02e75480561400000038
+    manufacturer:
+        Red Hat
+    master:
+        192.168.46.105
+    mdadm:
+    mem_total:
+        1782
+    nodename:
+        node02
+    num_cpus:
+        2
+    num_gpus:
+        1
+    os:
+        CentOS
+    os_family:
+        RedHat
+    osarch:
+        x86_64
+    oscodename:
+        Final
+    osfinger:
+        CentOS-6
+    osfullname:
+        CentOS
+    osmajorrelease:
+        6
+    osrelease:
+        6.4
+    osrelease_info:
+        - 6
+        - 4
+    path:
+        /sbin:/usr/sbin:/bin:/usr/bin:/usr/local/bin
+    productname:
+        KVM
+    ps:
+        ps -efH
+    pythonexecutable:
+        /usr/bin/python2.6
+    pythonpath:
+        - /usr/bin
+        - /usr/lib64/python26.zip
+        - /usr/lib64/python2.6
+        - /usr/lib64/python2.6/plat-linux2
+        - /usr/lib64/python2.6/lib-tk
+        - /usr/lib64/python2.6/lib-old
+        - /usr/lib64/python2.6/lib-dynload
+        - /usr/lib64/python2.6/site-packages
+        - /usr/lib64/python2.6/site-packages/gtk-2.0
+        - /usr/lib/python2.6/site-packages
+    pythonversion:
+        - 2
+        - 6
+        - 6
+        - final
+        - 0
+    saltpath:
+        /usr/lib/python2.6/site-packages/salt
+    saltversion:
+        2015.8.7
+    saltversioninfo:
+        - 2015
+        - 8
+        - 7
+        - 0
+    selinux:
+        ----------
+        enabled:
+            False
+        enforced:
+            Disabled
+    server_id:
+        224394767
+    shell:
+        /bin/bash
+    uuid:
+        2ee2920f-d6f9-4c0a-ae64-39e8e7c35c39
+    virtual:
+        kvm
+    zmqversion:
+        4.0.5
+
+查看grains某个信息
+[root@centosXnode1 base]# salt '*' grains.item fqdn_ip4
+node02.cs1cloud.internal:
+    ----------
+    fqdn_ip4:
+        - 192.168.46.66
+node01.cs1cloud.internal:
+    ----------
+    fqdn_ip4:
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/salt02/" data-title="saltstack基础知识" data-url="https://SomethingCM.github.io/target/salt02/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

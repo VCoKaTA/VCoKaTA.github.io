@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署Dashboard on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2dashboard/</link>
+    <description>Recent content in 部署Dashboard on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2dashboard/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署8.2（部署 Dashboard）</title>
+      <link>https://SomethingCM.github.io/k8s/k8s8.2/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/k8s8.2/</guid>
+      <description>1、下载配置dashboard-service.yaml 将下载的 kubernetes-server-linux-amd64.tar.gz 解压后，再解压其中的 kubernetes-src.tar.gz 文件。 dashboard 对应的目录是：cluster/addons/dashboard cd /root/kubernetes/cluster/addons/dashboard 修改 service 定义，指定端口类型为 NodePort，这样外界可以通过地址 NodeIP:NodePort 访问 dashboard； [root@k8s-1 dashboard]# cat dashboard-service.yaml apiVersion: v1 kind: Service metadata: name: kubernetes-dashboard namespace: kube-system labels: k8s-app: kubernetes-dashboard kubernetes.io/cluster-service: &amp;quot;true&amp;quot; addonmanager.kubernetes.io/mode: Reconcile spec: type: NodePort selector: k8s-app: kubernetes-dashboard ports: - port: 443 targetPort: 8443 vim dashboard-controller.yaml image: registry.aliyuncs.com/google_containers/kubernetes-dashboard-amd64:v1.10.1 执行所有定义文件 [root@k8s-1 dashboard]# ls *.yaml dashboard-configmap.yaml dashboard-controller.yaml dashboard-rbac.yaml dashboard-secret.yaml dashboard-service.yaml [root@k8s-1 dashboard]# cat *.yaml apiVersion: v1 kind: ConfigMap metadata: labels: k8s-app: kubernetes-dashboard # Allows editing resource and makes sure it is created first.</description>
+    </item>
+    
+  </channel>
+</rss>

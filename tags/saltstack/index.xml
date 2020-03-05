@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>saltstack on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/saltstack/</link>
+    <description>Recent content in saltstack on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 20 Jul 2015 14:56:05 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/saltstack/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>saltstack 学习笔记</title>
+      <link>https://SomethingCM.github.io/target/saltstack/</link>
+      <pubDate>Mon, 20 Jul 2015 14:56:05 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/saltstack/</guid>
+      <description>基础环境 salt-key --help查看帮助 [root@centos7Xnode1 ~]# salt-key Accepted Keys: node1 node2 node3 Denied Keys: Unaccepted Keys: Rejected Keys: node1是master也是minion node2，node3是minion yaml 一两个空格为缩进 vim /etc/salt/master ##salt 配置文件也是yaml格式 file_roots: base: - /srv/salt/base test: - /srv/salt/test prod: - /srv/salt/prod 重启salt-master [root@centos7Xnode1 base]# pwd /srv/salt/base  使用salt初始化系统 [root@centos7Xnode1 base]# pwd /srv/salt/base [root@centos7Xnode1 base]# tree . ├── init │ ├── audit.sls │ ├── dns.sls │ ├── env_init.sls │ ├── files │ │ └── resolv.conf │ ├── history.</description>
+    </item>
+    
+    <item>
+      <title>saltstack安装</title>
+      <link>https://SomethingCM.github.io/target/salt01/</link>
+      <pubDate>Tue, 10 Mar 2015 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/salt01/</guid>
+      <description> saltstack 安装 官网安装地址：https://docs.saltstack.com/en/latest/topics/installation/rhel.html 我的环境是centos  导入saltstack仓库 版本 7: rpm --import https://repo.saltstack.com/yum/redhat/7/x86_64/latest/SALTSTACK-GPG-KEY.pub 版本 6: rpm --import https://repo.saltstack.com/yum/redhat/6/x86_64/latest/SALTSTACK-GPG-KEY.pub  编辑仓库配置 vi /etc/yum.repos.d/saltstack.repo [saltstack-repo] name=SaltStack repo for RHEL/CentOS $releasever baseurl=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest enabled=1 gpgcheck=1 gpgkey=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub  安装 yum install salt-master yum install salt-minion yum install salt-ssh yum install salt-syndic yum install salt-cloud  启动 版本6或6以下设置开机自启动，例： chkconfig salt-master on 版本7： systemctl enable salt-master.service 版本6或6以下启动，例： service salt-master start 版本7： systemctl start salt-master.service  </description>
+    </item>
+    
+  </channel>
+</rss>

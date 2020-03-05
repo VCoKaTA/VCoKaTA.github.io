@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署kube-proxy组件 on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2kube-proxy%E7%BB%84%E4%BB%B6/</link>
+    <description>Recent content in 部署kube-proxy组件 on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 10 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2kube-proxy%E7%BB%84%E4%BB%B6/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署6.3（部署 kube-proxy 组件）</title>
+      <link>https://SomethingCM.github.io/k8s/k8s6.3/</link>
+      <pubDate>Wed, 10 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/k8s6.3/</guid>
+      <description>1、创建 kube-proxy 证书 kube-proxy 运行在所有 worker 节点上，它监听 apiserver 中 service 和 endpoint 的变化情况，创建路由规则以提供服务 IP 和负载均衡功能。 各节点需要安装 ipvsadm 和 ipset 命令，加载 ip_vs 内核模块。 yum install -y epel-release yum install -y conntrack ipvsadm ntp ntpdate ipset jq iptables curl sysstat libseccomp &amp;amp;&amp;amp; modprobe ip_vs 在证书节点上操作 cat &amp;gt; kube-proxy-csr.json &amp;lt;&amp;lt;EOF { &amp;quot;CN&amp;quot;: &amp;quot;system:kube-proxy&amp;quot;, &amp;quot;key&amp;quot;: { &amp;quot;algo&amp;quot;: &amp;quot;rsa&amp;quot;, &amp;quot;size&amp;quot;: 2048 }, &amp;quot;names&amp;quot;: [ { &amp;quot;C&amp;quot;: &amp;quot;CN&amp;quot;, &amp;quot;ST&amp;quot;: &amp;quot;BeiJing&amp;quot;, &amp;quot;L&amp;quot;: &amp;quot;BeiJing&amp;quot;, &amp;quot;O&amp;quot;: &amp;quot;k8s&amp;quot;, &amp;quot;OU&amp;quot;: &amp;quot;System&amp;quot; } ] } EOF # CN：指定该证书的 User 为 system:kube-proxy； # 预定义的 RoleBinding system:node-proxier 将User system:kube-proxy 与 Role system:node-proxier 绑定，该 Role 授予了调用 kube-apiserver Proxy 相关 API 的权限； # 该证书只会被 kube-proxy 当做 client 证书使用，所以 hosts 字段为空； cfssl gencert -ca=ca.</description>
+    </item>
+    
+  </channel>
+</rss>

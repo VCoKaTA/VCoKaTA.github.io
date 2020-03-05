@@ -1,0 +1,136 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Targets on SomethingCM</title>
+    <link>https://SomethingCM.github.io/target/</link>
+    <description>Recent content in Targets on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 23 Feb 2016 10:27:29 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/target/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>gitlab &#43; jenkins&#43;salt持续集成</title>
+      <link>https://SomethingCM.github.io/target/git_jen/</link>
+      <pubDate>Tue, 23 Feb 2016 10:27:29 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/git_jen/</guid>
+      <description>目的： 主要是了解持续集成方面的知识，分析gitlab的对于svn的优势，了解gitlab和jenkins的原理，再配合脚本和salt做一个简易的持续集成。
+环境 我使用三台机器做测试： 三台机器系统都是centos7，selinux disabled，iptables disabled 192.168.46.66 jenkins salt-master 192.168.46.82 gitlab 192.168.46.105 nginx salt-minion  该测试大致过程  通过提交代码到gitlab触发jenkins构建，jenkins调用脚本打包程序，通过salt分发包，并通过salt部署包
+1 安装  1.1 安装jenkins 官网安装文档：https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins#InstallingJenkins-Unix%2FLinuxInstallation 我装的稳定版本： 1.1.1 添加Jenkins的源（repository）: wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key yum install jenkins 1.1.2 安装/检查JDK [root@localhost jenkins]# yum install java -y [root@localhost jenkins]# java -version openjdk version &amp;quot;1.8.0_71&amp;quot; OpenJDK Runtime Environment (build 1.8.0_71-b15) OpenJDK 64-Bit Server VM (build 25.71-b15, mixed mode) 1.1.3 安装Jenkins： [root@localhost jenkins]#yum install jenkins 遇到错误 Delta RPMs disabled because /usr/bin/applydeltarpm not installed.</description>
+    </item>
+    
+    <item>
+      <title>docker web化管理</title>
+      <link>https://SomethingCM.github.io/target/first/</link>
+      <pubDate>Thu, 31 Dec 2015 13:25:08 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/first/</guid>
+      <description>背景 目前很多公司都在使用docker，docker也是一种趋势，我们公司也在使用docker，所以我也跟着学习使用docker，根据基本需求，结合api做了一个web程序  1 实验环境 本次试验使用两台实体机做模拟docker集群，一台虚拟机做docker镜像服务器，一台虚拟机做web管理机 系统软件环境及版本： selinux disabled iptables -F 三台docker机器系统使用centos7.1，两台模拟机群docker机软件docker+pipework+openswitch+etcd+dhcp，docker镜像服务器跑了一个registry容器提供镜像服务 Web管理机使用ubuntu，python+django+uwsgi  、
+程序流程图 2原理 通过web界面创建删除容器和镜像，web服务器通过api操作三台docker机器，创建容器时通过dhcp获取ip，pipework给容器附上获取的ip，并把容器信息写入etcd库中，由于容器重启后ip消失，我通过监控脚本给启动没有ip的容器重新附上ip。容器支持ssh，有好处也有风险。 网络这块我是用交换机提供的网段，容器使用的ip和实体机在同一valn，你也可以一个集群使用一个valn，这里我是用同一valn。容器ip可以从交换机dhcp获取，不懂交换机，我直接用一台docker实体机起了dhcp服务，为该段提供dhcp服务。  3安装 3.1 docker集群节点 两台机器软件一样，我就以AB区别,软件基本一样，A多了一个dhcp，没有使用交换机提供dhcp  3.1.1安装openswitch： 如果后期不想在docker集群中划分vlan，可以使用系统自带的brctl命令创建桥接网卡，下面创建桥接网卡的脚本相应的变一下，ovs-vsctl改为brctl yum install gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool wget http://openvswitch.org/releases/openvswitch-2.3.1.tar.gz tar zxvf openvswitch-2.3.1.tar.gz mkdir -p ~/rpmbuild/SOURCES cp openvswitch-2.3.1.tar.gz ~/rpmbuild/SOURCES/ sed &#39;s/openvswitch-kmod, //g&#39; openvswitch-2.3.1/rhel/openvswitch.spec &amp;gt; openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec rpmbuild -bb --without check openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec #之后会在~/rpmbuild/RPMS/x86_64/里有2个文件 -rw-rw-r-- 1 ovswitch ovswitch 2013688 Jan 15 03:20 openvswitch-2.</description>
+    </item>
+    
+    <item>
+      <title>ELK学习安装</title>
+      <link>https://SomethingCM.github.io/target/elk/</link>
+      <pubDate>Wed, 11 Nov 2015 13:35:50 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/elk/</guid>
+      <description>1.介绍 官网：https://www.elastic.co/guide/index.html ELK 由ElasticSearch 、 Logstash 和 Kiabana 三个开源工具组成 l Elasticsearch 是个开源分布式搜索引擎，它的特点有：分布式，零配置，自动发现，索引自动分片，索引副本机制， restful 风格接口，多数据源，自动搜索负载等。 l Logstash 是一个完全开源的工具，他可以对你的日志进行收集、分析，并将其存储供以后使用（如，搜索）。 l kibana 也是一个开源和免费的工具，他 Kibana 可以为 Logstash 和ElasticSearch 提供的日志分析友好的 Web 界面，可以帮助您汇总、分析和搜索重要数据日志。 工作原理如下如所示：  在需要收集日志的所有服务上部署 logstash ，作为 logstash agent （ logstash shipper ）用于监控并过滤收集日志，将过滤后的内容发送到 logstash indexer ，logstash indexer 将日志收集在一起交给全文搜索服务 ElasticSearch ，可以用ElasticSearch 进行自定义搜索通过 Kibana 来结合自定义搜索进行页面展示。  2.环境 两台centos7 iptables disabled selinux disabled node1 10.0.0.10 node2 10.0.0.11 selinux disabled  3.安装 安装java包（elasticsearch 需要java支持） yum install -y java elasticsearch安装： 下载并安装GPG key rpm --import https://packages.</description>
+    </item>
+    
+    <item>
+      <title>salt yum 安装 lnmp</title>
+      <link>https://SomethingCM.github.io/target/salt_yum_lnmp/</link>
+      <pubDate>Fri, 02 Oct 2015 10:53:48 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/salt_yum_lnmp/</guid>
+      <description>背景 以前安装lnmp都是手动安装，一个包一个包下然后再一个一个编译，源码安装的时候屏幕滚动，感觉很帅的样子，现在想起来可笑，费时费劲，前段时间试了下用salt安装，是yum版的，源码版的等有时间再弄，系统用的centos7，所以源码版的很多包要重新测。  环境 master： centos7 minion： centos7 node02  master 状态文件目录讲解 ├── base #master配置文件中定义了三个状态文件目录，分别为base，prod，test │ └── top.sls #top文件这里就不介绍了 ├── prod │ └── yum_lnmp #自定义lnmp目录 │ ├── epel_release.sls #安装epel源 │ ├── files #各种配置文件 │ │ ├── index.php │ │ ├── my.cnf │ │ ├── nginx.conf │ │ ├── nginx_default.conf │ │ ├── php-fpm.conf │ │ ├── php-fpm_www.conf │ │ └── php.ini │ ├── lnmp.sls #我用的yum安装的，里面是所有包安装以及文件下发 │ ├── service.sls #各软件的启动 │ └── www.</description>
+    </item>
+    
+    <item>
+      <title>KVM学习笔记</title>
+      <link>https://SomethingCM.github.io/target/kvm/</link>
+      <pubDate>Fri, 02 Oct 2015 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/kvm/</guid>
+      <description>1.环境 我是在VMware下面做的实验 一台centos7的虚拟机 selinux disabled iptables -F 查询是否支持虚拟化 inter的cpu：vmx AMD的cpu：svm [root@kvm-node1 ~]``# grep -E &amp;quot;svm|vmx&amp;quot; /proc/cpuinfo ` flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave avx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust flags : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave a* vx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust`  2.</description>
+    </item>
+    
+    <item>
+      <title>shipyard安装</title>
+      <link>https://SomethingCM.github.io/target/shipyard/</link>
+      <pubDate>Thu, 30 Jul 2015 15:20:45 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/shipyard/</guid>
+      <description>shipyard github地址：https://github.com/shipyard/shipyard 控制节点ip：192.168.46.119 node节点ip：192.168.46.82 我的系统是centos7的 所有节点安装docker yum install -y docker 控制节点执行脚本 curl -s https://shipyard-project.com/deploy | bash -s 获取帮助 curl -s https://shipyard-project.com/deploy | bash -s -- -h node节点注册 curl -sSL https://shipyard-project.com/deploy | ACTION=node DISCOVERY=etcd://192.168.46.119:4001 bash -s 访问 http://192.168.46.119:8080 Username: admin Password: shipyard  </description>
+    </item>
+    
+    <item>
+      <title>saltstack 学习笔记</title>
+      <link>https://SomethingCM.github.io/target/saltstack/</link>
+      <pubDate>Mon, 20 Jul 2015 14:56:05 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/saltstack/</guid>
+      <description>基础环境 salt-key --help查看帮助 [root@centos7Xnode1 ~]# salt-key Accepted Keys: node1 node2 node3 Denied Keys: Unaccepted Keys: Rejected Keys: node1是master也是minion node2，node3是minion yaml 一两个空格为缩进 vim /etc/salt/master ##salt 配置文件也是yaml格式 file_roots: base: - /srv/salt/base test: - /srv/salt/test prod: - /srv/salt/prod 重启salt-master [root@centos7Xnode1 base]# pwd /srv/salt/base  使用salt初始化系统 [root@centos7Xnode1 base]# pwd /srv/salt/base [root@centos7Xnode1 base]# tree . ├── init │ ├── audit.sls │ ├── dns.sls │ ├── env_init.sls │ ├── files │ │ └── resolv.conf │ ├── history.</description>
+    </item>
+    
+    <item>
+      <title>Keepalived&#43;Haproxy</title>
+      <link>https://SomethingCM.github.io/target/ha/</link>
+      <pubDate>Tue, 19 May 2015 16:35:31 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/ha/</guid>
+      <description>keepalived haproxy 介绍 Keepalived是HA cluster的一种实现方案，其以vrrp协议为实现基础，在N台具有相同功能的路由器或服务器中选出一个master或多个backup，这些路由器或服务器会共用一个对外提供服务的VIP。在此HA cluster集群中，master主机会发送组播来跟backup主机进行通信确认双方是否存活。当backup主机在指定的时间内没有收到vrrp组播报文则认为master主机宕机了，此时就会在所有的backup主机中根据vrrp协议来选举出新的master主机来保证服务的高可用性。 keepalived主要有三个模块，分别是ipvs wrapper、checkers和vrrp stack。ipvs wrapper模块为keepalived的核心，负责主进程的启动、维护以及全局配置文件的加载和解析。checkers负责健康检查，包括常见的各种检查方式。vrrp stack模块是来实现VRRP协议的。 HAProxy提供高可用性、负载均衡以及基于TCP和HTTP应用的代理，支持虚拟主机，它是免费、快速并且可靠的一种解决方案。根据官方数据，其最高极限支持10G的并发。 HAProxy特别适用于那些负载特大的web站点， 这些站点通常又需要会话保持或七层处理。HAProxy运行在当前的硬件上，完全可以支持数以万计的并发连接。并且它的运行模式使得它可以很简单安全的整合进您当前的架构中， 同时可以保护你的web服务器不被暴露到网络上。  1、软件安装 rpm -import https://www.elrepo.org/RPM-GPG-KEY-elrepo.org rpm -Uvh https://www.elrepo.org/elrepo-release-7.0-4.el7.elrepo.noarch.rpm yum install -y keepalived haproxy  2、软件配置 2.1、keepalived配置 Master global_defs { notification_email { chenmeng@yunzongnet.com } } vrrp_script chk_haproxy { script &amp;quot;/etc/keepalived/check_haproxy.sh&amp;quot; interval 2 weight 2 } vrrp_instance VI_1 { state MASTER nopreempt interface eth0 virtual_router_id 121 priority 60 lvs_sync_daemon_interface eth0 advert_int 1 authentication { auth_type PASS auth_pass adminyz } track_script { chk_haproxy } virtual_ipaddress { 10.</description>
+    </item>
+    
+    <item>
+      <title>saltstack安装</title>
+      <link>https://SomethingCM.github.io/target/salt01/</link>
+      <pubDate>Tue, 10 Mar 2015 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/salt01/</guid>
+      <description> saltstack 安装 官网安装地址：https://docs.saltstack.com/en/latest/topics/installation/rhel.html 我的环境是centos  导入saltstack仓库 版本 7: rpm --import https://repo.saltstack.com/yum/redhat/7/x86_64/latest/SALTSTACK-GPG-KEY.pub 版本 6: rpm --import https://repo.saltstack.com/yum/redhat/6/x86_64/latest/SALTSTACK-GPG-KEY.pub  编辑仓库配置 vi /etc/yum.repos.d/saltstack.repo [saltstack-repo] name=SaltStack repo for RHEL/CentOS $releasever baseurl=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest enabled=1 gpgcheck=1 gpgkey=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub  安装 yum install salt-master yum install salt-minion yum install salt-ssh yum install salt-syndic yum install salt-cloud  启动 版本6或6以下设置开机自启动，例： chkconfig salt-master on 版本7： systemctl enable salt-master.service 版本6或6以下启动，例： service salt-master start 版本7： systemctl start salt-master.service  </description>
+    </item>
+    
+    <item>
+      <title>saltstack基础知识</title>
+      <link>https://SomethingCM.github.io/target/salt02/</link>
+      <pubDate>Mon, 09 Mar 2015 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/salt02/</guid>
+      <description>基础阶段 客户端配置好master地址后重启服务，在master段查看 [root@centosXnode1 ~]# salt-key -L Accepted Keys: Denied Keys: Unaccepted Keys: node01.cs1cloud.internal node02.cs1cloud.internal Rejected Keys:  接受客户端node01，node02 [root@centosXnode1 ~]# salt-key -a node01.cs1cloud.internal （a指定node节点名添加，A添加所以） The following keys are going to be accepted: Unaccepted Keys: node01.cs1cloud.internal Proceed? [n/Y] y Key for minion node01.cs1cloud.internal accepted. [root@centosXnode1 ~]# salt-key -L Accepted Keys: node01.cs1cloud.internal Denied Keys: Unaccepted Keys: node02.cs1cloud.internal Rejected Keys: [root@centosXnode1 ~]# salt-key -A The following keys are going to be accepted: Unaccepted Keys: node02.</description>
+    </item>
+    
+    <item>
+      <title>mysql 修改用户名密码</title>
+      <link>https://SomethingCM.github.io/target/mysql/</link>
+      <pubDate>Thu, 22 May 2014 10:04:16 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/mysql/</guid>
+      <description>修改密码 1.方法1 /etc/init.d/mysql stop mysqld_safe --user=mysql --skip-grant-tables --skip-networking &amp;amp; mysql -u root mysql mysql&amp;gt; UPDATE user SET Password=PASSWORD(’newpassword’) where USER=’root’; mysql&amp;gt; FLUSH PRIVILEGES; mysql&amp;gt; quit /etc/init.d/mysql restart mysql -uroot -pnewpassword  2.方法2 mysql -uroot -ppassword use mysql; select host,user,password from user; grant all on mydb.* to NewUserName@HostName identified by &amp;quot;newpassword&amp;quot; ; grant usage on *.* to NewUserName@HostName identified by &amp;quot;newpassword&amp;quot;; grant select,insert,update on mydb.* to NewUserName@HostName identified by &amp;quot;newpassword&amp;quot;; grant update,delete on mydb.</description>
+    </item>
+    
+    <item>
+      <title>lnmp 源码安装</title>
+      <link>https://SomethingCM.github.io/target/lunp/</link>
+      <pubDate>Tue, 29 Apr 2014 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/lunp/</guid>
+      <description>安装环境 redhat6.0 itables disabled selinux disabled  1.安装MYAQL [root@localhost mysql]# ls mysql-5.6.10 mysql-5.6.10.tar.gz [root@localhost mysql]# cd mysql-5.6.10
+源码安装mysql（也可yum install） yum install -y gcc gcc-c++ make ncurses-devel bison openssl-devel zlib-devel cmake -y [root@localhost 5.6.10]# cmake -DCMAKE_INSTALL_PREFIX=/usr/local/lnmp/mysql -DMYSQL_DATADIR=/usr/local/lnmp/mysql/data -DMYSQL_UNIX_ADDR=/usr/local/lnmp/mysql/data/mysql.sock -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DENABLED_LOCAL_INFILE=1 -DWITH_READLINE=1 -DWITH_SSL=yes -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DEXTRA_CHARSETS=all -DMYSQL_TCP_PORT=3306 make &amp;amp;&amp;amp; make install cp support-files/my-medium.cnf /etc/my.cnf # 复制配置文件，注意修改配置文件中的目录 vi /etc/my.cnf # These are commonly set, remove the # and set as required.</description>
+    </item>
+    
+    <item>
+      <title>samba安装</title>
+      <link>https://SomethingCM.github.io/target/samba/</link>
+      <pubDate>Sun, 23 Mar 2014 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/samba/</guid>
+      <description>一. samba的安装: centos yum -y install samba samba-client samba-common systemctl start smb ubuntu sudo apt-get install samba // (sudo get temp root auth) sudo apt-get install smbfs  二. 创建共享目录: mkdir /home/john/share sudo chmod 777 /home/john/ share 说明：john为你的ubuntu的用户名；share你可以随便起个名字做为共享文件夹  三. 创建Samba配置文件： 1. 保存现有的配置文件 cp /etc/samba/smb.conf /etc/samba/smb.conf.bak 2.修改现配置文件 vim /etc/samba/smb.conf 在smb.conf最后添加 [share] path = /home/john/ share available = yes browseable = yes public = yes writable = yes valid users = myname create mask = 0700 directory mask =0700 force user =nobody force group = nogroup 说明：valid users = myname　这个myname是自己起的，后面在添加用户名时就是添加的这个； 另外这个[share]名字也是可以随便起的，这个是你在windows下访问时显示的名字； 在windows下 \\162.</description>
+    </item>
+    
+  </channel>
+</rss>

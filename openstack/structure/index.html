@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Openstack项目架构">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>Openstack项目架构 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                     using tags
+                    
+                        
+                        <a href="/tags/openstack">“Openstack”</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<hr />
+
+<h4 id="物理架构">物理架构</h4>
+
+<p><img style="zoom:60%" src="/images/openstack/openstack1.jpg"></p>
+
+<pre><code>   还有一张图是ceph与计算节点分离的，其实也差不多，就没放上来了。  
+   公司要节约经费，所以计算节点和存储节点放一起。如果你们经费足够还是建议分开放，因为计算节点虚拟机跑多了，多多少少会出问题，容易宕机，很不幸我有一部分机器有点不稳定，有几个计算节点老是宕机，来来回回换了好多东西，就差整机都换了（我那批机器是惠普380GEN9系列），还是建议买dell的机器，感觉比惠普靠谱点。  
+   如果你的ceph节点足够多，一台或几台ceph节点宕机不影响整个集群，ceph节点可以和计算节点混合使用。  
+   如果你考虑使用ceph和计算混用，你要注意计算节点要给ceph节点预留内存和cpu，一般一个osd节点给2G内存1core资源就可以了。  
+   还有一个比较重要的是ceph网络最好使用万兆交换机，千兆交换机不出问题还好，ceph节点宕机数据同步是一件非常痛苦的事，想想如果一个ceph节点有10T数据需要同步，按理论最快速度同步，一天也别想同步完。  
+</code></pre>
+
+<hr />
+
+<h4 id="软件组成">软件组成</h4>
+
+<p><img style="zoom:70%" src="/images/openstack/openstack2.png"></p>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/openstack/structure/" data-title="Openstack项目架构" data-url="https://SomethingCM.github.io/openstack/structure/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

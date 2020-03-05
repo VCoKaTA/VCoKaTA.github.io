@@ -1,0 +1,657 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="saltstack 学习笔记">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>saltstack 学习笔记 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/saltstack">saltstack</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/saltstack">saltstack</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h4 id="基础环境">基础环境</h4>
+
+<pre><code>salt-key --help查看帮助
+[root@centos7Xnode1 ~]# salt-key
+Accepted Keys:
+node1
+node2
+node3
+Denied Keys:
+Unaccepted Keys:
+Rejected Keys:
+
+node1是master也是minion
+node2，node3是minion
+
+yaml 一两个空格为缩进
+
+vim /etc/salt/master ##salt 配置文件也是yaml格式
+file_roots:
+  base:
+    - /srv/salt/base
+  test:
+    - /srv/salt/test
+  prod:
+    - /srv/salt/prod
+重启salt-master
+
+
+[root@centos7Xnode1 base]# pwd
+/srv/salt/base
+</code></pre>
+
+<h4 id="使用salt初始化系统">使用salt初始化系统</h4>
+
+<pre><code>[root@centos7Xnode1 base]# pwd
+/srv/salt/base
+[root@centos7Xnode1 base]# tree
+.
+├── init
+│   ├── audit.sls
+│   ├── dns.sls
+│   ├── env_init.sls
+│   ├── files
+│   │   └── resolv.conf
+│   ├── history.sls
+│   └── sysctl.sls
+└── top.sls
+[root@centos7Xnode1 base]# cat top.sls
+base:
+  '*':
+    - init.env_init
+
+apache-service:
+  service.running:
+    - name: httpd
+    - enable: True
+    - reload: True
+
+[root@centos7Xnode1 init]# pwd
+/srv/salt/base/init
+
+[root@centos7Xnode1 init]# cat env_init.sls
+include:
+  - init.dns
+  - init.history
+  - init.audit
+  - init.sysctl
+[root@centos7Xnode1 init]# cat audit.sls
+/etc/bashrc:
+  file.append:
+    - text:
+      - export PROMPT_COMMAND='{ msg=$(history 1| { read x y; echo $y; });logger &quot;[euid=$(whoami)]&quot;:$(who am i):[`pwd`]&quot;$msg&quot;;}'
+
+[root@centos7Xnode1 init]# cat dns.sls
+/etc/resolv.conf:
+  file.managed:
+    - source: salt://init/files/resolv.conf
+    - user: root
+    - group: root
+    - mode: 644
+
+[root@centos7Xnode1 init]# cat history.sls
+/etc/profile:
+  file.append:
+    - text:
+      - export HISTTTIMEFORMAT=&quot;%F %T `whoami`&quot;
+
+ [root@centos7Xnode1 init]# cat sysctl.sls
+vm.swappiness:
+  sysctl.present:
+    - value: 0
+net.ipv4.ip_local_port_range:
+  sysctl.present:
+    - value: 10000 65000
+fs.file-max:
+  sysctl.present:
+    - value: 100000
+
+[root@centos7Xnode1 files]# pwd
+/srv/salt/base/init/files
+
+[root@centos7Xnode1 files]# cat resolv.conf
+nameserver 192.168.46.6
+nameserver 202.106.0.20
+</code></pre>
+
+<p><strong>执行高级状态状态，高级状态从top.sls读，top.sls指定什么salt就执行什么</strong></p>
+
+<pre><code>salt '*' state.highstate
+[root@centos7Xnode1 base]# salt '*' state.highstate
+node1:
+----------
+          ID: /etc/resolv.conf
+    Function: file.managed
+      Result: True
+     Comment: File /etc/resolv.conf updated
+     Started: 21:11:57.715443
+    Duration: 54.554 ms
+     Changes:   
+              ----------
+              diff:
+                  ---
+                  +++
+                  @@ -1,4 +1,2 @@
+                  -# Generated by NetworkManager
+                  -search cs1cloud.internal
+                  -nameserver 192.168.46.6
+                  +nameserver 192.168.46.6
+                   nameserver 202.106.0.20
+----------
+          ID: /etc/profile
+    Function: file.append
+      Result: True
+     Comment: Appended 1 lines
+     Started: 21:11:57.770267
+    Duration: 5.364 ms
+     Changes:   
+              ----------
+              diff:
+                  ---
+                  +++
+                  @@ -74,3 +74,4 @@
+
+                   unset i
+                   unset -f pathmunge
+                  +export HISTTTIMEFORMAT=&quot;%F %T `whoami`&quot;
+----------
+          ID: /etc/bashrc
+    Function: file.append
+      Result: True
+     Comment: Appended 1 lines
+     Started: 21:11:57.775876
+    Duration: 7.582 ms
+     Changes:   
+              ----------
+              diff:
+                  ---
+                  +++
+                  @@ -90,3 +90,4 @@
+                       unset -f pathmunge
+                   fi
+                   # vim:ts=4:sw=4
+                  +export PROMPT_COMMAND='{ msg=$(history 1| { read x y; echo $y; });logger &quot;[euid=$(whoami)]&quot;:$(who am i):[`pwd`]&quot;$msg&quot;;}'
+----------
+          ID: vm.swappiness
+    Function: sysctl.present
+      Result: True
+     Comment: Updated sysctl value vm.swappiness = 0
+     Started: 21:11:57.786126
+    Duration: 199.282 ms
+     Changes:   
+              ----------
+              vm.swappiness:
+                  0
+----------
+          ID: net.ipv4.ip_local_port_range
+    Function: sysctl.present
+      Result: True
+     Comment: Updated sysctl value net.ipv4.ip_local_port_range = 10000 65000
+     Started: 21:11:57.985864
+    Duration: 69.867 ms
+     Changes:   
+              ----------
+              net.ipv4.ip_local_port_range:
+                  10000 65000
+----------
+          ID: fs.file-max
+    Function: sysctl.present
+      Result: True
+     Comment: Updated sysctl value fs.file-max = 100000
+     Started: 21:11:58.056100
+    Duration: 68.2 ms
+     Changes:   
+              ----------
+              fs.file-max:
+                  100000
+
+Summary
+------------
+Succeeded: 6 (changed=6)
+Failed:    0
+------------
+Total states run:     6
+node3:
+----------
+          ID: /etc/resolv.conf
+    Function: file.managed
+      Result: True
+     Comment: File /etc/resolv.conf is in the correct state
+     Started: 21:11:42.649234
+    Duration: 25.383 ms
+     Changes:   
+----------
+          ID: /etc/profile
+    Function: file.append
+      Result: True
+     Comment: File /etc/profile is in correct state
+     Started: 21:11:42.674927
+    Duration: 6.533 ms
+     Changes:   
+----------
+          ID: /etc/bashrc
+    Function: file.append
+      Result: True
+     Comment: File /etc/bashrc is in correct state
+     Started: 21:11:42.681899
+    Duration: 8.034 ms
+     Changes:   
+----------
+          ID: vm.swappiness
+    Function: sysctl.present
+      Result: True
+     Comment: Sysctl value vm.swappiness = 0 is already set
+     Started: 21:11:42.693356
+    Duration: 155.178 ms
+     Changes:   
+----------
+          ID: net.ipv4.ip_local_port_range
+    Function: sysctl.present
+      Result: True
+     Comment: Sysctl value net.ipv4.ip_local_port_range = 10000 65000 is already set
+     Started: 21:11:42.849148
+    Duration: 113.318 ms
+     Changes:   
+----------
+          ID: fs.file-max
+    Function: sysctl.present
+      Result: True
+     Comment: Sysctl value fs.file-max = 100000 is already set
+     Started: 21:11:42.962932
+    Duration: 105.169 ms
+     Changes:   
+
+Summary
+------------
+Succeeded: 6
+Failed:    0
+------------
+Total states run:     6
+node2:
+----------
+          ID: /etc/resolv.conf
+    Function: file.managed
+      Result: True
+     Comment: File /etc/resolv.conf is in the correct state
+     Started: 21:11:38.457476
+    Duration: 21.989 ms
+     Changes:   
+----------
+          ID: /etc/profile
+    Function: file.append
+      Result: True
+     Comment: Appended 1 lines
+     Started: 21:11:38.479709
+    Duration: 5.019 ms
+     Changes:   
+              ----------
+              diff:
+                  ---
+                  +++
+                  @@ -74,3 +74,4 @@
+
+                   unset i
+                   unset -f pathmunge
+                  +export HISTTTIMEFORMAT=&quot;%F %T `whoami`&quot;
+----------
+          ID: /etc/bashrc
+    Function: file.append
+      Result: True
+     Comment: Appended 1 lines
+     Started: 21:11:38.484961
+    Duration: 9.008 ms
+     Changes:   
+              ----------
+              diff:
+                  ---
+                  +++
+                  @@ -90,3 +90,4 @@
+                       unset -f pathmunge
+                   fi
+                   # vim:ts=4:sw=4
+                  +export PROMPT_COMMAND='{ msg=$(history 1| { read x y; echo $y; });logger &quot;[euid=$(whoami)]&quot;:$(who am i):[`pwd`]&quot;$msg&quot;;}'
+----------
+          ID: vm.swappiness
+    Function: sysctl.present
+      Result: True
+     Comment: Updated sysctl value vm.swappiness = 0
+     Started: 21:11:38.496523
+    Duration: 104.069 ms
+     Changes:   
+              ----------
+              vm.swappiness:
+                  0
+----------
+          ID: net.ipv4.ip_local_port_range
+    Function: sysctl.present
+      Result: True
+     Comment: Updated sysctl value net.ipv4.ip_local_port_range = 10000 65000
+     Started: 21:11:38.600939
+    Duration: 95.702 ms
+     Changes:   
+              ----------
+              net.ipv4.ip_local_port_range:
+                  10000 65000
+----------
+          ID: fs.file-max
+    Function: sysctl.present
+      Result: True
+     Comment: Updated sysctl value fs.file-max = 100000
+     Started: 21:11:38.697011
+    Duration: 84.904 ms
+     Changes:   
+              ----------
+              fs.file-max:
+                  100000
+
+Summary
+------------
+Succeeded: 6 (changed=5)
+Failed:    0
+------------
+Total states run:     6
+</code></pre>
+
+<hr />
+
+<p>1.初始化模块
+2.功能模块(每个软件建立成独立的模块)
+3.业务模块(include功能模块)</p>
+
+<h4 id="jinja模板基本使用">jinja模板基本使用</h4>
+
+<pre><code>[root@centos7Xnode1 base]# pwd
+/srv/salt/base
+[root@centos7Xnode1 base]# cat dns1.sls
+/etc/resolv.conf:
+  file.managed:
+    - source: salt://init/files/resolv1.conf
+    - user: root
+    - group: root
+    - mode: 644   
+    - template: jinja
+    - defaults:
+      DNS_SERVER: 192.168.46.6
+
+[root@centos7Xnode1 files]# pwd
+/srv/salt/base/init/files
+[root@centos7Xnode1 files]# cat resolv1.conf
+nameserver {{ DNS_SERVER }}
+nameserver 202.106.0.20
+
+[root@centos7Xnode1 base]# salt node1 state.sls dns1
+node1:
+----------
+          ID: /etc/resolv.conf
+    Function: file.managed
+      Result: True
+     Comment: File /etc/resolv.conf is in the correct state
+     Started: 21:38:03.504531
+    Duration: 33.185 ms
+     Changes:   
+
+Summary
+------------
+Succeeded: 1
+Failed:    0
+------------
+Total states run:     1
+</code></pre>
+
+<h4 id="使用grains">使用grains</h4>
+
+<pre><code>[root@centos7Xnode1 files]# pwd
+/srv/salt/base/init/files
+[root@centos7Xnode1 files]# cat resolv1.conf
+#test
+# {{ grains['fqdn_ip4'] }}
+nameserver {{ DNS_SERVER }}
+nameserver 202.106.0.20
+
+[root@centos7Xnode1 base]# salt node1 state.sls dns1
+node1:
+----------
+          ID: /etc/resolv.conf
+    Function: file.managed
+      Result: True
+     Comment: File /etc/resolv.conf updated
+     Started: 21:43:48.126309
+    Duration: 19.699 ms
+     Changes:   
+              ----------
+              diff:
+                  ---
+                  +++
+                  @@ -1,2 +1,4 @@
+                  +#test
+                  +# ['192.168.46.105']
+                   nameserver 192.168.46.6
+                   nameserver 202.106.0.20
+
+Summary
+------------
+Succeeded: 1 (changed=1)
+Failed:    0
+------------
+Total states run:     1
+</code></pre>
+
+<h4 id="模板中可以是用jinja-grains-模板中还可以使用执行模块-可以使用pillar">模板中可以是用jinja，grains。模板中还可以使用执行模块，可以使用pillar</h4>
+
+<pre><code>mkdir /srv/salt/prod
+mkdir /srv/salt/prod/pkg
+mkdir /srv/salt/prod/haproxy
+mkdir /srv/salt/prod/haproxy/files
+cd /srv/salt/prod/haproxy/files
+下载一个包 haproxy-1.6.2.tar.gz
+tar -zxf haproxy-1.6.2.tar.gz
+cd  haproxy-1.6.2
+make TARGET=linux26 PREFIX=/usr/local/haproxy &amp;&amp; make install PREFIX=/usr/local/haproxy
+cd examples
+修改haproxy.init
+BIN=/usr/local/haproxy/sbin/$BASENAME      路径
+cp haproxy.init /srv/salt/prod/haproxy/files/
+cd /srv/salt/prod/haproxy/
+
+
+cd /srv/salt/prod/pkg
+[root@centos7Xnode1 pkg]# cat  pkg-init.sls
+pkg-init:
+  pkg.installed:
+   - names:
+      - gcc
+      - gcc-c++
+      - glibc
+      - make
+      - autoconf
+      - openssl
+      - openssl-devel
+
+
+cd /srv/salt/prod/haproxy
+[root@centos7Xnode1 haproxy]# cat install.sls
+include:
+  - pkg.pkg-init
+
+haproxy-install:
+  file.managed:
+    - name: /usr/local/src/haproxy-1.6.2.tar.gz
+    - source: salt://haproxy/files/haproxy-1.6.2.tar.gz
+    - user: root
+    - group: root
+    - mode: 755
+  cmd.run:
+    - name: cd /usr/local/src/ &amp;&amp; tar -zxf haproxy-1.6.2.tar.gz &amp;&amp; cd  haproxy-1.6.2 &amp;&amp; make TARGET=linux26 PREFIX=/usr/local/haproxy &amp;&amp; make install PREFIX=/usr/local/haproxy
+    - unless: text -d /usr/local/haproxy
+    - require:
+      - pkg: pkg-init
+      - file: haproxy-install
+
+haproxy-init:
+  file.managed:
+    - name: /etc/init.d/haproxy
+    - source: salt://haproxy/files/haproxy.init
+    - user: root
+    - group: root
+    - mode: 755
+    - require:
+      - cmd: haproxy-install
+  cmd.run:
+    - name: chkcofig --add haproxy
+    - unless: chkconfig --list|grep harpoxy
+    - require:
+      - file: haproxy-init
+
+net.ipv4.ip_nonlocal_bind:
+  sysctl.present:
+    - value: 1
+
+haproxy-config-dir:
+  file.directory:
+    - name: /etc/haproxy
+    - user: root
+    - group: root
+    - mode: 755
+
+salt node2 state.sls haproxy.install env=prod
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/saltstack/" data-title="saltstack 学习笔记" data-url="https://SomethingCM.github.io/target/saltstack/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

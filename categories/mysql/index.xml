@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>mysql on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/mysql/</link>
+    <description>Recent content in mysql on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 22 May 2014 10:04:16 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/mysql/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>mysql 修改用户名密码</title>
+      <link>https://SomethingCM.github.io/target/mysql/</link>
+      <pubDate>Thu, 22 May 2014 10:04:16 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/mysql/</guid>
+      <description>修改密码 1.方法1 /etc/init.d/mysql stop mysqld_safe --user=mysql --skip-grant-tables --skip-networking &amp;amp; mysql -u root mysql mysql&amp;gt; UPDATE user SET Password=PASSWORD(’newpassword’) where USER=’root’; mysql&amp;gt; FLUSH PRIVILEGES; mysql&amp;gt; quit /etc/init.d/mysql restart mysql -uroot -pnewpassword  2.方法2 mysql -uroot -ppassword use mysql; select host,user,password from user; grant all on mydb.* to NewUserName@HostName identified by &amp;quot;newpassword&amp;quot; ; grant usage on *.* to NewUserName@HostName identified by &amp;quot;newpassword&amp;quot;; grant select,insert,update on mydb.* to NewUserName@HostName identified by &amp;quot;newpassword&amp;quot;; grant update,delete on mydb.</description>
+    </item>
+    
+  </channel>
+</rss>

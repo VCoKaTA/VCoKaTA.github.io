@@ -1,0 +1,417 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="docker web化管理">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>docker web化管理 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/docker">docker</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/%E5%AD%A6%E4%B9%A0%E9%A1%B9%E7%9B%AE">学习项目</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h2 id="背景">背景</h2>
+
+<pre><code>目前很多公司都在使用docker，docker也是一种趋势，我们公司也在使用docker，所以我也跟着学习使用docker，根据基本需求，结合api做了一个web程序
+</code></pre>
+
+<h2 id="1-实验环境">1 实验环境</h2>
+
+<pre><code>本次试验使用两台实体机做模拟docker集群，一台虚拟机做docker镜像服务器，一台虚拟机做web管理机
+系统软件环境及版本：
+    selinux disabled
+    iptables -F
+    三台docker机器系统使用centos7.1，两台模拟机群docker机软件docker+pipework+openswitch+etcd+dhcp，docker镜像服务器跑了一个registry容器提供镜像服务
+    Web管理机使用ubuntu，python+django+uwsgi
+</code></pre>
+
+<p>、</p>
+
+<h3 id="程序流程图">程序流程图</h3>
+
+<p><img src="/images/dockercode.png" alt="Alt text" /></p>
+
+<h2 id="2原理">2原理</h2>
+
+<pre><code>通过web界面创建删除容器和镜像，web服务器通过api操作三台docker机器，创建容器时通过dhcp获取ip，pipework给容器附上获取的ip，并把容器信息写入etcd库中，由于容器重启后ip消失，我通过监控脚本给启动没有ip的容器重新附上ip。容器支持ssh，有好处也有风险。
+网络这块我是用交换机提供的网段，容器使用的ip和实体机在同一valn，你也可以一个集群使用一个valn，这里我是用同一valn。容器ip可以从交换机dhcp获取，不懂交换机，我直接用一台docker实体机起了dhcp服务，为该段提供dhcp服务。
+</code></pre>
+
+<h2 id="3安装">3安装</h2>
+
+<h4 id="3-1-docker集群节点">3.1 docker集群节点</h4>
+
+<pre><code>两台机器软件一样，我就以AB区别,软件基本一样，A多了一个dhcp，没有使用交换机提供dhcp
+</code></pre>
+
+<h5 id="3-1-1安装openswitch">3.1.1安装openswitch：</h5>
+
+<pre><code>如果后期不想在docker集群中划分vlan，可以使用系统自带的brctl命令创建桥接网卡，下面创建桥接网卡的脚本相应的变一下，ovs-vsctl改为brctl
+yum install gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config   libtool
+wget http://openvswitch.org/releases/openvswitch-2.3.1.tar.gz
+
+tar zxvf openvswitch-2.3.1.tar.gz
+mkdir -p ~/rpmbuild/SOURCES
+cp openvswitch-2.3.1.tar.gz ~/rpmbuild/SOURCES/
+sed 's/openvswitch-kmod, //g' openvswitch-2.3.1/rhel/openvswitch.spec &gt; openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec
+
+rpmbuild -bb --without check openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec
+#之后会在~/rpmbuild/RPMS/x86_64/里有2个文件
+-rw-rw-r-- 1 ovswitch ovswitch 2013688 Jan 15 03:20 openvswitch-2.3.1-1.x86_64.rpm
+-rw-rw-r-- 1 ovswitch ovswitch 7712168 Jan 15 03:20 openvswitch-debuginfo-2.3.1-1.x86_64.rpm
+
+yum localinstall ~/rpmbuild/RPMS/x86_64/openvswitch-2.3.1-1.x86_64.rpm
+
+systemctl enable openvswitch
+systemctl start openvswitch
+</code></pre>
+
+<h5 id="3-1-2下载pipework">3.1.2下载pipework：</h5>
+
+<pre><code>git clone https://github.com/jpetazzo/pipework.git
+chmod +x pipework
+cp pipework   /usr/bin/pipework
+</code></pre>
+
+<h5 id="3-1-3-网卡配置">3.1.3 网卡配置</h5>
+
+<blockquote>
+<p><a href="https://github.com/SomethingCM/Web-for-docker/tree/master/docker_demo/scripts">脚本下载地址</a></p>
+</blockquote>
+
+<pre><code>在节点机器上
+pwd
+/root
+check_modify_container.py create_docker_container_use_dhcp_ip.sh    openvswitch_docker.sh
+#openvswitch_docker.sh 是网卡初始化脚本
+#create_docker_container_use_dhcp_ip.sh 是创建容器时会调用的脚本
+#check_modify_container.py  容器ip监控脚本
+crontab -e
+*/5 * * * * python /root/check_modify_container.py  #监控脚本每五分钟执行一次
+
+em1 为管理网段ip
+Ovs1桥接在em2上，为docker内网网段ip
+配置网卡，这里使用桥接
+
+cat openvswitch_docker.sh
+#!/bin/bash
+#删除docker测试机
+#docker rm `docker stop $(docker ps -a -q)`
+#删除已有的openvswitch交换机
+ovs-vsctl list-br|xargs -I {} ovs-vsctl del-br {}
+#创建交换机
+ovs-vsctl add-br ovs1
+#把物理网卡加入ovs1
+ovs-vsctl add-port ovs1 em2
+ip link set ovs1 up
+ifconfig em2 0
+ifconfig ovs1 192.168.157.21 netmask 255.255.255.0
+
+chmod +x openvswitch_docker.sh
+sh openvswitch_docker.sh
+
+也可以写到配置文件中
+我的em1为管理网卡10.0.0.21
+A机器中安装dhcp，集群中一台机器配置dhcp就可以了，网段根据你的环境改变
+
+yum install -y dhcp
+vim /etc/dhcp/dhcpd.conf
+    log-facility local7;
+    ddns-update-style none;
+
+    subnet 192.168.157.0 netmask 255.255.255.0 {
+          range 192.168.157.100 192.168.157.200;
+          option domain-name-servers 202.106.0.20;
+          option routers 192.168.157.1;
+          option broadcast-address 192.168.157.255;
+          default-lease-time 80000;
+          max-lease-time 80000;
+        }
+    systemctl enable dhcpd
+systemctl start dhcpd
+</code></pre>
+
+<h5 id="3-1-4安装docker">3.1.4安装docker</h5>
+
+<pre><code>yum install -y docker
+vim /etc/sysconfig/docker
+    OPTIONS='--selinux-enabled --insecure-registry 192.168.46.130:5000  -b=none -H tcp://0.0.0.0:2375 -H unix:///var/run/docker.sock'
+#指定镜像服务器为192.168.46.130，net使用none模式，监听2375端口，这个端口提供api访问的
+systemctl start docker.service
+systemctl enable docker.service
+</code></pre>
+
+<h5 id="3-1-5etcd安装">3.1.5Etcd安装</h5>
+
+<pre><code>yum install libffi libffi-devel python-devel
+yum -y install epel-release
+yum -y install python-pip
+yum install etcd -y
+vim /etc/etcd/etcd.conf
+ETCD_NAME=default
+ETCD_DATA_DIR=&quot;/var/lib/etcd/default.etcd&quot;
+ETCD_LISTEN_CLIENT_URLS=&quot;http://localhost:2379&quot;
+ETCD_ADVERTISE_CLIENT_URLS=&quot;http://localhost:2379&quot;
+###这里etcd我没有做成集群，每台docker机的数据就保存在本机的etcd库中，不与其他节点同步，也不需要提供其他节点访问，这里设置监听本机
+systemctl enable etcd
+systemctl start etcd
+</code></pre>
+
+<h4 id="3-2-docker镜像服务器">3.2 docker镜像服务器</h4>
+
+<pre><code>docker安装重复3.1.4安装docker
+镜像服务器在安装配置完docker后，从官网pull下来一个registry镜像，启动创建一个镜像服务器容器
+docker search registry
+docker pull docker.io/registry
+docker run --restart always  -d -p 5000:5000 -v /opt/data/registry:/tmp/registry docker.io/registry
+</code></pre>
+
+<h4 id="3-3-web服务器">3.3 web服务器</h4>
+
+<blockquote>
+<p><a href="https://github.com/SomethingCM/Web-for-docker.git">Django web程序下载地址</a></p>
+</blockquote>
+
+<pre><code>Web服务器系统我用的ubuntu，主要是安装软件简单，源及软件更新比较快
+&gt;&gt;&gt; import django
+&gt;&gt;&gt; django.VERSION
+(1, 7, 1, 'final', 0)这是我的django版本
+apt-get install mysql-server mysql-client
+apt-get install python-pip
+pip install Django==1.7.1  #你也可以安装最新版本，不确定我写的程序能否正常运行  
+apt-get install python-mysqldb 
+pip install docker-py       #要调用docker api，所以要安装相关python包
+apt-get install curl
+apt-get install mysql-server
+apt-get isntall mysql-client
+sudo apt-get install libmysqlclient-dev
+apt-get install python-paramiko  #web程序中也会用到curl和paramiko
+git clone https://github.com/SomethingCM/Web-for-docker.git 到本地
+cd Web-for-docker/docker_demo
+vim docker_demo/settings.py
+#修改数据库配置
+DATABASES = {
+   'default': {
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'docker', #docker 库名
+            'USER': 'root',   #mysql登陆用户
+            'PASSWORD': 'dockerchen',#密码，如果mysql设置了用户名密码可以填写，没有则为空
+            'HOST':'',
+            'PORT':'',
+        }
+    }
+#修改完以后创建表
+./manage.py syncdb
+#执行的时候会让你设置后台root用户密码，两次输入密码创建表成功
+./manage.py runserver 0.0.0.0:80
+</code></pre>
+
+<h3 id="初始化设置"><strong>初始化设置</strong></h3>
+
+<pre><code>在浏览器中输入 IP:port/admin 设置后台 IP为web服务器的ip
+</code></pre>
+
+<h5 id="登陆后台admin初始化设置"><strong>登陆后台admin初始化设置</strong></h5>
+
+<hr />
+
+<p><img src="/images/loginadmin.png" alt="Alt text" /></p>
+
+<p><img src="/images/admin.png" alt="Alt text" /></p>
+
+<hr />
+
+<h5 id="添加仓库节点"><strong>添加仓库节点</strong></h5>
+
+<hr />
+
+<p><img src="/images/addregistry.png" alt="Alt text" /></p>
+
+<hr />
+
+<h5 id="添加节点"><strong>添加节点</strong></h5>
+
+<hr />
+
+<p><img src="/images/addnode1.png" alt="Alt text" /></p>
+
+<p><img src="/images/addnode2.png" alt="Alt text" /></p>
+
+<p><img style="zoom:70%" src="/images/shownode.png"></p>
+
+<hr />
+
+<h5 id="前台登陆"><strong>前台登陆</strong></h5>
+
+<hr />
+
+<p><img style="zoom:70%" src="/images/login.png">
+<img style="zoom:100%" src="/images/index.png">
+<img style="zoom:70%" src="/images/showimages.png"></p>
+
+<hr />
+
+<h5 id="编写dockerfile创建镜像"><strong>编写dockerfile创建镜像</strong></h5>
+
+<hr />
+
+<p><img style="zoom:70%" src="/images/dockerfile.png">
+<img style="zoom:70%" src="/images/showcontainers.png"></p>
+
+<hr />
+
+<h5 id="把现有容器打包成镜像"><strong>把现有容器打包成镜像</strong></h5>
+
+<hr />
+
+<p><img style="zoom:70%" src="/images/containertoimage.png"></p>
+
+<hr />
+
+<h5 id="创建容器"><strong>创建容器</strong></h5>
+
+<hr />
+
+<p><img style="zoom:100%" src="/images/createcontailer.png"></p>
+
+<h4 id="关于怎么用django-uwsgi发布网站这里就不叙述了">关于怎么用django+uwsgi发布网站这里就不叙述了</h4>
+
+<h2 id="此项目只是个学习django练手的项目">此项目只是个学习django练手的项目</h2>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/first/" data-title="docker web化管理" data-url="https://SomethingCM.github.io/target/first/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

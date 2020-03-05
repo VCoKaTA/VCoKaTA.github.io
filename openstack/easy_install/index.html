@@ -1,0 +1,2045 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="openstack 学习安装">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>openstack 学习安装 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/openstack">openstack</a>
+                     using tags
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<pre><code>Openstack不是经常安装，过一段时间就会忘记，所以做个安装笔记，以后忘记通过笔记可以快速记起来
+</code></pre>
+
+<h2 id="1-openstack环境介绍">1 openstack环境介绍</h2>
+
+<pre><code>官方文档：
+http://docs.openstack.org
+</code></pre>
+
+<h4 id="1-1-openstack各个服务的功能详解">1.1 openstack各个服务的功能详解：</h4>
+
+<table>
+<thead>
+<tr>
+<th>服务名称</th>
+<th align="center">项目名称</th>
+<th align="right">描述</th>
+</tr>
+</thead>
+
+<tbody>
+<tr>
+<td>Dashbiard</td>
+<td align="center">Horizon</td>
+<td align="right">基于openstack API接口使用diango开发的web管理</td>
+</tr>
+
+<tr>
+<td>compute</td>
+<td align="center">Nova</td>
+<td align="right">通过虚拟化技术提供计算资源池</td>
+</tr>
+
+<tr>
+<td>Networking</td>
+<td align="center">Neutron</td>
+<td align="right">实现了虚拟机的网络资源管理</td>
+</tr>
+
+<tr>
+<td>storage(存储)</td>
+<td align="center"></td>
+<td align="right"></td>
+</tr>
+
+<tr>
+<td>Object Storage</td>
+<td align="center">Swift</td>
+<td align="right">对象存储，适用于&rdquo;一次写入，多次读取&rdquo;</td>
+</tr>
+
+<tr>
+<td>Block Storage</td>
+<td align="center">Cinder</td>
+<td align="right">块存储，提供存储资源池</td>
+</tr>
+
+<tr>
+<td>Shared Services(共享服务)</td>
+<td align="center"></td>
+<td align="right"></td>
+</tr>
+
+<tr>
+<td>Identity Service</td>
+<td align="center">Keystone</td>
+<td align="right">认证管理</td>
+</tr>
+
+<tr>
+<td>Image Service</td>
+<td align="center">Glance</td>
+<td align="right">提供虚拟镜像的注册和存储管理</td>
+</tr>
+
+<tr>
+<td>Telemetry</td>
+<td align="center">Ceilometer</td>
+<td align="right">提供监控和数据采集、计量服务</td>
+</tr>
+
+<tr>
+<td>Higher-level services(高层服务)</td>
+<td align="center"></td>
+<td align="right"></td>
+</tr>
+
+<tr>
+<td>Orchestration</td>
+<td align="center">Heat</td>
+<td align="right">自动化部署的组件</td>
+</tr>
+
+<tr>
+<td>Database Service</td>
+<td align="center">Trove</td>
+<td align="right">提供数据库应用服务</td>
+</tr>
+</tbody>
+</table>
+
+<h2 id="2-环境">2 环境：</h2>
+
+<pre><code>两台centos7.1机器 selinux disabled
+Iptables 
+主机hosts
+192.168.44.113 hc360-controller
+192.168.44.114 hc360-compute1
+时间同步
+Controller :
+yum install -y chrony
+timedatectl set-timezone Asia/Shanghai
+[root@hc360-controller ~]#vi  /etc/chrony.conf
+allow 192.168/16
+systemctl enable chronyd.service
+systemctl start chronyd.service
+[root@hc360-controller ~]# chronyc sources
+210 Number of sources = 4
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^- dns2.synet.edu.cn             2   6    13   107  +5360us[ +464us] +/-   23ms
+^* dns.sjtu.edu.cn               3   6    37    47    -12us[-9122us] +/-   88ms
+^- ntp-sz.chl.la                 2   6    23    41  -5736us[-5736us] +/-   60ms
+^- news.neu.edu.cn               2   6    17   115  +5087us[+1810us] +/-   23ms
+[root@hc360-controller ~]# date
+Wed Jan  6 17:16:37 CST 2016
+
+Other node:
+yum install -y chrony
+timedatectl set-timezone Asia/Shanghai
+Vi /etc/chrony.conf
+server hc360-controller iburst 或者server 192.168.44.113  iburst
+systemctl enable chronyd.service
+systemctl start chronyd.service
+[root@hc360-compute1 ~]# chronyc sources
+210 Number of sources = 1
+MS Name/IP address         Stratum Poll Reach LastRx Last sample
+===============================================================================
+^? hc360-controller              0   7     0   10y     +0ns[   +0ns] +/-    0ns
+[root@hc360-compute1 ~]# date
+Wed Jan  6 17:16:42 CST 2016
+</code></pre>
+
+<h2 id="3-节点安装">3.节点安装</h2>
+
+<pre><code>基本包安装，可以提前安装，也可以在后面安装各模块组件是一个一个安装
+</code></pre>
+
+<p><strong>控制节点</strong></p>
+
+<pre><code>#Base
+   yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+   yum install -y centos-release-openstack-liberty
+   yum install -y python-openstackclient
+##MySQL
+    yum install -y mariadb mariadb-server MySQL-python
+##RabbitMQ
+    yum install -y rabbitmq-server
+##Keystone
+    yum install -y openstack-keystone httpd mod_wsgi memcached python-memcached
+##Glance
+    yum install -y openstack-glance python-glance python-glanceclient
+##Nova
+yum install -y openstack-nova-api openstack-nova-cert openstack-nova-conductor openstack-nova-console \
+openstack-nova-novncproxy openstack-nova-scheduler python-novaclient
+
+##Neutron Controller 
+yum install -y openstack-neutron openstack-neutron-ml2 openstack-neutron-linuxbridge python-neutronclient ebtables ipset
+##Dashboard
+yum install openstack-dashboard
+</code></pre>
+
+<p><strong>计算节点</strong></p>
+
+<pre><code>##Base
+    yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+    yum install -y centos-release-openstack-liberty
+    yum install -y python-openstackclient
+##Nova   linux-node2
+    yum install -y openstack-nova-compute sysfsutils
+##Neutron linux-node2
+    yum install -y openstack-neutron openstack-neutron-linuxbridge ebtables ipset
+</code></pre>
+
+<h4 id="3-1基本包安装">3.1基本包安装</h4>
+
+<pre><code>yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+   yum install -y centos-release-openstack-liberty
+   yum install -y python-openstackclient
+</code></pre>
+
+<h4 id="3-2安装配置数据库">3.2安装配置数据库</h4>
+
+<pre><code>[root@hc360-controller ~]# yum install mariadb mariadb-server MySQL-python -y  ##如果你已经在前面把所有基础包安装了就不用再安装了
+[root@hc360-controller ~]# cp /usr/share/mysql/my-medium.cnf /etc/my.cnf
+cp: overwrite ‘/etc/my.cnf’? y
+[mysqld]
+default-storage-engine = innodb    ## 默认存储引擎
+innodb_file_per_table              ##每个表建立一个个表空间
+collation-server = utf8_general_ci   ## 默认字符集
+init-connect = 'SET NAMES utf8'
+character-set-server = utf8
+[root@hc360-controller ~]# systemctl  start mariadb  #centos7 mysql叫mariadb  
+[root@hc360-controller ~]# systemctl  enable mariadb
+Created symlink from /etc/systemd/system/multi-user.target.wants/mariadb.service to /usr/lib/systemd/system/mariadb.service.
+[root@hc360-controller ~]# mysqladmin -uroot password &quot;password&quot;
+[root@hc360-controller ~]# mysql -uroot -ppassword
+Welcome to the MariaDB monitor.  Commands end with ; or \g.
+Your MariaDB connection id is 4
+Server version: 5.5.44-MariaDB-log MariaDB Server
+Copyright (c) 2000, 2015, Oracle, MariaDB Corporation Ab and others.
+Type 'help;' or '\h' for help. Type '\c' to clear the current input statement.
+MariaDB [(none)]&gt; 
+测试一下mysql密码
+---
+可以提前创建数据库，也可以再安装组件的时候一个一个创建，记得密码要换一下
+#keystone数据库
+mysql -u root -p -e &quot;CREATE DATABASE keystone;&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' IDENTIFIED BY 'hc360keystone';&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' IDENTIFIED BY 'hc360keystone';&quot;
+#Glance数据库
+mysql -u root -p -e &quot;CREATE DATABASE glance;&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY 'hc360glance';&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'%' IDENTIFIED BY 'hc360glance';&quot;
+#Nova数据库
+mysql -u root -p -e &quot;CREATE DATABASE nova;&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY 'hc360nova';&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'%' IDENTIFIED BY 'hc360nova';&quot;
+#Neutron 数据库
+mysql -u root -p -e &quot;CREATE DATABASE neutron;&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'localhost' IDENTIFIED BY 'hc360neutron';&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON neutron.* TO 'neutron'@'%' IDENTIFIED BY 'hc360neutron';&quot;
+#Cinder数据库
+mysql -u root -p -e &quot;CREATE DATABASE cinder;&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'localhost' IDENTIFIED BY 'hc360cinder';&quot;
+mysql -u root -p -e &quot;GRANT ALL PRIVILEGES ON cinder.* TO 'cinder'@'%' IDENTIFIED BY 'hc360cinder';&quot;
+---
+</code></pre>
+
+<h4 id="3-3-安装消息队列-rabbitmq">3.3 安装消息队列 rabbitmq</h4>
+
+<p><strong>安装</strong></p>
+
+<pre><code>[root@hc360-controller ~]# yum install -y rabbitmq-server 
+[root@hc360-controller ~]# systemctl enable rabbitmq-server.service
+Created symlink from /etc/systemd/system/multi-user.target.wants/rabbitmq-server.service to /usr/lib/systemd/system/rabbitmq-server.service.
+[root@hc360-controller ~]# systemctl start rabbitmq-server.service
+[root@hc360-controller ~]#  netstat -lntup
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:25672           0.0.0.0:*               LISTEN      5541/beam.smp       
+tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN      4120/mysqld         
+tcp        0      0 0.0.0.0:4369            0.0.0.0:*               LISTEN      5556/epmd           
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1526/sshd           
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      2335/master         
+tcp6       0      0 :::5672                 :::*                    LISTEN      5541/beam.smp       
+tcp6       0      0 :::22                   :::*                    LISTEN      1526/sshd           
+tcp6       0      0 ::1:25                  :::*                    LISTEN      2335/master         
+udp        0      0 127.0.0.1:323           0.0.0.0:*                           3659/chronyd        
+udp6       0      0 ::1:323                 :::*                                3659/chronyd       
+监听端口5672 和25672
+</code></pre>
+
+<p><strong>添加一个openstack的用户名和密码：</strong></p>
+
+<pre><code>[root@hc360-controller ~]# rabbitmqctl add_user openstack hc360openstack
+Creating user &quot;openstack&quot; ...
+...done.
+</code></pre>
+
+<p><strong>用户授权：</strong></p>
+
+<pre><code>[root@hc360-controller ~]# rabbitmqctl set_permissions openstack &quot;.*&quot; &quot;.*&quot; &quot;.*&quot;
+Setting permissions for user &quot;openstack&quot; in vhost &quot;/&quot; ...
+...done.
+</code></pre>
+
+<p><strong>列出rabbitmq的插件：</strong></p>
+
+<pre><code>[root@hc360-controller ~]# rabbitmq-plugins list
+[ ] amqp_client                       3.3.5
+[ ] cowboy                            0.5.0-rmq3.3.5-git4b93c2d
+[ ] eldap                             3.3.5-gite309de4
+[ ] mochiweb                          2.7.0-rmq3.3.5-git680dba8
+[ ] rabbitmq_amqp1_0                  3.3.5
+[ ] rabbitmq_auth_backend_ldap        3.3.5
+[ ] rabbitmq_auth_mechanism_ssl       3.3.5
+[ ] rabbitmq_consistent_hash_exchange 3.3.5
+[ ] rabbitmq_federation               3.3.5
+[ ] rabbitmq_federation_management    3.3.5
+[ ] rabbitmq_management               3.3.5
+[ ] rabbitmq_management_agent         3.3.5
+[ ] rabbitmq_management_visualiser    3.3.5
+[ ] rabbitmq_mqtt                     3.3.5
+[ ] rabbitmq_shovel                   3.3.5
+[ ] rabbitmq_shovel_management        3.3.5
+[ ] rabbitmq_stomp                    3.3.5
+[ ] rabbitmq_test                     3.3.5
+[ ] rabbitmq_tracing                  3.3.5
+[ ] rabbitmq_web_dispatch             3.3.5
+[ ] rabbitmq_web_stomp                3.3.5
+[ ] rabbitmq_web_stomp_examples       3.3.5
+[ ] sockjs                            0.3.4-rmq3.3.5-git3132eb9
+[ ] webmachine                        1.10.3-rmq3.3.5-gite9359c7
+</code></pre>
+
+<p><strong>启用管理插件</strong></p>
+
+<pre><code>[root@hc360-controller ~]# rabbitmq-plugins enable rabbitmq_management 
+The following plugins have been enabled:
+  mochiweb
+  webmachine
+  rabbitmq_web_dispatch
+  amqp_client
+  rabbitmq_management_agent
+  rabbitmq_management
+Plugin configuration has changed. Restart RabbitMQ for changes to take effect.
+[root@hc360-controller ~]# systemctl restart rabbitmq-server.service
+[root@hc360-controller ~]#  netstat -lntup
+Active Internet connections (only servers)
+Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name    
+tcp        0      0 0.0.0.0:25672           0.0.0.0:*               LISTEN      6091/beam.smp       
+tcp        0      0 0.0.0.0:3306            0.0.0.0:*               LISTEN      4120/mysqld         
+tcp        0      0 0.0.0.0:4369            0.0.0.0:*               LISTEN      6106/epmd           
+tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      1526/sshd           
+tcp        0      0 0.0.0.0:15672           0.0.0.0:*               LISTEN      6091/beam.smp       
+tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      2335/master         
+tcp6       0      0 :::5672                 :::*                    LISTEN      6091/beam.smp       
+tcp6       0      0 :::22                   :::*                    LISTEN      1526/sshd           
+tcp6       0      0 ::1:25                  :::*                    LISTEN      2335/master         
+udp        0      0 127.0.0.1:323           0.0.0.0:*                           3659/chronyd        
+udp6       0      0 ::1:323                 :::*                                3659/chronyd  
+监听端口多了一个15672，这是mq后台web监听端口
+
+登陆rabbitmq后台管理页面
+http://192.168.44.113:15672/
+user：guest
+Passwd：guest
+</code></pre>
+
+<p><img src="/images/openstack/mq01.png" alt="Alt text" /></p>
+
+<p><strong>提升刚创建的openstack权限</strong></p>
+
+<p><img src="/images/openstack/mq02.png" alt="Alt text" />
+<img src="/images/openstack/mq03.png" alt="Alt text" /></p>
+
+<h4 id="3-4安装keystone用户认证和服务注册模块">3.4安装Keystone用户认证和服务注册模块</h4>
+
+<pre><code>Keystone安装和配置OpenStack身份服务，在控制器节点，Apache HTTP服务器来处理请求和memcached存储令牌代替SQL数据库
+Keystone作用：用户与认证：用户权限与用户行为跟踪：
+服务目录：提供一个服务目录，包括所有服务项与相关Api的端点
+User:用户   Tenant:租户 项目    Token:令牌   Role:角色   Service:服务   Endpoint:端点
+</code></pre>
+
+<p><strong>安装相关软件</strong></p>
+
+<pre><code>[root@hc360-controller ~]# yum install -y openstack-keystone httpd mod_wsgi memcached python-memcached
+创建keystone库和相关认证
+创建keystone用户
+[root@hc360-controller ~]# keystone-manage pki_setup --keystone-user keystone  --keystone-group keystone
+去/etc/keystone/ssl/查看
+[root@hc360-controller ~]# cd /etc/keystone/ssl/
+[root@hc360-controller ssl]# ls
+certs  private
+确保keysthone用户对ssl文件权限
+[root@hc360-controller ssl]# chown -R  keystone:keystone /etc/keystone/ssl/
+[root@hc360-controller ssl]# chmod -R o-rwx /etc/keystone/ssl/
+</code></pre>
+
+<p><strong>创建keystone库，创建权限</strong></p>
+
+<pre><code>[root@hc360-controller ~]# mysql -uroot -ppassword
+MariaDB [(none)]&gt; CREATE DATABASE keystone;
+MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'localhost' \
+    -&gt;   IDENTIFIED BY 'hc360keystone';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@hc360-controller\
+    -&gt;   IDENTIFIED BY 'hc360keystone';
+Query OK, 0 rows affected (0.00 sec)
+
+MariaDB [(none)]&gt; GRANT ALL PRIVILEGES ON keystone.* TO 'keystone'@'%' \
+    -&gt;   IDENTIFIED BY 'hc360keystone';
+Query OK, 0 rows affected (0.00 sec)
+</code></pre>
+
+<p><strong>生成一个随机码</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openssl rand -hex 10
+4d605ae92bbc32b95092
+</code></pre>
+
+<p><strong>配置keystone</strong></p>
+
+<pre><code>[root@hc360-controller ~]# grep -n '^[a-z]'  /etc/keystone/keystone.conf 
+13:admin_token = 4d605ae92bbc32b95092
+108:verbose = true
+497:connection = mysql://keystone:hc360keystone@192.168.44.113/keystone
+1314:servers = 192.168.44.113:11211
+1719:driver = sql
+1912:provider = uuid
+1918:driver = memcache
+</code></pre>
+
+<p><strong>同步数据库：注意权限，所以要用su -s 切换到keystone用户下执行：</strong></p>
+
+<pre><code>[root@hc360-controller ssl]# su -s /bin/sh -c &quot;keystone-manage db_sync&quot; keystone
+No handlers could be found for logger &quot;oslo_config.cfg&quot;
+</code></pre>
+
+<p><strong>查看创建表是否成功</strong></p>
+
+<pre><code>[root@hc360-controller ssl]# mysql -h 192.168.44.113  -ukeystone -phc360keystone -e &quot;use keystone;show tables;&quot;
++------------------------+
+| Tables_in_keystone     |
++------------------------+
+| access_token           |
+| assignment             |
+| config_register        |
+| consumer               |
+| credential             |
+| domain                 |
+| endpoint               |
+| endpoint_group         |
+| federation_protocol    |
+| group                  |
+| id_mapping             |
+| identity_provider      |
+| idp_remote_ids         |
+| mapping                |
+| migrate_version        |
+| policy                 |
+| policy_association     |
+| project                |
+| project_endpoint       |
+| project_endpoint_group |
+| region                 |
+| request_token          |
+| revocation_event       |
+| role                   |
+| sensitive_config       |
+| service                |
+| service_provider       |
+| token                  |
+| trust                  |
+| trust_role             |
+| user                   |
+| user_group_membership  |
+| whitelisted_config     |
++------------------------+
+</code></pre>
+
+<p><strong>新建keystone配置文件，并用apache来代理它：5000  正常的api来访问  35357  管理访问的端口,先修改httpd监听主机</strong></p>
+
+<pre><code>[root@hc360-controller ssl]# vim  /etc/httpd/conf/httpd.conf
+ServerName 192.168.44.113:80
+vim /etc/httpd/conf.d/wsgi-keystone.conf
+Listen 5000
+Listen 35357
+&lt;VirtualHost *:5000&gt;
+    WSGIDaemonProcess keystone-public processes=5 threads=1 user=keystone group=keystone display-name=%{GROUP}
+    WSGIProcessGroup keystone-public
+    WSGIScriptAlias / /usr/bin/keystone-wsgi-public
+    WSGIApplicationGroup %{GLOBAL}
+    WSGIPassAuthorization On
+    &lt;IfVersion &gt;= 2.4&gt;
+      ErrorLogFormat &quot;%{cu}t %M&quot;
+    &lt;/IfVersion&gt;
+    ErrorLog /var/log/httpd/keystone-error.log
+    CustomLog /var/log/httpd/keystone-access.log combined
+
+    &lt;Directory /usr/bin&gt;
+        &lt;IfVersion &gt;= 2.4&gt;
+            Require all granted
+        &lt;/IfVersion&gt;
+        &lt;IfVersion &lt; 2.4&gt;
+            Order allow,deny
+            Allow from all
+        &lt;/IfVersion&gt;
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+
+&lt;VirtualHost *:35357&gt;
+    WSGIDaemonProcess keystone-admin processes=5 threads=1 user=keystone group=keystone display-name=%{GROUP}
+    WSGIProcessGroup keystone-admin
+    WSGIScriptAlias / /usr/bin/keystone-wsgi-admin
+    WSGIApplicationGroup %{GLOBAL}
+    WSGIPassAuthorization On
+    &lt;IfVersion &gt;= 2.4&gt;
+      ErrorLogFormat &quot;%{cu}t %M&quot;
+    &lt;/IfVersion&gt;
+    ErrorLog /var/log/httpd/keystone-error.log
+    CustomLog /var/log/httpd/keystone-access.log combined
+
+    &lt;Directory /usr/bin&gt;
+        &lt;IfVersion &gt;= 2.4&gt;
+            Require all granted
+        &lt;/IfVersion&gt;
+        &lt;IfVersion &lt; 2.4&gt;
+            Order allow,deny
+            Allow from all
+        &lt;/IfVersion&gt;
+    &lt;/Directory&gt;
+&lt;/VirtualHost&gt;
+</code></pre>
+
+<p><strong>启动keystone、memcache、httpd服务</strong></p>
+
+<pre><code>[root@hc360-controller ssl]# systemctl enable memcached.service
+ln -s '/usr/lib/systemd/system/memcached.service' '/etc/systemd/system/multi-user.target.wants/memcached.service'
+[root@hc360-controller ssl]# systemctl start memcached.service
+[root@hc360-controller ssl]# systemctl enable httpd.service
+ln -s '/usr/lib/systemd/system/httpd.service' '/etc/systemd/system/multi-user.target.wants/httpd.service'
+[root@hc360-controller ssl]# systemctl start httpd.service
+</code></pre>
+
+<p><strong>设置环境变量</strong></p>
+
+<pre><code>[root@hc360-controller ~]# export OS_TOKEN=4d605ae92bbc32b95092
+[root@hc360-controller ~]# export OS_URL=http://192.168.44.113:35357/v3
+[root@hc360-controller ~]# export OS_IDENTITY_API_VERSION=3
+</code></pre>
+
+<p><strong>创建keysthone服务，keystone本身也需要注册：</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack service create  --name keystone --description &quot;OpenStack Identity&quot; identity
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | OpenStack Identity               |
+| enabled     | True                             |
+| id          | 5b80fefb451f45109ef07dd2e2be2967 |
+| name        | keystone                         |
+| type        | identity                         |
++-------------+----------------------------------+
+</code></pre>
+
+<p><strong>公共的api接口</strong></p>
+
+<pre><code>Create the Identity service API endpoints:
+[root@hc360-controller ~]# openstack endpoint create --region RegionOne   identity public http://192.168.44.113:5000/v2.0
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 66bdff8db4a84ac09f26aebefd09cc28 |
+| interface    | public                           |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | 5b80fefb451f45109ef07dd2e2be2967 |
+| service_name | keystone                         |
+| service_type | identity                         |
+| url          | http://192.168.44.113:5000/v2.0  |
++--------------+----------------------------------+
+</code></pre>
+
+<p><strong>内部的api接口</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack endpoint create --region RegionOne   identity internal http://192.168.44.113:5000/v2.0
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 62d742066b6540d4b105d75b0911030f |
+| interface    | internal                         |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | 5b80fefb451f45109ef07dd2e2be2967 |
+| service_name | keystone                         |
+| service_type | identity                         |
+| url          | http://192.168.44.113:5000/v2.0  |
++--------------+----------------------------------+
+</code></pre>
+
+<p><strong>管理的api接口</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack endpoint create --region RegionOne   identity admin http://192.168.44.113:35357/v2.0
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | c762b87367214d8aac2dc0fa960b1720 |
+| interface    | admin                            |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | 5b80fefb451f45109ef07dd2e2be2967 |
+| service_name | keystone                         |
+| service_type | identity                         |
+| url          | http://192.168.44.113:35357/v2.0 |
++--------------+----------------------------------+
+</code></pre>
+
+<p><strong>查看endpoint，查看各服务api接口信息</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  openstack endpoint list
++----------------------------------+-----------+--------------+--------------+---------+-----------+----------------------------------+
+| ID                               | Region    | Service Name | Service Type | Enabled | Interface | URL                              |
++----------------------------------+-----------+--------------+--------------+---------+-----------+----------------------------------+
+| 62d742066b6540d4b105d75b0911030f | RegionOne | keystone     | identity     | True    | internal  | http://192.168.44.113:5000/v2.0  |
+| 66bdff8db4a84ac09f26aebefd09cc28 | RegionOne | keystone     | identity     | True    | public    | http://192.168.44.113:5000/v2.0  |
+| c762b87367214d8aac2dc0fa960b1720 | RegionOne | keystone     | identity     | True    | admin     | http://192.168.44.113:35357/v2.0 |
++----------------------------------+-----------+--------------+--------------+---------+-----------+----------------------------------+
+</code></pre>
+
+<p><strong>创建admin项目：</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack project create --domain default \
+&gt;   --description &quot;Admin Project&quot; admin
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Admin Project                    |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | de418479033d45c780aa8bc3e79b925f |
+| is_domain   | False                            |
+| name        | admin                            |
+| parent_id   | None                             |
++-------------+----------------------------------+
+</code></pre>
+
+<p><strong>创建admin用户：</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack user create --domain default \
+&gt;   --password-prompt admin
+User Password:admin(密码自定义)
+Repeat User Password:admin
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | 103e05fbe1fb44ca9880596699f5539b |
+| name      | admin                            |
++-----------+----------------------------------+
+</code></pre>
+
+<p><strong>创建admin角色</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role create admin
++-------+----------------------------------+
+| Field | Value                            |
++-------+----------------------------------+
+| id    | a1a6693fcfaa49efbf4798f7d58605ca |
+| name  | admin                            |
++-------+----------------------------------+
+</code></pre>
+
+<p><strong>把admin用户添加到admin项目中</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role add --project admin --user admin admin
+</code></pre>
+
+<p><strong>创建一个服务项目</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack project create --domain default \
+&gt;   --description &quot;Service Project&quot; service
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Service Project                  |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | a881a390b9104e3997676fa3a6b152e4 |
+| is_domain   | False                            |
+| name        | service                          |
+| parent_id   | None                             |
++-------------+----------------------------------+
+</code></pre>
+
+<p><strong>创建一个demo项目</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  openstack project create --domain default \
+&gt;   --description &quot;Demo Project&quot; demo
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | Demo Project                     |
+| domain_id   | default                          |
+| enabled     | True                             |
+| id          | 9de69fa4844b463ca7b25547151029b7 |
+| is_domain   | False                            |
+| name        | demo                             |
+| parent_id   | None                             |
++-------------+----------------------------------+
+</code></pre>
+
+<p><strong>列出项目</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack project list
++----------------------------------+---------+
+| ID                               | Name    |
++----------------------------------+---------+
+| 9de69fa4844b463ca7b25547151029b7 | demo    |
+| a881a390b9104e3997676fa3a6b152e4 | service |
+| de418479033d45c780aa8bc3e79b925f | admin   |
++----------------------------------+---------+
+</code></pre>
+
+<p><strong>创建一个demo用户</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack user create --domain default --password=demo demo
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | 0ad715681e7a4d3f87027a081b65494f |
+| name      | demo                             |
++-----------+----------------------------------+
+</code></pre>
+
+<p><strong>创建一个用户角色</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role create user
++-------+----------------------------------+
+| Field | Value                            |
++-------+----------------------------------+
+| id    | d2d3964c299747288e0f0d5099638155 |
+| name  | user                             |
++-------+----------------------------------+
+</code></pre>
+
+<p><strong>把user角色的demo用户添加到demo项目中</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role add --project demo --user demo user
+</code></pre>
+
+<p><strong>查看注册的服务</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack service list
++----------------------------------+----------+----------+
+| ID                               | Name     | Type     |
++----------------------------------+----------+----------+
+| 5b80fefb451f45109ef07dd2e2be2967 | keystone | identity |
++----------------------------------+----------+----------+
+</code></pre>
+
+<p><strong>查看服务的api接口</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack endpoint list
++----------------------------------+-----------+--------------+--------------+---------+-----------+----------------------------------+
+| ID                               | Region    | Service Name | Service Type | Enabled | Interface | URL                              |
++----------------------------------+-----------+--------------+--------------+---------+-----------+----------------------------------+
+| 62d742066b6540d4b105d75b0911030f | RegionOne | keystone     | identity     | True    | internal  | http://192.168.44.113:5000/v2.0  |
+| 66bdff8db4a84ac09f26aebefd09cc28 | RegionOne | keystone     | identity     | True    | public    | http://192.168.44.113:5000/v2.0  |
+| c762b87367214d8aac2dc0fa960b1720 | RegionOne | keystone     | identity     | True    | admin     | http://192.168.44.113:35357/v2.0 |
++----------------------------------+-----------+--------------+--------------+---------+-----------+----------------------------------+
+</code></pre>
+
+<p><strong>查看注册的项目</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack project list
++----------------------------------+---------+
+| ID                               | Name    |
++----------------------------------+---------+
+| 9de69fa4844b463ca7b25547151029b7 | demo    |
+| a881a390b9104e3997676fa3a6b152e4 | service |
+| de418479033d45c780aa8bc3e79b925f | admin   |
++----------------------------------+---------+
+</code></pre>
+
+<p><strong>查看角色</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role list
++----------------------------------+-------+
+| ID                               | Name  |
++----------------------------------+-------+
+| a1a6693fcfaa49efbf4798f7d58605ca | admin |
+| d2d3964c299747288e0f0d5099638155 | user  |
++----------------------------------+-------+
+</code></pre>
+
+<p><strong>查看用户</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack user list
++----------------------------------+-------+
+| ID                               | Name  |
++----------------------------------+-------+
+| 0ad715681e7a4d3f87027a081b65494f | demo  |
+| 103e05fbe1fb44ca9880596699f5539b | admin |
++----------------------------------+-------+
+</code></pre>
+
+<p><strong>使用用户名密码的方式登录：必须要先取消环境变量</strong></p>
+
+<pre><code>[root@hc360-controller ~]# echo $OS_TOKEN
+4d605ae92bbc32b95092
+[root@hc360-controller ~]# echo $OS_URL
+http://192.168.44.113:35357/v3
+[root@hc360-controller ~]# unset OS_TOKEN
+[root@hc360-controller ~]# unset OS_URL
+[root@hc360-controller ~]# openstack --os-auth-url http://192.168.44.113:35357/v3 --os-project-domain-id default --os-user-domain-id default --os-project-name admin --os-username admin --os-auth-type password token issue
+Password: admin
++------------+----------------------------------+
+| Field      | Value                            |
++------------+----------------------------------+
+| expires    | 2016-01-08T06:33:11.590480Z      |
+| id         | 60a79b47c76c466daaf2baa9e7add2f3 |
+| project_id | de418479033d45c780aa8bc3e79b925f |
+| user_id    | 103e05fbe1fb44ca9880596699f5539b |
++------------+----------------------------------+
+
+[root@hc360-controller ~]#   openstack --os-auth-url http://192.168.44.113:5000/v3 \
+&gt;   --os-project-domain-id default --os-user-domain-id default \
+&gt;   --os-project-name demo --os-username demo --os-auth-type password \
+&gt;   token issue
+Password: 
++------------+----------------------------------+
+| Field      | Value                            |
++------------+----------------------------------+
+| expires    | 2016-01-08T06:38:03.275913Z      |
+| id         | 792478c20d5c48418ee9a2f261f70c5f |
+| project_id | 9de69fa4844b463ca7b25547151029b7 |
+| user_id    | 0ad715681e7a4d3f87027a081b65494f |
++------------+----------------------------------+
+</code></pre>
+
+<p><strong>为了方便快捷的使用keystone,我们需要设置两个环境变量脚本：</strong></p>
+
+<pre><code>vim admin-openrc.sh
+export OS_PROJECT_DOMAIN_ID=default
+Export OS_USER_DOMAIN_ID=default
+export OS_PROJECT_NAME=admin
+export OS_TENANT_NAME=admin
+export OS_USERNAME=admin
+export OS_PASSWORD=admin
+export OS_AUTH_URL=http://192.168.44.113:35357/v3
+export OS_IDENTITY_API_VERSION=3
+vim demo-openrc.sh
+export OS_PROJECT_DOMAIN_ID=default
+export OS_USER_DOMAIN_ID=default
+export OS_PROJECT_NAME=demo
+export OS_TENANT_NAME=demo
+export OS_USERNAME=demo
+export OS_PASSWORD=demo
+export OS_AUTH_URL=http://192.168.44.113:5000/v3
+export OS_IDENTITY_API_VERSION=3
+[root@hc360-controller ~]# chmod +x *.sh 
+[root@hc360-controller ~]# source admin-openrc.sh 
+[root@hc360-controller ~]#  openstack token issue
++------------+----------------------------------+
+| Field      | Value                            |
++------------+----------------------------------+
+| expires    | 2016-01-08T06:49:25.826822Z      |
+| id         | efb408c1d4e3447ead7e0dd1fff860d2 |
+| project_id | de418479033d45c780aa8bc3e79b925f |
+| user_id    | 103e05fbe1fb44ca9880596699f5539b |
++------------+----------------------------------+
+</code></pre>
+
+<h4 id="3-5安装glance组件">3.5安装glance组件</h4>
+
+<pre><code>glance主要由四个部分组成：glance-api、glance-registry、Database、Storage repository for image files
+glance-api:接受云系统镜像的创建、删除、读取请求
+glance-registry：云系统的镜像注册服务
+Database：存储图像元数据，您可以选择您的数据库，这取决于您的偏好。大多数部署使用MySQL、SQLite。
+
+Storage repository for image files：镜像文件的存储库，支持各种类型库包括正常的文件系统，对象存储，由于块设备，HTTP，和Amazon S3。请注意，某些库将只支持只读的使用。
+</code></pre>
+
+<p><strong>创建glance数据库，添加glance用户认证</strong></p>
+
+<pre><code>[root@hc360-controller ~]# mysql -uroot -ppassword
+MariaDB [keystone]&gt; CREATE DATABASE glance;
+Query OK, 1 row affected (0.00 sec)
+MariaDB [keystone]&gt; GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'localhost' IDENTIFIED BY 'hc360glance';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [keystone]&gt; GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'hc360-controller' IDENTIFIED BY 'hc360glance';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [keystone]&gt; GRANT ALL PRIVILEGES ON glance.* TO 'glance'@'192.168.44.0%255.255.255.0' IDENTIFIED BY 'hc360glance';
+Query OK, 0 rows affected (0.00 sec)
+[root@hc360-controller ~]# source admin-openrc.sh
+</code></pre>
+
+<p><strong>创建一个glance用户</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack user create --domain default --password=hc360glance glance
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | d1ccf2f88e7a46eaacca7939624a9847 |
+| name      | glance                           |
++-----------+----------------------------------+
+</code></pre>
+
+<p><strong>添加到service项目中，并赋予admin权限</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role add --project service --user glance admin
+</code></pre>
+
+<p><strong>注册glance服务</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack service create --name glance \
+&gt;   --description &quot;OpenStack Image service&quot; image
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | OpenStack Image service          |
+| enabled     | True                             |
+| id          | a0600b4725ec4b60ad4c19a215dc9850 |
+| name        | glance                           |
+| type        | image                            |
++-------------+----------------------------------+
+</code></pre>
+
+<p><strong>注册创建glance api</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack endpoint create --region RegionOne \
+&gt;   image public http://192.168.44.113:9292
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | f515fec82e864d828b4fa925abf8ffb7 |
+| interface    | public                           |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | a0600b4725ec4b60ad4c19a215dc9850 |
+| service_name | glance                           |
+| service_type | image                            |
+| url          | http://192.168.44.113:9292       |
++--------------+----------------------------------+
+[root@hc360-controller ~]#  openstack endpoint create --region RegionOne \
+&gt;   image internal http://192.168.44.113:9292
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 7a3f44fe41834f618c56578c40ed31f3 |
+| interface    | internal                         |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | a0600b4725ec4b60ad4c19a215dc9850 |
+| service_name | glance                           |
+| service_type | image                            |
+| url          | http://192.168.44.113:9292       |
++--------------+----------------------------------+
+[root@hc360-controller ~]#  openstack endpoint create --region RegionOne \
+&gt;   image admin http://192.168.44.113:9292
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 864f48f369694c39acbca045c2f4f6f8 |
+| interface    | admin                            |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | a0600b4725ec4b60ad4c19a215dc9850 |
+| service_name | glance                           |
+| service_type | image                            |
+| url          | http://192.168.44.113:9292       |
+</code></pre>
+
+<p><strong>安装glance相关软件</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  yum install openstack-glance python-glance python-glanceclient -y
+</code></pre>
+
+<p><strong>修改glance-api.conf配置文件</strong></p>
+
+<pre><code>[root@hc360-controller ~]# vim /etc/glance/glance-api.conf
+[root@hc360-controller ~]# grep -n '^[a-z]' /etc/glance/glance-api.conf 
+363:verbose=True
+491:notification_driver = noop
+538:connection=mysql://glance:hc360glance@192.168.44.113/glance
+642:default_store=file
+701:filesystem_store_datadir=/var/lib/glance/images/
+974:auth_uri = http://192.168.44.113:5000
+975:auth_url = http://192.168.44.113:35357
+976:auth_plugin = password
+977:project_domain_id = default
+978:user_domain_id = default
+979:project_name = service
+980:username = glance
+981:password = hc360glance
+1484:flavor=keystone
+修改glance-registry.conf配置 
+[root@hc360-controller ~]# vim /etc/glance/glance-registry.conf 
+[root@hc360-controller ~]# grep -n '^[a-z]' /etc/glance/glance-registry.conf
+188:verbose=True
+316:notification_driver = noop
+363:connection=mysql://glance:hc360glance@192.168.44.113/glance
+763:auth_uri = http://192.168.44.113:5000
+764:auth_url = http://192.168.44.113:35357
+765:auth_plugin = password
+766:project_domain_id = default
+767:user_domain_id = default
+768:project_name = service
+769:username = glance
+770:password = hc360glance
+1255:flavor=keystone
+
+创建表
+[root@hc360-controller ~]# su -s /bin/sh -c &quot;glance-manage db_sync&quot; glance
+No handlers could be found for logger &quot;oslo_config.cfg&quot;
+检查是否创建成功
+[root@hc360-controller ~]# mysql -h 192.168.44.113  -uglance -phc360glance -e &quot;use glance;show tables;&quot;
++----------------------------------+
+| Tables_in_glance                 |
++----------------------------------+
+| artifact_blob_locations          |
+| artifact_blobs                   |
+| artifact_dependencies            |
+| artifact_properties              |
+| artifact_tags                    |
+| artifacts                        |
+| image_locations                  |
+| image_members                    |
+| image_properties                 |
+| image_tags                       |
+| images                           |
+| metadef_namespace_resource_types |
+| metadef_namespaces               |
+| metadef_objects                  |
+| metadef_properties               |
+| metadef_resource_types           |
+| metadef_tags                     |
+| migrate_version                  |
+| task_info                        |
+| tasks                            |
++----------------------------------+
+</code></pre>
+
+<p><strong>启动服务</strong></p>
+
+<pre><code>[root@hc360-controller ~]# systemctl enable openstack-glance-api.service \
+&gt;   openstack-glance-registry.service
+ln -s '/usr/lib/systemd/system/openstack-glance-api.service' '/etc/systemd/system/multi-user.target.wants/openstack-glance-api.service'
+ln -s '/usr/lib/systemd/system/openstack-glance-registry.service' '/etc/systemd/system/multi-user.target.wants/openstack-glance-registry.service'
+[root@hc360-controller ~]# systemctl start openstack-glance-api.service \
+&gt;   openstack-glance-registry.service
+
+监听端口: registry:9191     api:9292
+[root@hc360-controller ~]# ps -ef|grep glance
+root     46100 40362  0 14:51 pts/1    00:00:00 tail -f /var/log/glance/api.log
+glance   46181     1  1 14:55 ?        00:00:03 /usr/bin/python2 /usr/bin/glance-api
+glance   46182     1  0 14:55 ?        00:00:01 /usr/bin/python2 /usr/bin/glance-registry
+glance   46199 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46200 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46201 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46202 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46203 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46204 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46205 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46206 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46207 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46208 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46209 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46210 46182  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-registry
+glance   46213 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46214 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46215 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46216 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46217 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46218 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46219 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46220 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46221 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46222 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46223 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+glance   46224 46181  0 14:55 ?        00:00:00 /usr/bin/python2 /usr/bin/glance-api
+root     46303 41384  0 15:00 pts/2    00:00:00 grep --color=auto glance
+[root@hc360-controller ~]# netstat -antlp|grep 46182
+tcp        0      0 0.0.0.0:9191            0.0.0.0:*               LISTEN      46182/python2       
+[root@hc360-controller ~]# netstat -antlp|grep 46181
+tcp        0      0 0.0.0.0:9292            0.0.0.0:*               LISTEN      46181/python2   
+</code></pre>
+
+<p><strong>添加glance-api的环境变量</strong></p>
+
+<pre><code>[root@hc360-controller ~]# ls
+admin-openrc.sh  demo-openrc.sh
+[root@hc360-controller ~]# echo &quot;export OS_IMAGE_API_VERSION=2&quot; \
+&gt;   | tee -a admin-openrc.sh demo-openrc.sh
+export OS_IMAGE_API_VERSION=2
+[root@hc360-controller ~]# source admin-openrc.sh
+</code></pre>
+
+<p><strong>上传一个镜像</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  wget http://download.cirros-cloud.net/0.3.4/cirros-0.3.4-x86_64-disk.img
+[root@hc360-controller ~]# glance image-create --name &quot;cirros&quot; \
+&gt;   --file cirros-0.3.4-x86_64-disk.img \
+&gt;   --disk-format qcow2 --container-format bare \
+&gt;   --visibility public --progress
+[=============================&gt;] 100%
++------------------+--------------------------------------+
+| Property         | Value                                |
++------------------+--------------------------------------+
+| checksum         | ee1eca47dc88f4879d8a229cc70a07c6     |
+| container_format | bare                                 |
+| created_at       | 2016-01-08T07:05:48Z                 |
+| disk_format      | qcow2                                |
+| id               | cb67a7f1-3929-46b4-aa52-45905486e31a |
+| min_disk         | 0                                    |
+| min_ram          | 0                                    |
+| name             | cirros                               |
+| owner            | de418479033d45c780aa8bc3e79b925f     |
+| protected        | False                                |
+| size             | 13287936                             |
+| status           | active                               |
+| tags             | []                                   |
+| updated_at       | 2016-01-08T07:05:49Z                 |
+| virtual_size     | None                                 |
+| visibility       | public                               |
++------------------+--------------------------------------+
+[root@hc360-controller ~]# glance image-list
++--------------------------------------+--------+
+| ID                                   | Name   |
++--------------------------------------+--------+
+| cb67a7f1-3929-46b4-aa52-45905486e31a | cirros |
++--------------------------------------+--------+
+</code></pre>
+
+<h4 id="3-6-nova计算组件安装">3.6 nova计算组件安装</h4>
+
+<pre><code>使用OpenStack计算和管理云计算系统。OpenStack Compute是一个基础设施即服务（IaaS）系统的一个重要组成部分。
+API:负责接收和响应外部请求，支持openstack API,EC2API
+Cert:负责身份认证
+compute ：一个守护进程通过Hypervisor API创建和终止虚拟机实例，处理是相当复杂的。基本上，守护进程接收来自队列的行动和执行一系列的系统命令，如发射KVM实例和在数据库中更新它的状态。
+Scheduler:用于云主机调度
+Conductor:计算节点访问数据的中间件
+Consoleleauth:用于控制台的授权验证
+Novncproxy:VNC代理
+Nova API组件实现了RESTful API功能，是外部访问Nova的唯一途径。
+接收外部请求并通过Message Queue将请求发送给其他的服务组件，同时也兼容EC2 API,所以也可以用EC2的管理
+工具对nova进行日常管理。
+Nova Scheduler模块在openstack中的作用就是决策虚拟机创建在哪个主机(计算节点)上。
+决策一个虚机应该调度到某物理节点，需要分两个步骤：
+1 过滤(Fliter) 2计算权值(Weight)。Fliter Scheduler首先得到未经过滤的主机列表，然后根据过滤属性，选择符合条件的计算节点主机。经过主机过滤后，需要对主机进行权值的计算，根据策略选择相应的某一台主机(对于每一个要创建的虚拟机而言)
+</code></pre>
+
+<h6 id="3-6-1-控制节点nova组件安装">3.6.1 控制节点nova组件安装</h6>
+
+<pre><code>[root@hc360-controller ~]# mysql -uroot -ppassword
+MariaDB [glance]&gt; CREATE DATABASE nova;
+Query OK, 1 row affected (0.00 sec)
+MariaDB [glance]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'localhost' IDENTIFIED BY 'hc360nova';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [glance]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'hc360-controller' IDENTIFIED BY 'hc360nova';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [glance]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'nova'@'192.168.44.0%255.255.255.0' IDENTIFIED BY 'hc360nova';
+Query OK, 0 rows affected (0.00 sec)
+</code></pre>
+
+<p><strong>创建nova用户</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  source admin-openrc.sh
+[root@hc360-controller ~]# openstack user create --domain default --password=hc360nova nova
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | 4e397b07b3ae403a851063fc3666cb5a |
+| name      | nova                             |
++-----------+----------------------------------+
+</code></pre>
+
+<p><strong>添加nova到service项目并赋予admin权限</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role add --project service --user nova admin
+</code></pre>
+
+<p><strong>在keysthone注册一个nova 计算服务</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  openstack service create --name nova \
+&gt;   --description &quot;OpenStack Compute&quot; compute
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | OpenStack Compute                |
+| enabled     | True                             |
+| id          | 009e3f2a9f10435f8452ca3f6797332f |
+| name        | nova                             |
+| type        | compute                          |
++-------------+----------------------------------+
+</code></pre>
+
+<p><strong>注册api相关服务</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack endpoint create --region RegionOne compute public http://192.168.44.113:8774/v2/%\(tenant_id\)s
+ne compute admin http://192.168.44.113:8774/v2/%\(tenant_id\)s+--------------+---------------------------------------------+
+| Field        | Value                                       |
++--------------+---------------------------------------------+
+| enabled      | True                                        |
+| id           | 87743160706d45feb959d6e9d7f920d4            |
+| interface    | public                                      |
+| region       | RegionOne                                   |
+| region_id    | RegionOne                                   |
+| service_id   | 009e3f2a9f10435f8452ca3f6797332f            |
+| service_name | nova                                        |
+| service_type | compute                                     |
+| url          | http://192.168.44.113:8774/v2/%(tenant_id)s |
++--------------+---------------------------------------------+
+[root@hc360-controller ~]# openstack endpoint create --region RegionOne compute internal http://192.168.44.113:8774/v2/%\(tenant_id\)s
++--------------+---------------------------------------------+
+| Field        | Value                                       |
++--------------+---------------------------------------------+
+| enabled      | True                                        |
+| id           | 115de989b90c4ee08d39aee2254dab54            |
+| interface    | internal                                    |
+| region       | RegionOne                                   |
+| region_id    | RegionOne                                   |
+| service_id   | 009e3f2a9f10435f8452ca3f6797332f            |
+| service_name | nova                                        |
+| service_type | compute                                     |
+| url          | http://192.168.44.113:8774/v2/%(tenant_id)s |
++--------------+---------------------------------------------+
+[root@hc360-controller ~]# openstack endpoint create --region RegionOne compute admin http://192.168.44.113:8774/v2/%\(tenant_id\)s
++--------------+---------------------------------------------+
+| Field        | Value                                       |
++--------------+---------------------------------------------+
+| enabled      | True                                        |
+| id           | ead2dc3178e24f7f92338f78efa90445            |
+| interface    | admin                                       |
+| region       | RegionOne                                   |
+| region_id    | RegionOne                                   |
+| service_id   | 009e3f2a9f10435f8452ca3f6797332f            |
+| service_name | nova                                        |
+| service_type | compute                                     |
+| url          | http://192.168.44.113:8774/v2/%(tenant_id)s |
++--------------+---------------------------------------------+
+</code></pre>
+
+<p><strong>安装nova控制节点相关组件</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  yum install openstack-nova-api openstack-nova-cert \
+&gt;   openstack-nova-conductor openstack-nova-console \
+&gt;   openstack-nova-novncproxy openstack-nova-scheduler \
+&gt;   python-novaclient  -y
+</code></pre>
+
+<p><strong>修改nova.conf配置文件</strong></p>
+
+<pre><code>[root@hc360-controller ~]# vim  /etc/nova/nova.conf
+[root@hc360-controller ~]# grep -n '^[a-z]'  /etc/nova/nova.conf
+2:my_ip = 192.168.44.113
+343:enabled_apis=osapi_compute,metadata
+444:vncserver_listen=$my_ip
+449:vncserver_proxyclient_address=$my_ip
+531:auth_strategy=keystone
+864:network_api_class = nova.network.neutronv2.api.API
+956:linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+1089:security_group_api=neutron
+1266:firewall_driver = nova.virt.firewall.NoopFirewallDriver
+1304:debug=true
+1310:verbose=true
+1448:rpc_backend=rabbit
+1768:connection = mysql://nova:hc360nova@192.168.44.113/nova
+1969:host=$my_ip
+2147:auth_uri = http://192.168.44.113:5000
+2148:auth_url = http://192.168.44.113:35357
+2149:auth_plugin = password
+2150:project_domain_id = default
+2151:user_domain_id = default
+2152:project_name = service
+2153:username = nova
+2154:password = hc360nova
+2776:lock_path=/var/lib/nova/tmp
+2904:rabbit_host = 192.168.44.113
+2905:rabbit_userid = openstack
+2906:rabbit_password = hc360openstack
+</code></pre>
+
+<p><strong>创建nova数据表</strong></p>
+
+<pre><code>[root@hc360-controller ~]# su -s /bin/sh -c &quot;nova-manage db sync&quot; nova
+No handlers could be found for logger &quot;oslo_config.cfg&quot;
+</code></pre>
+
+<p><strong>检查是否创建成功</strong></p>
+
+<pre><code>[root@hc360-controller ~]# mysql -h 192.168.44.113  -unova -phc360nova -e &quot;use nova;show tables;&quot;
++--------------------------------------------+
+| Tables_in_nova                             |
++--------------------------------------------+
+| agent_builds                               |
+| aggregate_hosts                            |
+| aggregate_metadata                         |
+| aggregates                                 |
+| block_device_mapping                       |
+| bw_usage_cache                             |
+| cells                                      |
+| certificates                               |
+| compute_nodes                              |
+| console_pools                              |
+| consoles                                   |
+| dns_domains                                |
+| fixed_ips                                  |
+| floating_ips                               |
+| instance_actions                           |
+| instance_actions_events                    |
+| instance_extra                             |
+| instance_faults                            |
+| instance_group_member                      |
+| instance_group_policy                      |
+| instance_groups                            |
+| instance_id_mappings                       |
+| instance_info_caches                       |
+| instance_metadata                          |
+| instance_system_metadata                   |
+| instance_type_extra_specs                  |
+| instance_type_projects                     |
+| instance_types                             |
+| instances                                  |
+| key_pairs                                  |
+| migrate_version                            |
+| migrations                                 |
+| networks                                   |
+| pci_devices                                |
+| project_user_quotas                        |
+| provider_fw_rules                          |
+| quota_classes                              |
+| quota_usages                               |
+| quotas                                     |
+| reservations                               |
+| s3_images                                  |
+| security_group_default_rules               |
+| security_group_instance_association        |
+| security_group_rules                       |
+| security_groups                            |
+| services                                   |
+| shadow_agent_builds                        |
+| shadow_aggregate_hosts                     |
+| shadow_aggregate_metadata                  |
+| shadow_aggregates                          |
+| shadow_block_device_mapping                |
+| shadow_bw_usage_cache                      |
+| shadow_cells                               |
+| shadow_certificates                        |
+| shadow_compute_nodes                       |
+| shadow_console_pools                       |
+| shadow_consoles                            |
+| shadow_dns_domains                         |
+| shadow_fixed_ips                           |
+| shadow_floating_ips                        |
+| shadow_instance_actions                    |
+| shadow_instance_actions_events             |
+| shadow_instance_extra                      |
+| shadow_instance_faults                     |
+| shadow_instance_group_member               |
+| shadow_instance_group_policy               |
+| shadow_instance_groups                     |
+| shadow_instance_id_mappings                |
+| shadow_instance_info_caches                |
+| shadow_instance_metadata                   |
+| shadow_instance_system_metadata            |
+| shadow_instance_type_extra_specs           |
+| shadow_instance_type_projects              |
+| shadow_instance_types                      |
+| shadow_instances                           |
+| shadow_key_pairs                           |
+| shadow_migrate_version                     |
+| shadow_migrations                          |
+| shadow_networks                            |
+| shadow_pci_devices                         |
+| shadow_project_user_quotas                 |
+| shadow_provider_fw_rules                   |
+| shadow_quota_classes                       |
+| shadow_quota_usages                        |
+| shadow_quotas                              |
+| shadow_reservations                        |
+| shadow_s3_images                           |
+| shadow_security_group_default_rules        |
+| shadow_security_group_instance_association |
+| shadow_security_group_rules                |
+| shadow_security_groups                     |
+| shadow_services                            |
+| shadow_snapshot_id_mappings                |
+| shadow_snapshots                           |
+| shadow_task_log                            |
+| shadow_virtual_interfaces                  |
+| shadow_volume_id_mappings                  |
+| shadow_volume_usage_cache                  |
+| snapshot_id_mappings                       |
+| snapshots                                  |
+| tags                                       |
+| task_log                                   |
+| virtual_interfaces                         |
+| volume_id_mappings                         |
+| volume_usage_cache                         |
++--------------------------------------------+
+</code></pre>
+
+<p><strong>启动服务</strong></p>
+
+<pre><code>[root@hc360-controller ~]#  systemctl enable openstack-nova-api.service \
+&gt;   openstack-nova-cert.service openstack-nova-consoleauth.service \
+&gt;   openstack-nova-scheduler.service openstack-nova-conductor.service \
+&gt;   openstack-nova-novncproxy.service
+ln -s '/usr/lib/systemd/system/openstack-nova-api.service' '/etc/systemd/system/multi-user.target.wants/openstack-nova-api.service'
+ln -s '/usr/lib/systemd/system/openstack-nova-cert.service' '/etc/systemd/system/multi-user.target.wants/openstack-nova-cert.service'
+ln -s '/usr/lib/systemd/system/openstack-nova-consoleauth.service' '/etc/systemd/system/multi-user.target.wants/openstack-nova-consoleauth.service'
+ln -s '/usr/lib/systemd/system/openstack-nova-scheduler.service' '/etc/systemd/system/multi-user.target.wants/openstack-nova-scheduler.service'
+ln -s '/usr/lib/systemd/system/openstack-nova-conductor.service' '/etc/systemd/system/multi-user.target.wants/openstack-nova-conductor.service'
+ln -s '/usr/lib/systemd/system/openstack-nova-novncproxy.service' '/etc/systemd/system/multi-user.target.wants/openstack-nova-novncproxy.service'
+[root@hc360-controller ~]# systemctl start openstack-nova-api.service \
+&gt;   openstack-nova-cert.service openstack-nova-consoleauth.service \
+&gt;   openstack-nova-scheduler.service openstack-nova-conductor.service \
+&gt;   openstack-nova-novncproxy.service
+
+[root@hc360-controller ~]# openstack host list
++------------------+-------------+----------+
+| Host Name        | Service     | Zone     |
++------------------+-------------+----------+
+| hc360-controller | conductor   | internal |
+| hc360-controller | consoleauth | internal |
+| hc360-controller | scheduler   | internal |
+| hc360-controller | cert        | internal |
++------------------+-------------+----------+
+</code></pre>
+
+<h6 id="3-6-2-计算节点nova组件安装">3.6.2 计算节点nova组件安装</h6>
+
+<p><strong>基本包安装</strong></p>
+
+<pre><code>yum install -y http://dl.fedoraproject.org/pub/epel/7/x86_64/e/epel-release-7-5.noarch.rpm
+yum install -y centos-release-openstack-liberty
+yum install -y python-openstackclient
+
+[root@hc360-computer1 ~]#  yum install openstack-nova-compute sysfsutils -y
+[root@hc360-computer1 ~]# vim  /etc/nova/nova.conf
+[root@hc360-computer1 ~]# grep -n '^[a-z]'  /etc/nova/nova.conf
+2:my_ip = 192.168.44.113
+445:vncserver_listen = 0.0.0.0
+446:vncserver_proxyclient_address = $my_ip
+447:novncproxy_base_url = http://192.168.44.113:6080/vnc_auto.html
+533:auth_strategy=keystone
+866:network_api_class = nova.network.neutronv2.api.API
+958:linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+1092:security_group_api = neutron
+1268:firewall_driver = nova.virt.firewall.NoopFirewallDriver
+1310:verbose=true
+1449:rpc_backend=rabbit
+1970:host=$my_ip
+2148:auth_uri = http://192.168.44.113:5000
+2149:auth_url = http://192.168.44.113:35357
+2150:auth_plugin = password
+2151:project_domain_id = default
+2152:user_domain_id = default
+2153:project_name = service
+2154:username = nova
+2155:password = hc360nova
+2335:virt_type=kvm
+2777:lock_path=/var/lib/nova/tmp
+2905:rabbit_host = 192.168.44.113
+2906:rabbit_userid = openstack
+2907:rabbit_password = hc360openstack
+2964:rabbit_port=5672
+[root@hc360-computer1 ~]# egrep -c '(vmx|svm)' /proc/cpuinfo
+12
+</code></pre>
+
+<p><strong>查看是否支持vt</strong></p>
+
+<pre><code>不支持的话可以设置为qemu
+[root@hc360-computer1 ~]# vim /etc/nova/nova.conf
+virt_type=qeum
+我的支持所以
+[root@hc360-computer1 ~]# vim /etc/nova/nova.conf
+virt_type=kvm
+</code></pre>
+
+<p><strong>启动</strong></p>
+
+<pre><code>[root@hc360-computer1 ~]#  systemctl enable libvirtd.service openstack-nova-compute.service
+Created symlink from /etc/systemd/system/multi-user.target.wants/openstack-nova-compute.service to /usr/lib/systemd/system/openstack-nova-compute.service.
+[root@hc360-computer1 ~]# systemctl start libvirtd.service openstack-nova-compute.service
+
+在节点上验证，其他节点也写一份admin-openrc.sh和 demo-openrc.sh环境变量脚本
+[root@hc360-controller ~]# source admin-openrc.sh
+[root@hc360-controller ~]# nova service-list
++----+------------------+------------------+----------+---------+-------+----------------------------+-----------------+
+| Id | Binary           | Host             | Zone     | Status  | State | Updated_at                 | Disabled Reason |
++----+------------------+------------------+----------+---------+-------+----------------------------+-----------------+
+| 1  | nova-conductor   | hc360-controller | internal | enabled | up    | 2016-01-08T09:16:59.000000 | -               |
+| 4  | nova-consoleauth | hc360-controller | internal | enabled | up    | 2016-01-08T09:16:59.000000 | -               |
+| 5  | nova-scheduler   | hc360-controller | internal | enabled | up    | 2016-01-08T09:16:59.000000 | -               |
+| 6  | nova-cert        | hc360-controller | internal | enabled | up    | 2016-01-08T09:17:00.000000 | -               |
+| 7  | nova-compute     | hc360-computer1  | nova     | enabled | up    | 2016-01-08T09:17:04.000000 | -               |
++----+------------------+------------------+----------+---------+-------+----------------------------+-----------------+
+[root@hc360-controller ~]# nova endpoints
+WARNING: nova has no endpoint in ! Available endpoints for this service:
++-----------+----------------------------------------------------------------+
+| nova      | Value                                                          |
++-----------+----------------------------------------------------------------+
+| id        | 115de989b90c4ee08d39aee2254dab54                               |
+| interface | internal                                                       |
+| region    | RegionOne                                                      |
+| region_id | RegionOne                                                      |
+| url       | http://192.168.44.113:8774/v2/de418479033d45c780aa8bc3e79b925f |
++-----------+----------------------------------------------------------------+
++-----------+----------------------------------------------------------------+
+| nova      | Value                                                          |
++-----------+----------------------------------------------------------------+
+| id        | 87743160706d45feb959d6e9d7f920d4                               |
+| interface | public                                                         |
+| region    | RegionOne                                                      |
+| region_id | RegionOne                                                      |
+| url       | http://192.168.44.113:8774/v2/de418479033d45c780aa8bc3e79b925f |
++-----------+----------------------------------------------------------------+
++-----------+----------------------------------------------------------------+
+| nova      | Value                                                          |
++-----------+----------------------------------------------------------------+
+| id        | ead2dc3178e24f7f92338f78efa90445                               |
+| interface | admin                                                          |
+| region    | RegionOne                                                      |
+| region_id | RegionOne                                                      |
+| url       | http://192.168.44.113:8774/v2/de418479033d45c780aa8bc3e79b925f |
++-----------+----------------------------------------------------------------+
+WARNING: keystone has no endpoint in ! Available endpoints for this service:
++-----------+----------------------------------+
+| keystone  | Value                            |
++-----------+----------------------------------+
+| id        | 62d742066b6540d4b105d75b0911030f |
+| interface | internal                         |
+| region    | RegionOne                        |
+| region_id | RegionOne                        |
+| url       | http://192.168.44.113:5000/v2.0  |
++-----------+----------------------------------+
++-----------+----------------------------------+
+| keystone  | Value                            |
++-----------+----------------------------------+
+| id        | 66bdff8db4a84ac09f26aebefd09cc28 |
+| interface | public                           |
+| region    | RegionOne                        |
+| region_id | RegionOne                        |
+| url       | http://192.168.44.113:5000/v2.0  |
++-----------+----------------------------------+
++-----------+----------------------------------+
+| keystone  | Value                            |
++-----------+----------------------------------+
+| id        | c762b87367214d8aac2dc0fa960b1720 |
+| interface | admin                            |
+| region    | RegionOne                        |
+| region_id | RegionOne                        |
+| url       | http://192.168.44.113:35357/v2.0 |
++-----------+----------------------------------+
+WARNING: glance has no endpoint in ! Available endpoints for this service:
++-----------+----------------------------------+
+| glance    | Value                            |
++-----------+----------------------------------+
+| id        | 7a3f44fe41834f618c56578c40ed31f3 |
+| interface | internal                         |
+| region    | RegionOne                        |
+| region_id | RegionOne                        |
+| url       | http://192.168.44.113:9292       |
++-----------+----------------------------------+
++-----------+----------------------------------+
+| glance    | Value                            |
++-----------+----------------------------------+
+| id        | 864f48f369694c39acbca045c2f4f6f8 |
+| interface | admin                            |
+| region    | RegionOne                        |
+| region_id | RegionOne                        |
+| url       | http://192.168.44.113:9292       |
++-----------+----------------------------------+
++-----------+----------------------------------+
+| glance    | Value                            |
++-----------+----------------------------------+
+| id        | f515fec82e864d828b4fa925abf8ffb7 |
+| interface | public                           |
+| region    | RegionOne                        |
+| region_id | RegionOne                        |
+| url       | http://192.168.44.113:9292       |
++-----------+----------------------------------+
+[root@hc360-controller ~]#  nova image-list
++--------------------------------------+--------+--------+--------+
+| ID                                   | Name   | Status | Server |
++--------------------------------------+--------+--------+--------+
+| cb67a7f1-3929-46b4-aa52-45905486e31a | cirros | ACTIVE |        |
++--------------------------------------+--------+--------+--------+
+</code></pre>
+
+<h4 id="3-7-网络安装">3.7 网络安装</h4>
+
+<h6 id="3-7-1-控制节点网络安装">3.7.1 控制节点网络安装</h6>
+
+<p><strong>创建neutron</strong></p>
+
+<pre><code>[root@hc360-controller ~]# mysql -uroot -ppassword
+MariaDB [glance]&gt; CREATE DATABASE neutron;
+Query OK, 1 row affected (0.00 sec)
+MariaDB [glance]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'neutron'@'localhost' IDENTIFIED BY 'hc360neutron';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [glance]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'neutron'@'hc360-controller' IDENTIFIED BY 'hc360neutron';
+Query OK, 0 rows affected (0.00 sec)
+MariaDB [glance]&gt; GRANT ALL PRIVILEGES ON nova.* TO 'neutron'@'192.168.44.0%255.255.255.0' IDENTIFIED BY 'hc360neutron';
+Query OK, 0 rows affected (0.00 sec)
+[root@hc360-controller ~]#  source admin-openrc.sh
+</code></pre>
+
+<p><strong>Keystone上注册一个neutron的用户</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack user create --domain default --password=hc360neutron neutron
++-----------+----------------------------------+
+| Field     | Value                            |
++-----------+----------------------------------+
+| domain_id | default                          |
+| enabled   | True                             |
+| id        | d12608aba72546d78efe022278a508d5 |
+| name      | neutron                          |
++-----------+----------------------------------+
+</code></pre>
+
+<p><strong>Neutron添加到service项目中，并赋予admin权限</strong></p>
+
+<pre><code>[root@hc360-controller ~]# openstack role add --project service --user neutron admin
+[root@hc360-controller ~]# openstack service create --name neutron --description &quot;OpenStack Networking&quot; network
++-------------+----------------------------------+
+| Field       | Value                            |
++-------------+----------------------------------+
+| description | OpenStack Networking             |
+| enabled     | True                             |
+| id          | f4efce5c96754b2ba9ccaa88855afeac |
+| name        | neutron                          |
+| type        | network                          |
++-------------+----------------------------------+
+[root@hc360-controller ~]# openstack endpoint create --region RegionOne network public http://192.168.44.113:9696
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | f60d89ceb966464a89c21d07152af010 |
+| interface    | public                           |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | f4efce5c96754b2ba9ccaa88855afeac |
+| service_name | neutron                          |
+| service_type | network                          |
+| url          | http://192.168.44.113:9696       |
++--------------+----------------------------------+
+[root@hc360-controller ~]# openstack endpoint create --region RegionOne network internal http://192.168.44.113:9696
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | 6284b5275aca4a3d8fda9d3fc5a1fb84 |
+| interface    | internal                         |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | f4efce5c96754b2ba9ccaa88855afeac |
+| service_name | neutron                          |
+| service_type | network                          |
+| url          | http://192.168.44.113:9696       |
++--------------+----------------------------------+
+[root@hc360-controller ~]# openstack endpoint create --region RegionOne network admin http://192.168.44.113:9696
++--------------+----------------------------------+
+| Field        | Value                            |
++--------------+----------------------------------+
+| enabled      | True                             |
+| id           | b59cd594702c481bba11cd36338f7ba3 |
+| interface    | admin                            |
+| region       | RegionOne                        |
+| region_id    | RegionOne                        |
+| service_id   | f4efce5c96754b2ba9ccaa88855afeac |
+| service_name | neutron                          |
+| service_type | network                          |
+| url          | http://192.168.44.113:9696       |
++--------------+----------------------------------+
+</code></pre>
+
+<p><strong>安装软件</strong></p>
+
+<pre><code>yum install openstack-neutron openstack-neutron-ml2   openstack-neutron-linuxbridge python-neutronclient ebtables ipset  -y
+修改neutron.conf配置文件
+[root@hc360-controller ~]#  grep -n '^[a-z]' /etc/neutron/neutron.conf 
+3:verbose = True
+62:core_plugin = ml2
+80:service_plugins = router
+93:auth_strategy = keystone
+133:allow_overlapping_ips = True
+361:notify_nova_on_port_status_changes = True 
+365:notify_nova_on_port_data_changes = True 
+368:nova_url = http://192.168.44.113:8774/v2
+574:rpc_backend=rabbit
+718:auth_url = http://192.168.44.113:5000
+719:auth_url = http://192.168.44.113:35357
+720:auth_plugin = password
+721:project_domain_id = default
+722:user_domain_id = default
+723:project_name = service
+724:username = neutron
+725:password = hc360neutron
+738:connection = mysql://neutron:hc360neutron@192.168.44.113/neutron
+778:auth_url = http://192.168.44.113:35357
+779:auth_plugin = password
+780:project_domain_id = default
+781:user_domain_id = default
+782:region_name = RegionOne
+783:project_name = service
+784:username = nova
+785:password = hc360nova
+813:lock_path = /var/lib/neutron/tmp 
+951:rabbit_host = 192.168.44.113
+952:rabbit_userid = openstack
+953:rabbit_password = hc360openstack
+
+[root@hc360-controller ~]# grep -n '^[a-z]' /etc/neutron/plugins/ml2/ml2_conf.ini
+7:type_drivers = flat,vlan,gre,vxlan,geneve
+15:tenant_network_types = vlan,gre,vxlan,geneve
+26:mechanism_drivers = openvswitch,linuxbridge
+32:extension_drivers = port_security
+74:flat_networks = physnet1
+[root@hc360-controller ~]# grep -n '^[a-z]' /etc/neutron/plugins/ml2/linuxbridge_agent.ini
+11:physical_interface_mappings = physnet1:em1
+47:prevent_arp_spoofing = True 
+56:firewall_driver = neutron.agent.linux.iptables_firewall.IptablesFirewallDriver
+
+[root@hc360-controller ~]# grep -n '^[a-z]' /etc/neutron/dhcp_agent.ini 
+4:verbose = True
+27:interface_driver = neutron.agent.linux.interface.BridgeInterfaceDriver
+31:dhcp_driver = neutron.agent.linux.dhcp.Dnsmasq
+52:enable_isolated_metadata = True
+
+[root@hc360-controller ~]# grep -n '^[a-z]' /etc/neutron/metadata_agent.ini 
+6:auth_url = http://192.168.44.113:5000
+7:auth_url = http://192.168.44.113:35357
+8:auth_region = RegionOne
+9:auth_plugin = password
+10:project_domain_id = default
+11:user_domain_id = default
+12:project_name = service
+13:username = neutron
+14:password = hc360neturn
+24:nova_metadata_ip = 192.168.44.113 
+47:metadata_proxy_shared_secret = neutron
+
+[root@hc360-controller ~]# grep -n '^[a-z]' /etc/nova/nova.conf 
+2:my_ip = 192.168.44.113
+343:enabled_apis=osapi_compute,metadata
+444:vncserver_listen=$my_ip
+449:vncserver_proxyclient_address=$my_ip
+531:auth_strategy=keystone
+864:network_api_class = nova.network.neutronv2.api.API
+956:linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+1089:security_group_api=neutron
+1266:firewall_driver = nova.virt.firewall.NoopFirewallDriver
+1304:debug=true
+1310:verbose=true
+1448:rpc_backend=rabbit
+1768:connection = mysql://nova:hc360nova@192.168.44.113/nova
+1969:host=$my_ip
+2147:auth_url = http://192.168.44.113:5000
+2148:auth_url = http://192.168.44.113:35357
+2149:auth_plugin = password
+2150:project_domain_id = default
+2151:user_domain_id = default
+2152:project_name = service
+2153:username = nova
+2154:password = hc360nova
+2584:url = http://192.168.44.133:9696
+2585:auth_url = http://192.168.44.133:35357
+2586:auth_plugin = password
+2587:project_domain_id = default
+2588:user_domain_id = default
+2589:region_name = RegionOne
+2590:project_name = service
+2591:username = neutron
+2592:password = hc360neutron
+2594:service_metadata_proxy = True
+2595:metadata_proxy_shared_secret = neutron
+2787:lock_path=/var/lib/nova/tmp
+2915:rabbit_host = 192.168.44.113
+2916:rabbit_userid = openstack
+2917:rabbit_password = hc360openstack
+
+[root@hc360-controller ~]# ln -s /etc/neutron/plugins/ml2/ml2_conf.ini /etc/neutron/plugin.ini
+</code></pre>
+
+<p><strong>创建neutron表</strong></p>
+
+<pre><code>[root@hc360-controller ~]# su -s /bin/sh -c &quot;neutron-db-manage --config-file /etc/neutron/neutron.conf \
+&gt;   --config-file /etc/neutron/plugins/ml2/ml2_conf.ini upgrade head&quot; neutron
+No handlers could be found for logger &quot;neutron.quota&quot;
+INFO  [alembic.runtime.migration] Context impl MySQLImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+  Running upgrade for neutron ...
+INFO  [alembic.runtime.migration] Context impl MySQLImpl.
+INFO  [alembic.runtime.migration] Will assume non-transactional DDL.
+INFO  [alembic.runtime.migration] Running upgrade  -&gt; juno, juno_initial
+INFO  [alembic.runtime.migration] Running upgrade juno -&gt; 44621190bc02, add_uniqueconstraint_ipavailability_ranges
+INFO  [alembic.runtime.migration] Running upgrade 44621190bc02 -&gt; 1f71e54a85e7, ml2_network_segments models change for multi-segment network.
+INFO  [alembic.runtime.migration] Running upgrade 1f71e54a85e7 -&gt; 408cfbf6923c, remove ryu plugin
+INFO  [alembic.runtime.migration] Running upgrade 408cfbf6923c -&gt; 28c0ffb8ebbd, re
+
+[root@hc360-controller ~]#  systemctl restart openstack-nova-api.service
+[root@hc360-controller ~]# systemctl enable neutron-server.service \
+&gt;   neutron-linuxbridge-agent.service neutron-dhcp-agent.service \
+&gt;   neutron-metadata-agent.service
+ln -s '/usr/lib/systemd/system/neutron-server.service' '/etc/systemd/system/multi-user.target.wants/neutron-server.service'
+ln -s '/usr/lib/systemd/system/neutron-linuxbridge-agent.service' '/etc/systemd/system/multi-user.target.wants/neutron-linuxbridge-agent.service'
+ln -s '/usr/lib/systemd/system/neutron-dhcp-agent.service' '/etc/systemd/system/multi-user.target.wants/neutron-dhcp-agent.service'
+ln -s '/usr/lib/systemd/system/neutron-metadata-agent.service' '/etc/systemd/system/multi-user.target.wants/neutron-metadata-agent.service'
+[root@hc360-controller ~]# systemctl start neutron-server.service \
+&gt;   neutron-linuxbridge-agent.service neutron-dhcp-agent.service \
+&gt;   neutron-metadata-agent.service
+[root@hc360-controller ~]# neutron agent-list 
++--------------------------------------+--------------------+------------------+-------+----------------+---------------------------+
+| id                                   | agent_type         | host             | alive | admin_state_up | binary                    |
++--------------------------------------+--------------------+------------------+-------+----------------+---------------------------+
+| 02fa2a3f-e9fc-418a-93be-efed6dfdc80e | DHCP agent         | hc360-controller | :-)   | True           | neutron-dhcp-agent        |
+| 3a7815e6-5bc9-4f9c-a04f-fb9256a036f9 | Metadata agent     | hc360-controller | :-)   | True           | neutron-metadata-agent    |
+</code></pre>
+
+<h6 id="3-7-2-计算节点网络安装">3.7.2 计算节点网络安装</h6>
+
+<pre><code>[root@hc360-computer1 ~]# yum install openstack-neutron openstack-neutron-linuxbridge ebtables ipset -y
+[root@hc360-computer1 ~]# source admin-openrc.sh
+[root@hc360-computer1 ~]# grep -n '^[a-z]' /etc/neutron/neutron.conf 
+3:verbose = True
+92:auth_strategy = keystone 
+573:rpc_backend=rabbit
+717:auth_url = http://192.168.44.113:5000
+718:auth_url = http://192.168.44.113:35357
+719:auth_plugin = password
+720:project_domain_id = default
+721:user_domain_id = default
+722:project_name = service
+723:username = neutron
+724:password = hc360neutron
+799:lock_path = /var/lib/neutron/tmp
+985:rabbit_host = 192.168.44.113
+986:rabbit_userid = openstack
+987:rabbit_password = hc360openstack
+
+[root@hc360-computer1 ~]# grep -n '^[a-z]' /etc/nova/nova.conf 
+2:my_ip = 192.168.44.113
+445:vncserver_listen = 0.0.0.0
+446:vncserver_proxyclient_address = $my_ip
+447:novncproxy_base_url = http://192.168.44.113:6080/vnc_auto.html
+533:auth_strategy=keystone
+866:network_api_class = nova.network.neutronv2.api.API
+958:linuxnet_interface_driver = nova.network.linux_net.NeutronLinuxBridgeInterfaceDriver
+1092:security_group_api = neutron
+1268:firewall_driver = nova.virt.firewall.NoopFirewallDriver
+1310:verbose=true
+1449:rpc_backend=rabbit
+1970:host=$my_ip
+2148:auth_uri = http://192.168.44.113:5000
+2149:auth_url = http://192.168.44.113:35357
+2150:auth_plugin = password
+2151:project_domain_id = default
+2152:user_domain_id = default
+2153:project_name = service
+2154:username = nova
+2155:password = hc360nova
+2335:virt_type=kvm
+2585:url = http://192.168.44.113:9696
+2586:auth_url = http://192.168.44.113:35357
+2587:auth_plugin = password
+2588:project_domain_id = default
+2589:user_domain_id = default
+2590:region_name = RegionOne
+2591:project_name = service
+2592:username = neutron
+2593:password = hc360neutron
+2786:lock_path=/var/lib/nova/tmp
+2914:rabbit_host = 192.168.44.113
+2915:rabbit_userid = openstack
+2916:rabbit_password = hc360openstack
+2973:rabbit_port=5672
+[root@hc360-computer1 ~]#  systemctl restart openstack-nova-compute.service
+[root@hc360-computer1 ~]# systemctl enable neutron-linuxbridge-agent.service
+Created symlink from /etc/systemd/system/multi-user.target.wants/neutron-linuxbridge-agent.service to /usr/lib/systemd/system/neutron-linuxbridge-agent.service.
+[root@hc360-computer1 ~]# systemctl start neutron-linuxbridge-agent.service
+[root@hc360-computer1 ~]# neutron agent-list 
++--------------------------------------+--------------------+------------------+-------+----------------+---------------------------+
+| id                                   | agent_type         | host             | alive | admin_state_up | binary                    |
++--------------------------------------+--------------------+------------------+-------+----------------+---------------------------+
+| 02fa2a3f-e9fc-418a-93be-efed6dfdc80e | DHCP agent         | hc360-controller | :-)   | True           | neutron-dhcp-agent        |
+| 3a7815e6-5bc9-4f9c-a04f-fb9256a036f9 | Metadata agent     | hc360-controller | :-)   | True           | neutron-metadata-agent    |
+| d2b56697-462d-4e50-b43a-a08fcdfb4f53 | Linux bridge agent | hc360-computer1  | :-)   | True           | neutron-linuxbridge-agent |
++--------------------------------------+--------------------+------------------+-------+----------------+---------------------------+
+</code></pre>
+
+<h4 id="3-8-dashboard安装">3.8 dashboard安装</h4>
+
+<pre><code>[root@hc360-controller ~]#  yum install openstack-dashboard -y
+[root@hc360-controller ~]# vim /etc/openstack-dashboard/local_settingsOPENSTACK_HOST = &quot;192.168.44.113&quot;
+ALLOWED_HOSTS = ['*', 'localhost']
+CACHES = {
+    'default': {
+         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
+         'LOCATION': '192.168.44.113:11211',
+    }
+}
+[root@hc360-controller ~]# systemctl enable httpd.service memcached.service
+[root@hc360-controller ~]# systemctl restart httpd.service memcached.service
+</code></pre>
+
+<p><strong>admin或者demo用户登录</strong></p>
+
+<p><img src="/images/openstack/da.png" alt="Alt text" /></p>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/openstack/easy_install/" data-title="openstack 学习安装" data-url="https://SomethingCM.github.io/openstack/easy_install/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

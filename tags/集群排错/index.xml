@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>集群排错 on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/%E9%9B%86%E7%BE%A4%E6%8E%92%E9%94%99/</link>
+    <description>Recent content in 集群排错 on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 21 Mar 2018 01:23:49 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/%E9%9B%86%E7%BE%A4%E6%8E%92%E9%94%99/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Consul集群排错</title>
+      <link>https://SomethingCM.github.io/mesos/consul/</link>
+      <pubDate>Wed, 21 Mar 2018 01:23:49 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/mesos/consul/</guid>
+      <description> 一、consul集群状态查询 1、查看集群状态 登陆server节点 consul members  2、测试集群可用性 curl http://192.168.111.210:8500/v1/health/service/dbos-yzprod-10285| python -m json.tool 看是否正常输出信息（注意访问slave节点ip，在server 端ip为127.0.0.1）  3、排查mesos slave节点 3.1、查看consul状态 systemctl status consul  3.2、查看consul数据是否异常 ll /tmp/consul/services/  3.3、查容器registrator是否异常（正常状态Up,不正常就restart容器） 4、排查nginx节点 4.1、排查模版状态是否正常  systemctl status consul-template-xxxx.service  4.2、查看模版配置文件配置的vip cat /etc/xxxx.cfg  4.3、测试vip是否可用 curl http://xxx.xxx.xxx.xxx:8500/v1/health/service/xxx-10285| python -m json.tool  二、consul集群升级故障总结 consul集群分server端和client端  升级版本有先后顺序，需要先升级server端（三台server要连续升，中间可能会报错，报错忽略）再升级client端  </description>
+    </item>
+    
+  </channel>
+</rss>

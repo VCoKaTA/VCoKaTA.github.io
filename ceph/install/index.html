@@ -1,0 +1,437 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Ceph部署">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>Ceph部署 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                     using tags
+                    
+                        
+                        <a href="/tags/ceph">ceph</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<hr />
+
+<p><font color=#DC143C size=5 face="黑体">硬件环境</font></p>
+
+<pre><code>10台机器，每台7块1.2Tsas osd数据盘 2块128G ssd日志盘（分区每块osd分10G的日志盘）
+因为系统盘和数据盘在一个raid卡上，所以osd做单盘raid0，日志盘做raid1
+</code></pre>
+
+<hr />
+
+<p><font color=#DC143C size=5 face="黑体">官网：</font>
+<a href="https://docs.ceph.com/docs/master/">https://docs.ceph.com/docs/master/</a></p>
+
+<h3 id="1-系统环境">1、系统环境</h3>
+
+<pre><code>centos7  iptable selinux disabled
+systemctl disable firewalld
+
+vim /etc/sysconfig/selinux
+    SELINUX=disabled
+
+hosts     
+修改主机名hostnamectl set-hostname xxx
+
+controller1 controller2 controller3
+compute1 compute2 compute3 compute4 compute6 compute5 compute7 compute8 compute9 compute10
+
+所有几点安装基础包
+yum install ntp ntpdate ntp-doc  openssh-server -y
+需要配置时间同步
+ntpdate 1.cn.pool.ntp.org
+
+监控节点部署在openstack的控制节点，计算节点部署osd
+</code></pre>
+
+<h2 id="2-安装部署">2、安装部署</h2>
+
+<pre><code>添加ceph源
+yum -y install epel-release
+rpm --import https://download.ceph.com/keys/release.asc
+rpm -Uvh --replacepkgs https://download.ceph.com/rpm-jewel/el7/noarch/ceph-release-1-0.el7.noarch.rpm
+cat /etc/yum.repos.d/ceph.repo
+[Ceph]
+name=Ceph packages for $basearch
+baseurl=http://download.ceph.com/rpm-jewel/el7/$basearch
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://download.ceph.com/keys/release.asc
+priority=1
+[Ceph-noarch]
+name=Ceph noarch packages
+baseurl=http://download.ceph.com/rpm-jewel/el7/noarch
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://download.ceph.com/keys/release.asc
+priority=1
+[ceph-source]
+name=Ceph source packages
+baseurl=http://download.ceph.com/rpm-jewel/el7/SRPMS
+enabled=1
+gpgcheck=1
+type=rpm-md
+gpgkey=https://download.ceph.com/keys/release.asc
+priority=1
+
+更新软件库并安装 ceph-deploy
+yum update &amp;&amp;  yum install ceph-deploy
+
+无密码认证
+ssh-keygen
+for i in xxx;do scp /etc/yum.repos.d/ceph.repo  root@&quot;$i&quot;:/etc/yum.repos.d/ceph.repo;done
+</code></pre>
+
+<h2 id="3-创建集群">3、创建集群</h2>
+
+<pre><code>在controller1上开始安装ceph
+[root@controller1 ~]# mkdir my-cluster
+[root@controller1 ~]# cd my-cluster
+在管理节点上，进入刚创建的放置配置文件的目录，用 ceph-deploy 执行如下步骤
+</code></pre>
+
+<h3 id="3-1-创建集群">3.1、 创建集群</h3>
+
+<pre><code>[root@controller1 my-cluster]# ceph-deploy new controller1
+</code></pre>
+
+<h3 id="3-2-调整配置">3.2、 调整配置</h3>
+
+<pre><code>vim ceph.conf
+[global]
+fsid = 784988ea-26d5-4548-a5ac-72ddc683bdd3
+mon_initial_members = ceph-mon2, ceph-mon3, ceph-mon4
+mon_host = 10.8.75.21,10.8.75.22,10.8.75.23
+auth_cluster_required = cephx
+auth_service_required = cephx
+auth_client_required = cephx
+public_network = 10.8.75.0/24
+cluster_network = 10.8.76.0/24
+osd_pool_default_size = 3
+filestore_xattr_use_omap = true
+osd_pool_default_min_size = 1
+osd_pool_default_pg_num = 256
+osd_pool_default_pgp_num = 256
+</code></pre>
+
+<h3 id="3-3-安装-ceph">3.3、安装 Ceph</h3>
+
+<pre><code>ceph-deploy install --release mimic controller1 controller2 controller3 compute1 compute2 compute3 compute4 compute6 compute5 compute7 compute8 compute9 compute10
+等同于
+yum -y install epel-release
+rpm --import https://download.ceph.com/keys/release.asc
+rpm -Uvh --replacepkgs https://download.ceph.com/rpm-jewel/el7/noarch/ceph-release-1-0.el7.noarch
+yum -y install ceph ceph-radosgw
+下载一份rpm包
+yum -y install ceph ceph-radosgw --downloadonly --downloaddir=/var/cache/ceph
+安装rpm包前安装依赖包
+yum install -y psmisc python-requests  mailcap  python-backports-ssl_match_hostname
+</code></pre>
+
+<h3 id="3-4-配置初始-monitor-s-并收集所有密钥">3.4、配置初始 monitor(s)、并收集所有密钥：</h3>
+
+<pre><code>ceph-deploy mon create-initial
+[root@controller1 my-cluster]# ll
+total 104
+-rw------- 1 root root   113 Feb 14 16:59 ceph.bootstrap-mds.keyring
+-rw------- 1 root root   113 Feb 14 16:59 ceph.bootstrap-osd.keyring
+-rw------- 1 root root   113 Feb 14 16:59 ceph.bootstrap-rgw.keyring
+-rw------- 1 root root   129 Feb 14 16:59 ceph.client.admin.keyring
+-rw-r--r-- 1 root root   281 Feb 14 14:22 ceph.conf
+-rw-r--r-- 1 root root 78820 Feb 14 16:59 ceph-deploy-ceph.log
+-rw------- 1 root root    73 Feb 14 13:55 ceph.mon.keyring
+</code></pre>
+
+<h3 id="3-5-添加-monitors">3.5、添加 MONITORS</h3>
+
+<pre><code>Ceph 存储集群需要至少一个 Monitor 才能运行。为达到高可用，典型的 Ceph 存储集群会运行多个 Monitors，这样在单个 Monitor 失败时不会影响 Ceph 存储集群的可用性。Ceph 使用 PASOX 算法，此算法要求有多半 monitors（即 1 、 2:3 、 3:4 、 3:5 、 4:6 等 ）形成法定人数。
+新增两个监视器到 Ceph 集群。
+ceph-deploy mon add controller2
+ceph-deploy mon add  controller3
+新增 Monitor 后，Ceph 会自动开始同步并形成法定人数。你可以用下面的命令检查法定人数状态：
+ceph quorum_status --format json-pretty
+[root@controller1 my-cluster]# ceph -s
+    cluster 719c9704-c398-4726-9492-a5473a361fd7
+     health HEALTH_ERR
+            clock skew detected on mon.controller2, mon.controller3
+            64 pgs are stuck inactive for more than 300 seconds
+            64 pgs stuck inactive
+            no osds
+            Monitor clock skew detected
+
+[root@controller1 my-cluster]# ceph mon stat
+</code></pre>
+
+<h3 id="3-6-下发配置">3.6、下发配置</h3>
+
+<pre><code>用 ceph-deploy 把配置文件和 admin 密钥拷贝到管理节点和 Ceph 节点，这样你每次执行 Ceph 命令行时就无需指定 monitor 地址和ceph.client.admin.keyring 了
+ceph-deploy admin controller1 controller2 controller3 compute1 compute2 compute3 compute4 compute6 compute5 compute7 compute8 compute9 compute10
+
+或者ceph-deploy  --overwrite-conf controller1 controller2 controller3 compute1 compute2 compute3 compute4 compute6 compute5 compute7 compute8 compute9 compute10
+chmod +r /etc/ceph/ceph.client.admin.keyring
+</code></pre>
+
+<h3 id="3-7-部署管理器守护程序">3.7、部署管理器守护程序</h3>
+
+<pre><code>ceph-deploy mgr create controller1 controller2 controller3
+</code></pre>
+
+<h3 id="3-8-添加osd">3.8、添加osd</h3>
+
+<h4 id="3-8-1-方法1">3.8.1、方法1</h4>
+
+<pre><code>查看节点上可用磁盘
+ceph-deploy disk list compute1
+disk zap子命令会删除所有分区表和磁盘内容
+ceph-deploy disk zap compute1:vdb  
+准备osd
+ceph-deploy osd prepare  compute1:vdb
+激活osd
+ceph-deploy osd activate compute1:vdb
+</code></pre>
+
+<h4 id="3-8-2-方法2">3.8.2、方法2</h4>
+
+<pre><code>你可以用 create 命令一次完成准备 OSD 、部署到 OSD 节点、并激活它。 create 命令是依次执行 prepare 和 activate 命令的捷径。
+osd create 子命令首先会准备磁盘，默认使先使用xfs文件系统格盘，然后激活磁盘的第一二分区，分别作为数据分区和日志分区
+ceph-deploy osd create compute1:vdb
+</code></pre>
+
+<pre><code>ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute1
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute1
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute1
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute1
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute1
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute1
+
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute2
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute2
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute2
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute2
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute2
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute2
+
+
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute3
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute3
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute3
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute3
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute3
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute3
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute4
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute4
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute4
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute4
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute4
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute4
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute5
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute5
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute5
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute5
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute5
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute5
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute6
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute6
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute6
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute6
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute6
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute6
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute7
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute7
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute7
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute7
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute7
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute7
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute8
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute8
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute8
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute8
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute8
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute8
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute9
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute9
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute9
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute9
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute9
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute9
+
+ceph-deploy osd create --data /dev/sdc --journal /dev/sdb1 compute10
+ceph-deploy osd create --data /dev/sdd --journal /dev/sdb2 compute10
+ceph-deploy osd create --data /dev/sde --journal /dev/sdb3 compute10
+ceph-deploy osd create --data /dev/sdf --journal /dev/sdb5 compute10
+ceph-deploy osd create --data /dev/sdg --journal /dev/sdb6 compute10
+ceph-deploy osd create --data /dev/sdh --journal /dev/sdb7 compute10
+
+查看OSD的crush map
+[root@controller1 my-cluster]# ceph osd tree
+
+查看osd状态，例如：
+[root@controller1 my-cluster]# systemctl status ceph-osd@0
+
+查看mon状态
+[root@controller1 my-cluster]# systemctl status ceph-mon@ceph-1
+
+查看状态
+[root@controller1 ceph-cluster]# ceph -s
+</code></pre>
+
+<h3 id="3-9-调整pg数">3.9、调整pg数</h3>
+
+<pre><code>[root@controller1 ceph-cluster]# ceph osd pool set rbd pg_num 256
+set pool 0 pg_num to 256
+[root@controller1 ceph-cluster]# ceph osd pool set rbd pgp_num 256
+set pool 0 pgp_num to 256
+[root@controller1 ceph-cluster]# ceph health
+HEALTH_OK
+[root@controller1 ceph-cluster]# ceph -s
+
+查看osd map
+[root@controller1 ceph-cluster]#ceph osd tree
+[root@controller1 ceph-cluster]#ceph osd df tree
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/ceph/install/" data-title="Ceph部署" data-url="https://SomethingCM.github.io/ceph/install/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

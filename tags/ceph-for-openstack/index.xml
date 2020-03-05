@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>ceph for openstack on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/ceph-for-openstack/</link>
+    <description>Recent content in ceph for openstack on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 13 Apr 2016 21:51:55 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/ceph-for-openstack/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Openstack存储之Ceph</title>
+      <link>https://SomethingCM.github.io/ceph/foropenstack/</link>
+      <pubDate>Wed, 13 Apr 2016 21:51:55 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/ceph/foropenstack/</guid>
+      <description>1、创建池 默认情况下，Ceph块设备使用该rbd池。您可以使用任何可用的池。我们建议为Cinder创建一个池，为Glance创建一个池。确保您的Ceph集群正在运行，然后创建池 ceph osd pool create volumes ceph osd pool create images ceph osd pool create backups ceph osd pool create vms 新创建的池必须在使用之前进行初始化。使用该rbd工具初始化池： rbd pool init volumes rbd pool init images rbd pool init backups rbd pool init vms  2、配置OPENSTACK CEPH客户端 安装CEPH客户端软件包 在glance-api节点上，您将需要以下Python绑定librbd： yum install python-rbd 在nova-compute，cinder-backup和上cinder-volume节点，同时使用Python绑定和客户端的命令行工具： yum install ceph-common  3、设置CEPH客户端身份验证 为Nova / Cinder和Glance创建一个新用户。执行以下命令： ceph auth get-or-create client.glance mon &#39;profile rbd&#39; osd &#39;profile rbd pool=images&#39; ceph auth get-or-create client.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,1011 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="ELK学习安装">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>ELK学习安装 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/elk">elk</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/elk%E5%AD%A6%E4%B9%A0">ELK学习</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h2 id="1-介绍">1.介绍</h2>
+
+<pre><code>官网：https://www.elastic.co/guide/index.html
+ ELK 由ElasticSearch 、 Logstash 和 Kiabana 三个开源工具组成
+l   Elasticsearch 是个开源分布式搜索引擎，它的特点有：分布式，零配置，自动发现，索引自动分片，索引副本机制， restful 风格接口，多数据源，自动搜索负载等。
+l   Logstash 是一个完全开源的工具，他可以对你的日志进行收集、分析，并将其存储供以后使用（如，搜索）。
+l   kibana 也是一个开源和免费的工具，他 Kibana 可以为 Logstash 和ElasticSearch 提供的日志分析友好的 Web 界面，可以帮助您汇总、分析和搜索重要数据日志。
+
+工作原理如下如所示：
+</code></pre>
+
+<p><img src="/images/elk/01.png" alt="Alt text" /></p>
+
+<pre><code>在需要收集日志的所有服务上部署 logstash ，作为 logstash agent （ logstash shipper ）用于监控并过滤收集日志，将过滤后的内容发送到 logstash indexer ，logstash indexer 将日志收集在一起交给全文搜索服务 ElasticSearch ，可以用ElasticSearch 进行自定义搜索通过 Kibana 来结合自定义搜索进行页面展示。
+</code></pre>
+
+<h2 id="2-环境">2.环境</h2>
+
+<pre><code>两台centos7 iptables disabled  selinux disabled
+node1 10.0.0.10
+node2 10.0.0.11
+selinux disabled
+</code></pre>
+
+<h2 id="3-安装">3.安装</h2>
+
+<pre><code>安装java包（elasticsearch 需要java支持）
+yum install -y java
+
+elasticsearch安装：
+下载并安装GPG key
+ rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+添加yum仓库：
+vim /etc/yum.repos.d/elasticsearch.repo
+[elasticsearch-2.x]
+name=Elasticsearch repository for 2.x packages
+baseurl=http://packages.elastic.co/elasticsearch/2.x/centos
+gpgcheck=1
+gpgkey=http://packages.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+
+安装elasticsearch：
+ yum install -y elasticsearch
+
+logstash安装：
+下载并安装GPG key：
+rpm --import https://packages.elastic.co/GPG-KEY-elasticsearch
+添加yum仓库：
+vim /etc/yum.repos.d/logstash.repo
+[logstash-2.1]
+name=Logstash repository for 2.1.x packages
+baseurl=http://packages.elastic.co/logstash/2.1/centos
+gpgcheck=1
+gpgkey=http://packages.elastic.co/GPG-KEY-elasticsearch
+enabled=1
+安装logstash：
+yum install -y logstash
+
+安装kibana
+cd /usr/local/src
+wget https://download.elastic.co/kibana/kibana/kibana-4.3.1-linux-x64.tar.gz
+tar zxf kibana-4.3.1-linux-x64.tar.gz
+mv kibana-4.3.1-linux-x64 /usr/local/
+ ln -s /usr/local/kibana-4.3.1-linux-x64/ /usr/local/kibana
+
+yum install -y epel-release
+安装Redis
+yum install -y redis
+
+安装Nginx
+yum install -y nginx
+</code></pre>
+
+<h2 id="4-配置">4.配置</h2>
+
+<h4 id="4-1配置elasticsearch">4.1配置elasticsearch</h4>
+
+<pre><code>[root@node1 ~] # grep '^[a-z]' /etc/elasticsearch/elasticsearch.yml
+cluster.name: linux-log
+node.name: node-1
+path.data: /data/es-data
+path.logs: /var/log/elasticsearch
+bootstrap.mlockall: true
+network.host: 0.0.0.0
+http.port: 9200
+
+[root@node1 ~]# mkdir -p /data/es-data
+[root@node1 ~]# chown elasticsearch.elasticsearch /data/es-data/
+[root@node1 ~]# systemctl start elasticsearch
+[root@node1 ~]# systemctl status elasticsearch
+● elasticsearch.service - Elasticsearch
+   Loaded: loaded (/usr/lib/systemd/system/elasticsearch.service; disabled; vendor preset: disabled)
+   Active: active (running) since Sun 2016-01-17 10:03:23 CST; 3s ago
+</code></pre>
+
+<p><img src="/images/elk/02.png" alt="Alt text" /></p>
+
+<pre><code>查看当前索引和分片情况，稍后会有插件展示
+[root@node1 ~] # curl -i -XGET 'http://192.168.56.11:9200/_count?pretty' -d '{
+&quot;query&quot; {
+&quot;match_all&quot;: {}
+}
+}'
+HTTP/1.1 200 OK
+Content-Type: application/json; charset=UTF-8
+Content-Length: 95
+{
+&quot;count&quot; : 0, 索引0个
+&quot;_shards&quot; :{ 分区0个
+&quot;total&quot; : 0,
+&quot;successful&quot; : 0, 成功0个
+&quot;failed&quot; : 0 失败0个
+}
+}
+
+安装插件和es进行交互
+[root@node1 ~] # /usr/share/elasticsearch/bin/plugin install mobz/elasticsearch-head
+-&gt; Installing mobz/elasticsearch-head...
+Trying https://github.com/mobz/elasticsearch-head/archive/master.zip ...
+Downloading ...........................................................................................................................................................................................................................................................................................................................................................................DONE
+Verifying https://github.com/mobz/elasticsearch-head/archive/master.zip checksums if available ...
+NOTE: Unable to verify checksum for downloaded plugin (unable to find .sha1 or .md5 file to verify)
+Installed head into /usr/share/elasticsearch/plugins/head
+</code></pre>
+
+<p><img src="/images/elk/03.png" alt="Alt text" />
+<img src="/images/elk/04.png" alt="Alt text" /></p>
+
+<pre><code>配置node2 elasticsearch，配置成集群
+[root@node2 ~]# grep '^[a-z]' /etc/elasticsearch/elasticsearch.yml -n
+17:cluster.name: linux-log
+23:node.name: node-2
+33:path.data: /data/es-data
+37:path.logs: /var/log/elasticsearch
+43:bootstrap.mlockall: true
+54:network.host: 0.0.0.0
+58:http.port: 9200
+79:discovery.zen.ping.unicast.hosts: [&quot;10.0.0.10&quot;, &quot;10.0.0.11&quot;] # 使用单播模式(默认组播，但是不生效)
+97:discovery.zen.ping.multicast.enabled: false
+
+节点node1也需要修改
+
+[root@node2 ~]# mkdir -p /data/es-data
+[root@node2 ~]# chown elasticsearch.elasticsearch /data/es-data/
+[root@node2 ~]# systemctl start elasticsearch
+[root@node2 ~]# systemctl status elasticsearch
+● elasticsearch.service - Elasticsearch
+   Loaded: loaded (/usr/lib/systemd/system/elasticsearch.service; disabled; vendor preset: disabled)
+   Active: active (running) since Sun 2016-01-17 10:59:56 CST; 1s ago
+</code></pre>
+
+<p><img src="/images/elk/05.png" alt="Alt text" />
+    [root@node2 ~] # tail -f /var/log/elasticsearch/linux-log
+    会有报错
+<img src="/images/elk/06.png" alt="Alt text" /></p>
+
+<pre><code>[root@node2 ~] # vim /etc/security/limits.conf
+    # allow user 'elasticsearch' mlockall
+    elasticsearch soft memlock unlimited
+    elasticsearch hard memlock unlimited
+[root@node2 ~] # ulimit -HSn 65536
+或者
+[root@node2 ~] # vim /etc/sysctl.conf
+fs.file-max = 65536
+（重启）
+[root@node2 ~] # systemctl stop elasticsearch
+[root@node2 ~] # systemctl start elasticsearch
+
+同样node1也改（最好初始化时候做）
+[root@node1 ~] # vim /etc/security/limits.conf
+    # allow user 'elasticsearch' mlockall
+    elasticsearch soft memlock unlimited
+    elasticsearch hard memlock unlimited
+[root@node1 ~] # ulimit -HSn 65536
+或者
+[root@node1 ~] # vim /etc/sysctl.conf
+fs.file-max = 65536
+（重启）
+[root@node1 ~] # systemctl stop elasticsearch
+[root@node1 ~] # systemctl start elasticsearch
+
+
+使用kopf插件监控elasticsearch
+[root@node1 ~]# /usr/share/elasticsearch/bin/plugin install lmenezes/elasticsearch-kopf
+-&gt; Installing lmenezes/elasticsearch-kopf...
+Trying https://github.com/lmenezes/elasticsearch-kopf/archive/master.zip ...
+Downloading ..............................................................
+</code></pre>
+
+<p><img src="/images/elk/07.png" alt="Alt text" />
+    除此之外，kopf插件还提供了REST API 等，类似kopf插件的还有bigdesk，但是bigdesk目前还不支持2.1!！！安装bigdesk的方法如
+    1. /usr/share/elasticsearch/bin/plugin install lukas-vlcek/bigdesk</p>
+
+<h4 id="4-2配置logstarch">4.2配置logstarch</h4>
+
+<pre><code>启动一个logstash,-e：在命令行执行；input输入，stdin标准输入，是一个插件；output输出，stdout：标准输出
+
+[root@node1 ~]# /opt/logstash/bin/logstash -e 'input { stdin{} output {stdout{}}'
+Error: Expected one of #, =&gt; at line 1, column 31 (byte 31) after input { stdin{} output {stdout
+You may be interested in the '--configtest' flag which you can
+use to validate logstash's configuration before you choose
+to restart a running system.
+[root@node1 ~]# /opt/logstash/bin/logstash -e 'input { stdin{}} output {stdout{}}'
+Settings: Default filter workers: 1
+Logstash startup completed
+hello
+2016-01-23T17:24:21.893Z node1 hello
+
+使用rubudebug显示详细输出，codec为一种编解码器
+[root@node1 ~]# /opt/logstash/bin/logstash -e 'input { stdin{}} output {stdout{ codec =&gt; rubydebug}}'
+Settings: Default filter workers: 1
+Logstash startup completed
+hello
+{
+       &quot;message&quot; =&gt; &quot;hello&quot;,
+      &quot;@version&quot; =&gt; &quot;1&quot;,
+    &quot;@timestamp&quot; =&gt; &quot;2016-01-23T17:42:04.351Z&quot;,
+          &quot;host&quot; =&gt; &quot;node1&quot;
+}
+上述每一条输出的内容称为一个事件，多个相同的输出的内容合并到一起称为一个事件（举例：日志中连续相同的日志输出称为一个事件）！
+使用logstash将信息写入到elasticsearch
+[root@node1 ~]# /opt/logstash/bin/logstash -e 'input { stdin{}} output {elasticsearch {hosts =&gt; [&quot;10.0.0.10:9200&quot;] } stdout{ codec =&gt; rubydebug}}'
+Settings: Default filter workers: 1
+123123123
+Logstash startup completed
+{
+       &quot;message&quot; =&gt; &quot;123123123&quot;,
+      &quot;@version&quot; =&gt; &quot;1&quot;,
+    &quot;@timestamp&quot; =&gt; &quot;2016-01-23T18:13:24.419Z&quot;,
+          &quot;host&quot; =&gt; &quot;node1&quot;
+}
+在elasticsearch中查看logstash新加的索引
+</code></pre>
+
+<p><img src="/images/elk/08.jpg" alt="Alt text" /></p>
+
+<pre><code>logstash收集系统日志
+[root@node1 ~]# vim /etc/logstash/conf.d/file-logstash.conf
+input {
+    file {
+        path =&gt; &quot;/var/log/messages&quot;
+        type =&gt; &quot;system&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }   
+}
+
+output {
+    elasticsearch {
+        hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+        index =&gt; &quot;system-%{+YYYY.MM.dd}&quot;
+    }
+
+}
+
+[root@node1 ~]# /opt/logstash/bin/logstash -f /etc/logstash/conf.d/file-logstash.conf
+</code></pre>
+
+<p><img src="/images/elk/09.png" alt="Alt text" /></p>
+
+<pre><code>[root@node1 ~]# vim /etc/logstash/conf.d/file-logstash.conf
+input {
+    file {
+        path =&gt; &quot;/var/log/messages&quot;
+        type =&gt; &quot;system&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }
+   file {
+        path =&gt; &quot;/var/log/elasticsearch/linux-log.log&quot;
+        type =&gt; &quot;es-error&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }
+}
+
+output {
+    if [type] ==  &quot;system&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;system-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type] ==  &quot;es-error&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;es-error-%{+YYYY.MM.dd}&quot;
+        }
+    }
+}
+[root@node1 ~]# /opt/logstash/bin/logstash -f /etc/logstash/conf.d/file-logstash.conf
+</code></pre>
+
+<p><img src="/images/elk/10.jpg" alt="Alt text" /></p>
+
+<pre><code>[root@node1 ~]# vim /etc/logstash/conf.d/file-logstash.conf
+input {
+    file {
+        path =&gt; &quot;/var/log/messages&quot;
+        type =&gt; &quot;system&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }
+   file {
+        path =&gt; &quot;/var/log/elasticsearch/linux-log.log&quot;
+        type =&gt; &quot;es-error&quot;
+        start_position =&gt; &quot;beginning&quot;
+        codec =&gt; multiline{
+            pattern =&gt; &quot;^\[&quot;
+            negate =&gt; &quot;true&quot;
+            what =&gt; &quot;previous&quot;
+        }
+    }
+}       
+
+output {   
+    if [type] ==  &quot;system&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;system-%{+YYYY.MM.dd}&quot;
+        }   
+    }       
+    if [type] ==  &quot;es-error&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;es-error-%{+YYYY.MM.dd}&quot;
+        }
+    }
+}
+</code></pre>
+
+<h4 id="熟悉kibana">熟悉kibana</h4>
+
+<pre><code>[root@node1 ~]# grep '^[a-Z]' /usr/local/kibana/config/kibana.yml -n
+2:server.port: 5601  # 端口
+5:server.host: &quot;0.0.0.0&quot; #  对外服务的主机
+12:elasticsearch.url: &quot;http://10.0.0.10:9200&quot; #数据连接elasticsearch
+20:kibana.index: &quot;.kibana&quot;  #  在elasticsearch中添加.kibana索引
+[root@node1 ~]# screen
+
+[root@node1 ~]# /usr/local/kibana/bin/kibana
+  log   [04:46:42.322] [info][status][plugin:kibana] Status changed from uninitialized to green - Ready
+  log   [04:46:42.343] [info][status][plugin:elasticsearch] Status changed from uninitialized to yellow - Waiting for Elasticsearch
+  log   [04:46:42.354] [info][status][plugin:kbn_vislib_vis_types] Status changed from uninitialized to green - Ready
+  log   [04:46:42.361] [info][status][plugin:markdown_vis] Status changed from uninitialized to green - Ready
+  log   [04:46:42.366] [info][status][plugin:metric_vis] Status changed from uninitialized to green - Ready
+  log   [04:46:42.512] [info][status][plugin:spyModes] Status changed from uninitialized to green - Ready
+  log   [04:46:42.516] [info][status][plugin:statusPage] Status changed from uninitialized to green - Ready
+  log   [04:46:42.518] [info][status][plugin:table_vis] Status changed from uninitialized to green - Ready
+  log   [04:46:42.547] [info][listening] Server running at http://0.0.0.0:5601
+  log   [04:46:47.519] [info][status][plugin:elasticsearch] Status changed from yellow to yellow - No existing Kibana index found
+  log   [04:46:50.165] [info][status][plugin:elasticsearch] Status changed from yellow to green - Kibana index
+
+
+使用crtl +a+d退出screen
+[root@node1 ~]# screen -ls
+There is a screen on:
+    5430.pts-3.node1    (Detached)
+1 Socket in /var/run/screen/S-root.
+</code></pre>
+
+<p><img src="/images/elk/11.png" alt="Alt text" />
+<img src="/images/elk/12.png" alt="Alt text" />
+<img src="/images/elk/13.png" alt="Alt text" /></p>
+
+<pre><code>logstash 收集nginx日志
+在这里使用codec的json插件将日志的域进行分段，使用key-value的方式，使日志格式更清晰，易于搜索，还可以降低cpu的负载
+更改nginx的配置文件的日志格式，使用json
+[root@node1 ~]# vim /etc/nginx/nginx.conf
+http {
+    log_format  main  '$remote_addr - $remote_user [$time_local] &quot;$request&quot; '
+                      '$status $body_bytes_sent &quot;$http_referer&quot; '
+                      '&quot;$http_user_agent&quot; &quot;$http_x_forwarded_for&quot;';
+    log_format json '{&quot;@timestamp&quot;:&quot;$time_iso8601&quot;,'
+               '&quot;@version&quot;:&quot;1&quot;,'
+               '&quot;client&quot;:&quot;$remote_addr&quot;,'
+               '&quot;url&quot;:&quot;$uri&quot;,'
+               '&quot;status&quot;:&quot;$status&quot;,'
+               '&quot;domain&quot;:&quot;$host&quot;,'
+               '&quot;host&quot;:&quot;$server_addr&quot;,'
+               '&quot;size&quot;:$body_bytes_sent,'
+               '&quot;responsetime&quot;:$request_time,'
+               '&quot;referer&quot;: &quot;$http_referer&quot;,'
+               '&quot;ua&quot;: &quot;$http_user_agent&quot;'
+               '}';
+    access_log   /var/log/nginx/access_json.log  json;
+    #access_log  /var/log/nginx/access.log  main;
+
+[root@node1 ~]# netstat -antlp|grep 80
+tcp        0      0 0.0.0.0:80              0.0.0.0:*               LISTEN      5567/nginx: master 
+tcp        0      0 10.0.0.10:54780         10.0.0.10:9200          TIME_WAIT   -                   
+tcp6       0      0 :::80                   :::*                    LISTEN      5567/nginx: master
+访问nginx生成一点日志
+</code></pre>
+
+<p><img src="/images/elk/14.png" alt="Alt text" /></p>
+
+<pre><code>[root@node1 ~]# tail -f /var/log/nginx/
+access_json.log  error.log       
+[root@node1 ~]# tail -f /var/log/nginx/access_json.log
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/poweredby.png&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;http://10.0.0.10/&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/index.html&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;-&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/nginx-logo.png&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;http://10.0.0.10/&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/poweredby.png&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;http://10.0.0.10/&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/index.html&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;-&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/nginx-logo.png&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;http://10.0.0.10/&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/poweredby.png&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;http://10.0.0.10/&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/index.html&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;-&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;}
+{&quot;@timestamp&quot;:&quot;2016-01-24T05:17:43+08:00&quot;,&quot;@version&quot;:&quot;1&quot;,&quot;client&quot;:&quot;10.0.0.1&quot;,&quot;url&quot;:&quot;/nginx-logo.png&quot;,&quot;status&quot;:&quot;304&quot;,&quot;domain&quot;:&quot;10.0.0.10&quot;,&quot;host&quot;:&quot;10.0.0.10&quot;,&quot;size&quot;:0,&quot;responsetime&quot;:0.000,&quot;referer&quot;: &quot;http://10.0.0.10/&quot;,&quot;ua&quot;: &quot;Mozilla/5.0 (Windows NT 6.3; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/47.0.2526.106 Safari/537.36&quot;} 
+
+
+[root@node1 ~]# vim /etc/logstash/conf.d/file-logstash.conf
+input {
+    file {
+        path =&gt; &quot;/var/log/messages&quot;
+        type =&gt; &quot;system&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }
+        type =&gt; &quot;system&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }
+   file {
+        path =&gt; &quot;/var/log/elasticsearch/linux-log.log&quot;
+        type =&gt; &quot;es-error&quot;
+        start_position =&gt; &quot;beginning&quot;
+        codec =&gt; multiline{
+            pattern =&gt; &quot;^\[&quot;
+            negate =&gt; &quot;true&quot;
+            what =&gt; &quot;previous&quot;
+        }
+    }
+    file {
+        path =&gt; &quot;/var/log/nginx/access_json.log&quot;
+        type =&gt; &quot;nginx-log&quot;
+        codec =&gt; json
+        start_position =&gt; &quot;beginning&quot;
+    }
+}
+
+output {
+    if [type] ==  &quot;system&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;system-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type] ==  &quot;es-error&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;es-error-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type]  == &quot;nginx-log&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;nginx-log-%{+YYYY.MM.dd}&quot;
+        }
+    }
+}
+
+[root@node1 ~]# /opt/logstash/bin/logstash -f /etc/logstash/conf.d/file-logstash.conf
+</code></pre>
+
+<p><img src="/images/elk/15.png" alt="Alt text" />
+<img src="/images/elk/16.png" alt="Alt text" />
+<img src="/images/elk/17.png" alt="Alt text" />
+<img src="/images/elk/18.png" alt="Alt text" /></p>
+
+<pre><code>logstash 收集syslog日志
+[root@node1 ~]# vim /etc/logstash/conf.d/file-logstash.conf
+input {
+    file {
+        path =&gt; &quot;/var/log/messages&quot;
+        type =&gt; &quot;system&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }
+   file {
+        path =&gt; &quot;/var/log/elasticsearch/linux-log.log&quot;
+        type =&gt; &quot;es-error&quot;
+        start_position =&gt; &quot;beginning&quot;
+        codec =&gt; multiline{
+            pattern =&gt; &quot;^\[&quot;
+            negate =&gt; &quot;true&quot;
+            what =&gt; &quot;previous&quot;
+        }
+    }
+    file {
+        path =&gt; &quot;/var/log/nginx/access_json.log&quot;
+        type =&gt; &quot;nginx-log&quot;
+        codec =&gt; json
+        start_position =&gt; &quot;beginning&quot;
+    }
+    syslog {
+        type =&gt; &quot;system-syslog&quot;
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;514&quot;
+    }
+}
+
+output {
+    if [type] ==  &quot;system&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;system-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type] ==  &quot;es-error&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;es-error-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type]  == &quot;nginx-log&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;nginx-log-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type] == &quot;system-syslog&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;system-syslog-%{+YYYY.MM.dd}&quot;
+        }
+        }
+}
+[root@node1 ~]# vim /etc/rsyslog.conf 
+</code></pre>
+
+<p><img src="/images/elk/19.png" alt="Alt text" /></p>
+
+<pre><code>[root@node1 ~]# systemctl  status rsyslog
+[root@node1 ~]# /opt/logstash/bin/logstash -f /etc/logstash/conf.d/file-logstash.conf
+</code></pre>
+
+<p><img src="/images/elk/20.png" alt="Alt text" />
+<img src="/images/elk/21.png" alt="Alt text" />
+<img src="/images/elk/22.png" alt="Alt text" /></p>
+
+<pre><code>logstash 收集tcp日志
+[root@node1 ~]# vim /etc/logstash/conf.d/tcp.conf
+input{
+    tcp{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6666&quot;
+    }
+}
+output{
+    stdout{
+       codec =&gt; &quot;rubydebug&quot;
+    }
+
+}
+[root@node1 ~]# /opt/logstash/bin/logstash -f /etc/logstash/conf.d/tcp.conf
+[root@node1 ~]# echo &quot;haha&quot; | nc 10.0.0.10 6666
+</code></pre>
+
+<p><img src="/images/elk/23.png" alt="Alt text" /></p>
+
+<pre><code>[root@node1 ~]# echo &quot;hehe&quot; &gt; /dev/tcp/10.0.0.10/6666
+</code></pre>
+
+<p><img src="/images/elk/24.png" alt="Alt text" /></p>
+
+<h2 id="5-消息队列redis">5.消息队列redis</h2>
+
+<pre><code>[root@node1 ~]# vim /etc/redis.conf
+daemonize yes
+bind 10.0.0.10
+[root@node1 ~]# systemctl start redis
+[root@node1 ~]# netstat -lntup|grep 6379
+tcp        0      0 10.0.0.10:6379          0.0.0.0:*               LISTEN      6234/redis-server 1
+
+[root@node1 ~]# vim /etc/logstash/conf.d/redis.conf
+input {
+     stdin {
+
+    }
+}
+
+output {
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;demo&quot;
+    }
+}  
+
+
+[root@node1 ~]# /opt/logstash/bin/logstash -f /etc/logstash/conf.d/redis.conf
+Settings: Default filter workers: 1
+Logstash startup completed
+hello redis
+
+
+
+[root@node1 ~]# redis-cli  -h 10.0.0.10
+
+10.0.0.10:6379&gt; info
+# Server
+redis_version:2.8.19
+redis_git_sha1:00000000
+redis_git_dirty:0
+redis_build_id:c0359e7aa3798aa2
+redis_mode:standalone
+os:Linux 3.10.0-229.el7.x86_64 x86_64
+arch_bits:64
+multiplexing_api:epoll
+gcc_version:4.8.3
+process_id:6234
+run_id:123fc3afb24e64970a057172f54c37ddff37d622
+tcp_port:6379
+uptime_in_seconds:228
+uptime_in_days:0
+hz:10
+lru_clock:10752486
+config_file:/etc/redis.conf
+
+# Clients
+connected_clients:2
+client_longest_output_list:0
+client_biggest_input_buf:0
+blocked_clients:0
+
+# Memory
+used_memory:832048
+used_memory_human:812.55K
+used_memory_rss:5853184
+used_memory_peak:832048
+used_memory_peak_human:812.55K
+used_memory_lua:35840
+mem_fragmentation_ratio:7.03
+mem_allocator:jemalloc-3.6.0
+
+# Persistence
+loading:0
+rdb_changes_since_last_save:1
+rdb_bgsave_in_progress:0
+rdb_last_save_time:1453592834
+rdb_last_bgsave_status:ok
+rdb_last_bgsave_time_sec:-1
+rdb_current_bgsave_time_sec:-1
+aof_enabled:0
+aof_rewrite_in_progress:0
+aof_rewrite_scheduled:0
+aof_last_rewrite_time_sec:-1
+aof_current_rewrite_time_sec:-1
+aof_last_bgrewrite_status:ok
+aof_last_write_status:ok
+
+# Stats
+total_connections_received:2
+total_commands_processed:3
+instantaneous_ops_per_sec:0
+total_net_input_bytes:178
+total_net_output_bytes:1862
+instantaneous_input_kbps:0.00
+instantaneous_output_kbps:0.00
+rejected_connections:0
+sync_full:0
+sync_partial_ok:0
+sync_partial_err:0
+expired_keys:0
+evicted_keys:0
+keyspace_hits:0
+keyspace_misses:0
+pubsub_channels:0
+pubsub_patterns:0
+latest_fork_usec:0
+
+# Replication
+role:master
+connected_slaves:0
+master_repl_offset:0
+repl_backlog_active:0
+repl_backlog_size:1048576
+repl_backlog_first_byte_offset:0
+repl_backlog_histlen:0
+
+# CPU
+used_cpu_sys:0.26
+used_cpu_user:0.00
+used_cpu_sys_children:0.00
+used_cpu_user_children:0.00
+
+# Keyspace
+db6:keys=1,expires=0,avg_ttl=0
+10.0.0.10:6379&gt; select 6
+OK
+10.0.0.10:6379[6]&gt; KEYS *
+1) &quot;demo&quot;
+10.0.0.10:6379&gt; select 6
+OK
+10.0.0.10:6379[6]&gt; KEYS *
+1) &quot;demo&quot;
+10.0.0.10:6379[6]&gt; LINDEX demo -1
+&quot;{\&quot;message\&quot;:\&quot;hello redis\&quot;,\&quot;@version\&quot;:\&quot;1\&quot;,\&quot;@timestamp\&quot;:\&quot;2016-01-23T23:50:57.092Z\&quot;,\&quot;host\&quot;:\&quot;node1\&quot;}&quot;
+10.0.0.10:6379[6]&gt;
+
+编写shipper.conf作为redis收集logstash配置文件
+node1模拟收集日志写入redis
+[root@node1 ~]# cat /etc/logstash/conf.d/shipper.conf
+input {
+    file {
+        path =&gt; &quot;/var/log/messages&quot;
+        type =&gt; &quot;system&quot;
+        start_position =&gt; &quot;beginning&quot;
+    }
+   file {
+        path =&gt; &quot;/var/log/elasticsearch/linux-log.log&quot;
+        type =&gt; &quot;es-error&quot;
+        start_position =&gt; &quot;beginning&quot;
+        codec =&gt; multiline{
+            pattern =&gt; &quot;^\[&quot;
+            negate =&gt; &quot;true&quot;
+            what =&gt; &quot;previous&quot;
+        }
+    }
+    file {
+        path =&gt; &quot;/var/log/nginx/access_json.log&quot;
+        type =&gt; &quot;nginx-log&quot;
+        codec =&gt; json
+        start_position =&gt; &quot;beginning&quot;
+    }
+    syslog {
+        type =&gt; &quot;system-syslog&quot;
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;514&quot;
+    }
+}
+
+output {
+    if [type] ==  &quot;system&quot;{
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;system&quot;
+    }
+    }
+    if [type] ==  &quot;es-error&quot;{
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;es-error&quot;
+        }
+    }
+    if [type]  == &quot;nginx-log&quot;{
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;ngonx-log&quot;
+    }
+    }
+    if [type] == &quot;system-syslog&quot;{
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;system-syslog&quot;
+    }
+        }
+
+}
+[root@node1 ~]# /opt/logstash/bin/logstash -f /etc/logstash/conf.d/shipper.conf
+[root@node1 ~]# redis-cli  -h 10.0.0.10
+10.0.0.10:6379&gt; select 6
+OK
+10.0.0.10:6379[6]&gt; KEYS *
+1) &quot;redis&quot;
+2) &quot;ngonx-log&quot;
+3) &quot;es-error&quot;
+10.0.0.10:6379[6]&gt;
+
+node2模拟congredis读数据往es写数据
+
+[root@node2 ~]# cat /etc/logstash/conf.d/indexer.conf
+input {
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;system&quot;
+    type =&gt; &quot;system&quot;
+    }
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;es-error&quot;
+    type =&gt; &quot;es-error&quot;
+        }
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;ngonx-log&quot;
+        type =&gt; &quot;ngonx-log&quot;
+    }
+    redis{
+        host =&gt; &quot;10.0.0.10&quot;
+        port =&gt; &quot;6379&quot;
+        db =&gt; &quot;6&quot;
+        data_type =&gt; &quot;list&quot;
+        key =&gt; &quot;system-syslog&quot;
+        type =&gt; &quot;system-syslog&quot;
+    }
+}
+
+output {
+    if [type] ==  &quot;system&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;system-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type] ==  &quot;es-error&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;es-error-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type]  == &quot;nginx-log&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;nginx-log-%{+YYYY.MM.dd}&quot;
+        }
+    }
+    if [type] == &quot;system-syslog&quot;{
+        elasticsearch {
+            hosts =&gt; [&quot;10.0.0.10:9200&quot;]
+            index =&gt; &quot;system-syslog-%{+YYYY.MM.dd}&quot;
+        }
+        }
+
+}
+[root@node2 ~]#  /opt/logstash/bin/logstash -f /etc/logstash/conf.d/indexer.conf
+</code></pre>
+
+<h2 id="生产如何上线elk">生产如何上线ELK。</h2>
+
+<pre><code>日志分类系统日志  rsyslog   logstash syslog插件
+访问日志  nginx     logstash  codec json
+错误日志  file      logstash file+ mulitline
+运行日志  file      logstash codec json
+设备日志  syslog    logstash syslog插件
+debug日志 file      logstash json or mulitline
+
+ 日志标准化 
+ 1路径固定标准化
+ 2格式尽量使用json
+
+日志收集步骤
+系统日志开始-&gt;错误日志-&gt;运行日志-&gt;访问日志
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/elk/" data-title="ELK学习安装" data-url="https://SomethingCM.github.io/target/elk/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

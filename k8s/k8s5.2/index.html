@@ -1,0 +1,409 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="K8s 二进制部署5.2（master节点部署kube-controller-manager）">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>K8s 二进制部署5.2（master节点部署kube-controller-manager） &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2kube-controller-manager">master节点部署kube-controller-manager</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%83%A8%E7%BD%B2">二进制部署</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<hr />
+
+<h3 id="1-创建-kube-controller-manager-证书和私钥">1、创建 kube-controller-manager 证书和私钥</h3>
+
+<pre><code>该集群包含 3 个节点，启动后将通过竞争选举机制产生一个 leader 节点，其它节点为阻塞状态。当 leader 节点不可用时，阻塞的节点将再次进行选举产生新的 leader 节点，从而保证服务的可用性。
+为保证通信安全，本文档先生成 x509 证书和私钥，kube-controller-manager 在如下两种情况下使用该证书：
+1. 与 kube-apiserver 的安全端口通信;
+2. 在安全端口(https，10252) 输出 prometheus 格式的 metrics；
+
+创建证书签名请求：
+cat &gt; kube-controller-manager-csr.json &lt;&lt;EOF
+{
+    &quot;CN&quot;: &quot;system:kube-controller-manager&quot;,
+    &quot;key&quot;: {
+        &quot;algo&quot;: &quot;rsa&quot;,
+        &quot;size&quot;: 2048
+    },
+    &quot;hosts&quot;: [
+      &quot;127.0.0.1&quot;,
+      &quot;10.200.46.44&quot;,
+      &quot;10.200.46.39&quot;,
+      &quot;10.200.46.40&quot;,
+      &quot;10.200.46.41&quot;
+    ],
+    &quot;names&quot;: [
+      {
+        &quot;C&quot;: &quot;CN&quot;,
+        &quot;ST&quot;: &quot;BeiJing&quot;,
+        &quot;L&quot;: &quot;BeiJing&quot;,
+        &quot;O&quot;: &quot;system:kube-controller-manager&quot;,
+        &quot;OU&quot;: &quot;System&quot;
+      }
+    ]
+}
+EOF
+# hosts 列表包含所有 kube-controller-manager 节点 IP；
+# CN 和 O 均为 system:kube-controller-manager，kubernetes 内置的 ClusterRoleBindings system:kube-controller-manager 赋予 kube-controller-manager 工作所需的权限。
+
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem  -config=ca-config.json -profile=kubernetes kube-controller-manager-csr.json | cfssljson -bare kube-controller-manager
+cp kube-controller-manager*.pem /etc/kubernetes/pki/  
+scp kube-controller-manager*.pem  10.200.46.40:/etc/kubernetes/pki/
+scp kube-controller-manager*.pem  10.200.46.41:/etc/kubernetes/pki/
+</code></pre>
+
+<h2 id="2-创建和分发-kubeconfig-文件">2、创建和分发 kubeconfig 文件</h2>
+
+<pre><code>kube-controller-manager 使用 kubeconfig 文件访问 apiserver，该文件提供了 apiserver 地址、嵌入的 CA 证书和 kube-controller-manager 证书：
+
+kubectl config set-cluster kubernetes \
+  --certificate-authority=/etc/kubernetes/pki/ca.pem \
+  --embed-certs=true \
+  --server=https://10.200.46.44:6443 \
+  --kubeconfig=kube-controller-manager.kubeconfig
+kubectl config set-credentials system:kube-controller-manager \
+  --client-certificate=/etc/kubernetes/pki/kube-controller-manager.pem \
+  --client-key=/etc/kubernetes/pki/kube-controller-manager-key.pem \
+  --embed-certs=true \
+  --kubeconfig=kube-controller-manager.kubeconfig
+kubectl config set-context system:kube-controller-manager \
+  --cluster=kubernetes \
+  --user=system:kube-controller-manager \
+  --kubeconfig=kube-controller-manager.kubeconfig
+kubectl config use-context system:kube-controller-manager --kubeconfig=kube-controller-manager.kubeconfig
+
+分发 kubeconfig 到所有 master 节点：
+cp kube-controller-manager.kubeconfig  /etc/kubernetes/
+scp kube-controller-manager.kubeconfig   10.200.46.40:/etc/kubernetes/
+scp kube-controller-manager.kubeconfig   10.200.46.41:/etc/kubernetes/
+</code></pre>
+
+<h2 id="3-创建-kube-controller-manager-systemd-unit">3、创建 kube-controller-manager systemd unit</h2>
+
+<pre><code>创建 kube-controller-manager systemd unit
+mkdir -p /var/log/kubernetes/kube-controller/
+注意不同节点ip
+节点39:
+export NODE_IP=10.200.46.39
+节点40:
+export NODE_IP=10.200.46.40
+节点41:
+export NODE_IP=10.200.46.41
+cat &gt; /etc/systemd/system/kube-controller-manager.service &lt;&lt;EOF
+[Unit]
+Description=Kubernetes Controller Manager
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+[Service]
+ExecStart=/usr/bin/kube-controller-manager \\
+  --profiling \\
+  --cluster-name=kubernetes \\
+  --controllers=*,bootstrapsigner,tokencleaner \\
+  --kube-api-qps=1000 \\
+  --kube-api-burst=2000 \\
+  --leader-elect \\
+  --use-service-account-credentials\\
+  --concurrent-service-syncs=2 \\
+  --bind-address=${NODE_IP} \\
+  --secure-port=10252 \\
+  --tls-cert-file=/etc/kubernetes/pki/kube-controller-manager.pem \\
+  --tls-private-key-file=/etc/kubernetes/pki/kube-controller-manager-key.pem \\
+  --port=0 \\
+  --authentication-kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig \\
+  --client-ca-file=/etc/kubernetes/pki/ca.pem \\
+  --requestheader-allowed-names=&quot;&quot; \\
+  --requestheader-client-ca-file=/etc/kubernetes/pki/ca.pem \\
+  --requestheader-extra-headers-prefix=&quot;X-Remote-Extra-&quot; \\
+  --requestheader-group-headers=X-Remote-Group \\
+  --requestheader-username-headers=X-Remote-User \\
+  --authorization-kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig \\
+  --cluster-signing-cert-file=/etc/kubernetes/pki/ca.pem \\
+  --cluster-signing-key-file=/etc/kubernetes/pki/ca-key.pem \\
+  --experimental-cluster-signing-duration=876000h \\
+  --horizontal-pod-autoscaler-sync-period=10s \\
+  --concurrent-deployment-syncs=10 \\
+  --concurrent-gc-syncs=30 \\
+  --node-cidr-mask-size=24 \\
+  --service-cluster-ip-range=10.68.0.0/16 \\
+  --pod-eviction-timeout=6m \\
+  --terminated-pod-gc-threshold=10000 \\
+  --root-ca-file=/etc/kubernetes/pki/ca.pem \\
+  --service-account-private-key-file=/etc/kubernetes/pki/ca-key.pem \\
+  --kubeconfig=/etc/kubernetes/kube-controller-manager.kubeconfig \\
+  --logtostderr=false \\
+  --log-dir=/var/log/kubernetes/kube-controller \\
+  --v=2
+Restart=on-failure
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
+EOF
+# --port=0：关闭监听非安全端口（http），同时 --address 参数无效，--bind-address 参数有效；
+# --secure-port=10252、--bind-address=0.0.0.0: 在所有网络接口监听 10252 端口的 https /metrics 请求；
+# --kubeconfig：指定 kubeconfig 文件路径，kube-controller-manager 使用它连接和验证 kube-apiserver；
+# --authentication-kubeconfig 和 --authorization-kubeconfig：kube-controller-manager 使用它连接 apiserver，对 client 的请求进行认证和授权。kube-controller-manager 不再使用 --tls-ca-file 对请求 https metrics 的 Client 证书进行校验。如果没有配置这两个 kubeconfig 参数，则 client 连接 kube-controller-manager https 端口的请求会被拒绝(提示权限不足)。
+# --cluster-signing-*-file：签名 TLS Bootstrap 创建的证书；
+# --experimental-cluster-signing-duration：指定 TLS Bootstrap 证书的有效期；
+# --root-ca-file：放置到容器 ServiceAccount 中的 CA 证书，用来对 kube-apiserver 的证书进行校验；
+# --service-account-private-key-file：签名 ServiceAccount 中 Token 的私钥文件，必须和 kube-apiserver 的 --service-account-key-file 指定的公钥文件配对使用；
+# --service-cluster-ip-range ：指定 Service Cluster IP 网段，必须和 kube-apiserver 中的同名参数一致；
+# --leader-elect=true：集群运行模式，启用选举功能；被选为 leader 的节点负责处理工作，其它节点为阻塞状态；
+# --controllers=*,bootstrapsigner,tokencleaner：启用的控制器列表，tokencleaner 用于自动清理过期的 Bootstrap token；
+# --horizontal-pod-autoscaler-*：custom metrics 相关参数，支持 autoscaling/v2alpha1；
+# --tls-cert-file、--tls-private-key-file：使用 https 输出 metrics 时使用的 Server 证书和秘钥；
+# --use-service-account-credentials=true: kube-controller-manager 中各 controller 使用 serviceaccount 访问 kube-apiserver；
+
+systemctl daemon-reload &amp;&amp; systemctl enable kube-controller-manager &amp;&amp; systemctl restart kube-controller-manager
+</code></pre>
+
+<h2 id="4-检查服务运行状态">4、检查服务运行状态</h2>
+
+<pre><code>systemctl status kube-controller-manager|grep Active
+确保状态为 active (running)，否则查看日志，确认原因：
+tail -f /var/log/kubernetes/kube-controller
+kube-controller-manager 监听 10252 端口，接收 https 请求：
+[root@k8s-1 cert]# netstat -lnpt | grep kube-cont
+tcp        0      0 10.200.46.39:10252      0.0.0.0:*               LISTEN      13863/kube-controll
+
+查看输出的 metrics
+[root@k8s-1 cert]# curl -s --cacert /etc/kubernetes/pki/ca.pem --cert /etc/kubernetes/pki/admin.pem --key /etc/kubernetes/pki/admin-key.pem https://10.200.46.39:10252/metrics |head
+# HELP ClusterRoleAggregator_adds (Deprecated) Total number of adds handled by workqueue: ClusterRoleAggregator
+# TYPE ClusterRoleAggregator_adds counter
+ClusterRoleAggregator_adds 16
+# HELP ClusterRoleAggregator_depth (Deprecated) Current depth of workqueue: ClusterRoleAggregator
+# TYPE ClusterRoleAggregator_depth gauge
+ClusterRoleAggregator_depth 0
+# HELP ClusterRoleAggregator_longest_running_processor_microseconds (Deprecated) How many microseconds has the longest running processor for ClusterRoleAggregator been running.
+# TYPE ClusterRoleAggregator_longest_running_processor_microseconds gauge
+ClusterRoleAggregator_longest_running_processor_microseconds 0
+# HELP ClusterRoleAggregator_queue_latency (Deprecated) How long an item stays in workqueueClusterRoleAggregator before being requested.
+
+kube-controller-manager 的权限
+ClusteRole system:kube-controller-manager 的权限很小，只能创建 secret、serviceaccount 等资源对象，各 controller 的权限分散到 ClusterRole system:controller:XXX 中：
+[root@k8s-1 cert]# kubectl describe clusterrole system:kube-controller-manager
+Name:         system:kube-controller-manager
+Labels:       kubernetes.io/bootstrapping=rbac-defaults
+Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+PolicyRule:
+  Resources                                  Non-Resource URLs  Resource Names  Verbs
+  ---------                                  -----------------  --------------  -----
+  secrets                                    []                 []              [create delete get update]
+  endpoints                                  []                 []              [create get update]
+  serviceaccounts                            []                 []              [create get update]
+  events                                     []                 []              [create patch update]
+  serviceaccounts/token                      []                 []              [create]
+  tokenreviews.authentication.k8s.io         []                 []              [create]
+  subjectaccessreviews.authorization.k8s.io  []                 []              [create]
+  configmaps                                 []                 []              [get]
+  namespaces                                 []                 []              [get]
+  *.*                                        []                 []              [list watch]
+需要在 kube-controller-manager 的启动参数中添加 --use-service-account-credentials=true 参数，这样 main controller 会为各 controller 创建对应的 ServiceAccount XXX-controller。内置的 ClusterRoleBinding system:controller:XXX 将赋予各 XXX-controller ServiceAccount 对应的 ClusterRole system:controller:XXX 权限。
+
+[root@k8s-1 cert]#  kubectl get clusterrole|grep controller
+system:controller:attachdetach-controller                              61m
+system:controller:certificate-controller                               61m
+system:controller:clusterrole-aggregation-controller                   61m
+system:controller:cronjob-controller                                   61m
+system:controller:daemon-set-controller                                61m
+system:controller:deployment-controller                                61m
+system:controller:disruption-controller                                61m
+system:controller:endpoint-controller                                  61m
+system:controller:expand-controller                                    61m
+system:controller:generic-garbage-collector                            61m
+system:controller:horizontal-pod-autoscaler                            61m
+system:controller:job-controller                                       61m
+system:controller:namespace-controller                                 61m
+system:controller:node-controller                                      61m
+system:controller:persistent-volume-binder                             61m
+system:controller:pod-garbage-collector                                61m
+system:controller:pv-protection-controller                             61m
+system:controller:pvc-protection-controller                            61m
+system:controller:replicaset-controller                                61m
+system:controller:replication-controller                               61m
+system:controller:resourcequota-controller                             61m
+system:controller:route-controller                                     61m
+system:controller:service-account-controller                           61m
+system:controller:service-controller                                   61m
+system:controller:statefulset-controller                               61m
+system:controller:ttl-controller                                       61m
+system:kube-controller-manager                                         61m
+
+以 deployment controller 为例：
+[root@k8s-1 cert]# kubectl describe clusterrole system:controller:deployment-controller
+Name:         system:controller:deployment-controller
+Labels:       kubernetes.io/bootstrapping=rbac-defaults
+Annotations:  rbac.authorization.kubernetes.io/autoupdate: true
+PolicyRule:
+  Resources                          Non-Resource URLs  Resource Names  Verbs
+  ---------                          -----------------  --------------  -----
+  replicasets.apps                   []                 []              [create delete get list patch update watch]
+  replicasets.extensions             []                 []              [create delete get list patch update watch]
+  events                             []                 []              [create patch update]
+  pods                               []                 []              [get list update watch]
+  deployments.apps                   []                 []              [get list update watch]
+  deployments.extensions             []                 []              [get list update watch]
+  deployments.apps/finalizers        []                 []              [update]
+  deployments.apps/status            []                 []              [update]
+  deployments.extensions/finalizers  []                 []              [update]
+  deployments.extensions/status      []                 []              [update]
+
+查看当前的 leader
+[root@k8s-1 cert]# kubectl get endpoints kube-controller-manager --namespace=kube-system  -o yaml
+apiVersion: v1
+kind: Endpoints
+metadata:
+  annotations:
+    control-plane.alpha.kubernetes.io/leader: '{&quot;holderIdentity&quot;:&quot;k8s-1.novalocal_b3d701af-55b0-4c9d-8e23-93fc85355171&quot;,&quot;leaseDurationSeconds&quot;:15,&quot;acquireTime&quot;:&quot;2019-09-22T14:44:02Z&quot;,&quot;renewTime&quot;:&quot;2019-09-22T14:52:16Z&quot;,&quot;leaderTransitions&quot;:0}'
+  creationTimestamp: &quot;2019-09-22T14:44:02Z&quot;
+  name: kube-controller-manager
+  namespace: kube-system
+  resourceVersion: &quot;1646&quot;
+  selfLink: /api/v1/namespaces/kube-system/endpoints/kube-controller-manager
+  uid: eace961c-229c-4c93-8333-895f54c31b41
+
+可见，当前的 leader 为 k8s-1
+测试 kube-controller-manager 集群的高可用
+停掉一个或两个节点的 kube-controller-manager 服务，观察其它节点的日志，看是否获取了 leader 权限。
+
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/k8s/k8s5.2/" data-title="K8s 二进制部署5.2（master节点部署kube-controller-manager）" data-url="https://SomethingCM.github.io/k8s/k8s5.2/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

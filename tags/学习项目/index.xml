@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>学习项目 on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/%E5%AD%A6%E4%B9%A0%E9%A1%B9%E7%9B%AE/</link>
+    <description>Recent content in 学习项目 on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 31 Dec 2015 13:25:08 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/%E5%AD%A6%E4%B9%A0%E9%A1%B9%E7%9B%AE/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>docker web化管理</title>
+      <link>https://SomethingCM.github.io/target/first/</link>
+      <pubDate>Thu, 31 Dec 2015 13:25:08 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/first/</guid>
+      <description>背景 目前很多公司都在使用docker，docker也是一种趋势，我们公司也在使用docker，所以我也跟着学习使用docker，根据基本需求，结合api做了一个web程序  1 实验环境 本次试验使用两台实体机做模拟docker集群，一台虚拟机做docker镜像服务器，一台虚拟机做web管理机 系统软件环境及版本： selinux disabled iptables -F 三台docker机器系统使用centos7.1，两台模拟机群docker机软件docker+pipework+openswitch+etcd+dhcp，docker镜像服务器跑了一个registry容器提供镜像服务 Web管理机使用ubuntu，python+django+uwsgi  、
+程序流程图 2原理 通过web界面创建删除容器和镜像，web服务器通过api操作三台docker机器，创建容器时通过dhcp获取ip，pipework给容器附上获取的ip，并把容器信息写入etcd库中，由于容器重启后ip消失，我通过监控脚本给启动没有ip的容器重新附上ip。容器支持ssh，有好处也有风险。 网络这块我是用交换机提供的网段，容器使用的ip和实体机在同一valn，你也可以一个集群使用一个valn，这里我是用同一valn。容器ip可以从交换机dhcp获取，不懂交换机，我直接用一台docker实体机起了dhcp服务，为该段提供dhcp服务。  3安装 3.1 docker集群节点 两台机器软件一样，我就以AB区别,软件基本一样，A多了一个dhcp，没有使用交换机提供dhcp  3.1.1安装openswitch： 如果后期不想在docker集群中划分vlan，可以使用系统自带的brctl命令创建桥接网卡，下面创建桥接网卡的脚本相应的变一下，ovs-vsctl改为brctl yum install gcc make python-devel openssl-devel kernel-devel graphviz kernel-debug-devel autoconf automake rpm-build redhat-rpm-config libtool wget http://openvswitch.org/releases/openvswitch-2.3.1.tar.gz tar zxvf openvswitch-2.3.1.tar.gz mkdir -p ~/rpmbuild/SOURCES cp openvswitch-2.3.1.tar.gz ~/rpmbuild/SOURCES/ sed &#39;s/openvswitch-kmod, //g&#39; openvswitch-2.3.1/rhel/openvswitch.spec &amp;gt; openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec rpmbuild -bb --without check openvswitch-2.3.1/rhel/openvswitch_no_kmod.spec #之后会在~/rpmbuild/RPMS/x86_64/里有2个文件 -rw-rw-r-- 1 ovswitch ovswitch 2013688 Jan 15 03:20 openvswitch-2.</description>
+    </item>
+    
+    <item>
+      <title>lnmp 源码安装</title>
+      <link>https://SomethingCM.github.io/target/lunp/</link>
+      <pubDate>Tue, 29 Apr 2014 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/lunp/</guid>
+      <description>安装环境 redhat6.0 itables disabled selinux disabled  1.安装MYAQL [root@localhost mysql]# ls mysql-5.6.10 mysql-5.6.10.tar.gz [root@localhost mysql]# cd mysql-5.6.10
+源码安装mysql（也可yum install） yum install -y gcc gcc-c++ make ncurses-devel bison openssl-devel zlib-devel cmake -y [root@localhost 5.6.10]# cmake -DCMAKE_INSTALL_PREFIX=/usr/local/lnmp/mysql -DMYSQL_DATADIR=/usr/local/lnmp/mysql/data -DMYSQL_UNIX_ADDR=/usr/local/lnmp/mysql/data/mysql.sock -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DENABLED_LOCAL_INFILE=1 -DWITH_READLINE=1 -DWITH_SSL=yes -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DEXTRA_CHARSETS=all -DMYSQL_TCP_PORT=3306 make &amp;amp;&amp;amp; make install cp support-files/my-medium.cnf /etc/my.cnf # 复制配置文件，注意修改配置文件中的目录 vi /etc/my.cnf # These are commonly set, remove the # and set as required.</description>
+    </item>
+    
+    <item>
+      <title>samba安装</title>
+      <link>https://SomethingCM.github.io/target/samba/</link>
+      <pubDate>Sun, 23 Mar 2014 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/samba/</guid>
+      <description>一. samba的安装: centos yum -y install samba samba-client samba-common systemctl start smb ubuntu sudo apt-get install samba // (sudo get temp root auth) sudo apt-get install smbfs  二. 创建共享目录: mkdir /home/john/share sudo chmod 777 /home/john/ share 说明：john为你的ubuntu的用户名；share你可以随便起个名字做为共享文件夹  三. 创建Samba配置文件： 1. 保存现有的配置文件 cp /etc/samba/smb.conf /etc/samba/smb.conf.bak 2.修改现配置文件 vim /etc/samba/smb.conf 在smb.conf最后添加 [share] path = /home/john/ share available = yes browseable = yes public = yes writable = yes valid users = myname create mask = 0700 directory mask =0700 force user =nobody force group = nogroup 说明：valid users = myname　这个myname是自己起的，后面在添加用户名时就是添加的这个； 另外这个[share]名字也是可以随便起的，这个是你在windows下访问时显示的名字； 在windows下 \\162.</description>
+    </item>
+    
+  </channel>
+</rss>

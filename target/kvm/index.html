@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="KVM学习笔记">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>KVM学习笔记 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/kvm">KVM</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/%E8%99%9A%E6%8B%9F%E5%8C%96%E5%AD%A6%E4%B9%A0">虚拟化学习</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h2 id="1-环境">1.环境</h2>
+
+<pre><code>我是在VMware下面做的实验
+一台centos7的虚拟机
+selinux disabled 
+iptables -F
+查询是否支持虚拟化
+inter的cpu：vmx 
+AMD的cpu：svm 
+[root@kvm-node1 ~]``# grep -E &quot;svm|vmx&quot; /proc/cpuinfo `
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave avx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust
+flags           : fpu vme de pse tsc msr pae mce cx8 apic sep mtrr pge mca cmov pat pse36 clflush dts mmx fxsr sse sse2 ss ht syscall nx rdtscp lm constant_tsc arch_perfmon pebs bts nopl xtopology tsc_reliable nonstop_tsc aperfmperf pni pclmulqdq vmx ssse3 cx16 pcid sse4_1 sse4_2 x2apic popcnt tsc_deadline_timer xsave a* vx hypervisor lahf_lm arat epb pln pts dtherm tpr_shadow vnmi ept vpid tsc_adjust`
+</code></pre>
+
+<h2 id="2-安装相关软件">2.安装相关软件</h2>
+
+<pre><code>yum install qemu-kvm qemu-kvm-tools virt-manager libvirt  virt-install  -y
+kvm: linux内核的一个模块，模块不需要安装，只需要加载 
+qemu：虚拟化软件，可以虚拟不同的CPU，支持异构（x86的架构可以虚拟化出不是x86架构的） 
+qemu-kvm：用户态管理kvm，网卡，声卡，PCI设备等都是qemu来管理的
+
+启动相关程序
+启动libvirtd
+systemctl status libvirtd
+systemctl  enable libvirtd
+systemctl start libvirtd
+
+[root@kvm-node1 ~]# ifconfig 
+eth0: flags=4163&lt;UP,BROADCAST,RUNNING,MULTICAST&gt;  mtu 1500
+        inet 10.0.0.11  netmask 255.255.255.0  broadcast 10.0.0.255
+        inet6 fe80::20c:29ff:fe04:c637  prefixlen 64  scopeid 0x20&lt;link&gt;
+        ether 00:0c:29:04:c6:37  txqueuelen 1000  (Ethernet)
+        RX packets 19120  bytes 21439457 (20.4 MiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 7001  bytes 759523 (741.7 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+lo: flags=73&lt;UP,LOOPBACK,RUNNING&gt;  mtu 65536
+        inet 127.0.0.1  netmask 255.0.0.0
+        inet6 ::1  prefixlen 128  scopeid 0x10&lt;host&gt;
+        loop  txqueuelen 0  (Local Loopback)
+        RX packets 12  bytes 1092 (1.0 KiB)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 12  bytes 1092 (1.0 KiB)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+
+virbr0: flags=4099&lt;UP,BROADCAST,MULTICAST&gt;  mtu 1500
+        inet 192.168.122.1  netmask 255.255.255.0  broadcast 192.168.122.255
+        ether 52:54:00:ea:c0:d3  txqueuelen 0  (Ethernet)
+        RX packets 0  bytes 0 (0.0 B)
+        RX errors 0  dropped 0  overruns 0  frame 0
+        TX packets 0  bytes 0 (0.0 B)
+        TX errors 0  dropped 0 overruns 0  carrier 0  collisions 0
+[root@kvm-node1 ~]# brctl show
+bridge name     bridge id          STP enabled     interfaces
+virbr0          8000.525400eac0d3     yes          virbr0-nic
+</code></pre>
+
+<h2 id="3-创建一个虚拟磁盘">3.创建一个虚拟磁盘</h2>
+
+<pre><code>创建一个镜像
+从虚拟光驱中把镜像拷下来，dd成一个镜像
+dd if=/dev/cdrom of=/opt/Centos-7.1.iso
+可以到/opt 下看看
+[root@kvm-node1 opt]# ls
+    Centos-7.1.iso  Centos7-x86_64.raw
+
+创建一个虚拟磁盘
+-f 指定格式，路径是/opt/Centos7-x86_64.raw，大小为10G
+[root@kvm-node1 ~]# qemu-img create -f raw  /opt/Centos7-x86_64.raw 10G
+</code></pre>
+
+<h2 id="4-创建虚拟机">4.创建虚拟机</h2>
+
+<pre><code>使用命令创建一台虚拟机 
+首先学virt-install命令,在这里使用–help查看，并且只学习重要的，其他的稍后会有提供 
+virt-install –help 
+-n（Name）:指定虚拟机的名称 
+–memory（–raw）：指定内存大小 
+–cpu：指定cpu的核数（默认为1） 
+–cdrom：指定镜像 
+–disk：指定磁盘路径（即上文创建的虚拟磁盘） 
+–virt-type：指定虚拟机类型（kvm，qemu，xen） 
+–network：指定网络类型
+
+创建虚拟机
+[root@kvm-node1 opt]# virt-install  --virt-type kvm --name Centos7-x_64 --ram 1024 --cdrom=/opt/Centos-7.1.iso --disk path=/opt/Centos7-x86_64.raw --network network=default --graphics vnc,listen=0.0.0.0 --noautoconsole
+ Starting install...
+ Creating domain...                                                                                                                |    0 B            00:00:00    
+ Domain installation still in progress. You can reconnect to
+ the console to complete the installation process.
+
+查看进程
+[root@kvm-node1 opt]# netstat -ntlp
+Active Internet connections (only servers)
+     Proto Recv-Q Send-Q Local Address           Foreign Address         State       PID/Program name   
+     tcp        0      0 0.0.0.0:5900            0.0.0.0:*               LISTEN      65261/qemu-kvm     
+     tcp        0      0 192.168.122.1:53        0.0.0.0:*               LISTEN      3218/dnsmasq       
+     tcp        0      0 0.0.0.0:22              0.0.0.0:*               LISTEN      44962/sshd         
+     tcp        0      0 127.0.0.1:25            0.0.0.0:*               LISTEN      2590/master        
+     tcp6       0      0 :::22                   :::*                    LISTEN      44962/sshd         
+     tcp6       0      0 ::1:25                  :::*                    LISTEN      2590/master 
+
+ tightvnc链接
+</code></pre>
+
+<p><img src="/images/cloud/kvm01.png" alt="Alt text" /></p>
+
+<pre><code>连接上开始安装
+</code></pre>
+
+<p><img src="/images/cloud/kvm02.png" alt="Alt text" /></p>
+
+<pre><code>剩下安装过程就和在实体机上一样
+</code></pre>
+
+<h2 id="5-管理虚拟机">5.管理虚拟机</h2>
+
+<pre><code>virsh --help 是libvirt  包中
+安装完后，用libvirt 提供的virsh命令启动
+
+生成kvm虚拟机：virt-install 
+查看在运行的虚拟机：virsh list 
+查看所有虚拟机：virsh list –all 
+查看kvm虚拟机配置文件：virsh dumpxml name 
+启动kvm虚拟机：virsh start name 
+正常关机：virsh shutdown name 
+非正常关机（相当于物理机直接拔掉电源）：virsh destroy name 
+删除：virsh undefine name（彻底删除，找不回来了，如果想找回来，需要备份/etc/libvirt/qemu的xml文件） 
+根据配置文件定义虚拟机：virsh define file-name.xml 
+挂起，终止：virsh suspend name 
+恢复挂起状态:virsh resumed name
+
+查看虚拟机
+[root@kvm-node1 opt]# virsh list --all
+Id    Name                           State
+----------------------------------------------------
+-     Centos7-x_64                   shut off
+[root@kvm-node1 opt]# virsh start Centos7-x_64 
+Domain Centos7-x_64 started
+
+vnc从新连接
+</code></pre>
+
+<p><img src="/images/cloud/kvm03.png" alt="Alt text" /></p>
+
+<pre><code>关闭虚拟机
+[root@kvm-node1 opt]# virsh shutdown Centos7-x_64
+</code></pre>
+
+<p><img src="/images/cloud/kvm04.png" alt="Alt text" /></p>
+
+<pre><code>文件位置
+[root@kvm-node1 opt]# cd /etc/libvirt/qemu/
+[root@kvm-node1 qemu]# ls
+Centos7-x_64.xml  networks
+xml文件
+</code></pre>
+
+<p><img src="/images/cloud/kvm05.png" alt="Alt text" /></p>
+
+<pre><code>如果过想手动改xml文件，使用命令
+virsh undefine /opt/Centos7-x_64.xml 
+virsh define /opt/Centos7-x_64.xml
+</code></pre>
+
+<h2 id="6-kvm网络">6.kvm网络</h2>
+
+<pre><code>kvm网路类型有三种
+默认nat （能上外网，但别人连不上虚拟机）
+桥接
+内部（大部分用不上）
+
+默认情况是NAT情况，但是在生产情况，使用更多的是桥接模式，更改虚拟机为网桥模式，原理图如下，网桥的基本原理就是创建一个桥接接口br0，在物理网卡和虚拟网络接口之间传递数据 
+</code></pre>
+
+<p><img src="/images/cloud/kvm06.png" alt="Alt text" /></p>
+
+<pre><code>[root@kvm-node1 ~]# brctl addbr br0
+[root@kvm-node1 ~]#brctl addif br0 eth0 &amp;&amp; ip addr del dev eth0 10.0.0.123/24 &amp;&amp; ifconfig br0 10.0.0.123/24 up &amp;&amp; route add default gw 10.0.0.2 
+[root@kvm-node1 ~]# virsh edit Centos7-x_64 
+&lt;interface type=&quot;bridge&quot;&gt; &lt;!--虚拟机网络连接方式--&gt;
+    &lt;source bridge=&quot;br0&quot; /&gt; &lt;!-- 当前主机网桥的名称--&gt;
+    &lt;mac address=&quot;00:16:e4:9a:b3:6a&quot; /&gt; &lt;!--为虚拟机分配mac地址，务必唯一，如果是dhcp获得同样ip,引起冲突--&gt;
+&lt;/interface&gt;
+[root@kvm-node1 ~]# virsh start  Centos7-x_64 
+
+重新连接
+</code></pre>
+
+<p><img src="/images/cloud/kvm08.png" alt="Alt text" /></p>
+
+<pre><code>配置ip，可以dhcp，也可以手动配置
+</code></pre>
+
+<p><img src="/images/cloud/kvm09.png" alt="Alt text" />
+<img src="/images/cloud/kvm10.png" alt="Alt text" /></p>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/kvm/" data-title="KVM学习笔记" data-url="https://SomethingCM.github.io/target/kvm/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

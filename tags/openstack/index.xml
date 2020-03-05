@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>“Openstack” on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/openstack/</link>
+    <description>Recent content in “Openstack” on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 18 Mar 2016 09:29:37 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/openstack/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Openstack项目架构</title>
+      <link>https://SomethingCM.github.io/openstack/structure/</link>
+      <pubDate>Fri, 18 Mar 2016 09:29:37 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/openstack/structure/</guid>
+      <description> 物理架构  还有一张图是ceph与计算节点分离的，其实也差不多，就没放上来了。 公司要节约经费，所以计算节点和存储节点放一起。如果你们经费足够还是建议分开放，因为计算节点虚拟机跑多了，多多少少会出问题，容易宕机，很不幸我有一部分机器有点不稳定，有几个计算节点老是宕机，来来回回换了好多东西，就差整机都换了（我那批机器是惠普380GEN9系列），还是建议买dell的机器，感觉比惠普靠谱点。 如果你的ceph节点足够多，一台或几台ceph节点宕机不影响整个集群，ceph节点可以和计算节点混合使用。 如果你考虑使用ceph和计算混用，你要注意计算节点要给ceph节点预留内存和cpu，一般一个osd节点给2G内存1core资源就可以了。 还有一个比较重要的是ceph网络最好使用万兆交换机，千兆交换机不出问题还好，ceph节点宕机数据同步是一件非常痛苦的事，想想如果一个ceph节点有10T数据需要同步，按理论最快速度同步，一天也别想同步完。  软件组成 </description>
+    </item>
+    
+  </channel>
+</rss>

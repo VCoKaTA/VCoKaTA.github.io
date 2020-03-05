@@ -1,0 +1,221 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="K8s Harbor镜像清理">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>K8s Harbor镜像清理 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/%E9%95%9C%E5%83%8F%E6%B8%85%E7%90%86">镜像清理</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%83%A8%E7%BD%B2">二进制部署</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                <hr />
+
+<pre><code>每个项目我只保留最近10个镜像
+
+cat harbor_del.py
+#! /usr/bin/env python
+# -*- coding:utf-8 -*-
+import json
+import requests
+from pprint import pprint
+url=&quot;xxx.xxx.xxx.7&quot;
+username=&quot;admin&quot;
+password=&quot;xxx&quot;
+def get_projects():
+  try:
+    r = requests.get(&quot;https://&quot;+url+&quot;/api/projects&quot;, auth=(username,password),headers={&quot;Content-Type&quot;: &quot;application/json&quot;}, verify=False)
+    return r.json()
+  except Exception as e:
+    print(str(e))
+def get_project_info(pro_id):
+  try:
+    r = requests.get(&quot;https://&quot;+url+&quot;/api/repositories&quot;, auth=(username,password),params={&quot;project_id&quot;:pro_id},headers={&quot;Content-Type&quot;: &quot;application/json&quot;}, verify=False)
+    return r.json()
+  except Exception as e:
+    print(str(e))
+def del_0_size_repos(repo_name):
+    del_reps=[]
+    r = requests.get(&quot;https://&quot;+url+&quot;/api/repositories/&quot;+repo_name+&quot;/tags&quot;, auth=(username,password),headers={&quot;Content-Type&quot;: &quot;application/json&quot;}, verify=False)
+    tags = r.json()
+    for i in tags:
+      if i['size'] == 0:
+        rr=requests.delete(&quot;https://&quot;+url+&quot;/api/repositories/&quot;+repo_name+&quot;/tags/&quot;+i['name'], auth=(username,password),headers={&quot;Content-Type&quot;: &quot;application/json&quot;}, verify=False)
+        del_reps.append(rr)
+    return del_reps
+def del_repos(repo_name):
+  try:
+    del_reps=[]
+    r = requests.get(&quot;https://&quot;+url+&quot;/api/repositories/&quot;+repo_name+&quot;/tags&quot;, auth=(username,password),headers={&quot;Content-Type&quot;: &quot;application/json&quot;}, verify=False)
+    tags = r.json()
+    tags_sort = sorted(tags, key=lambda a: a[&quot;created&quot;])
+    del_tags = tags_sort[0:len(tags_sort) -10]
+    if del_tags:
+      for i in del_tags:
+        rr=requests.delete(&quot;https://&quot;+url+&quot;/api/repositories/&quot;+repo_name+&quot;/tags/&quot;+i['name'], auth=(username,password),headers={&quot;Content-Type&quot;: &quot;application/json&quot;}, verify=False)
+        del_reps.append(rr)
+    return del_reps
+  except Exception as e:
+    print(str(e))
+if __name__ == &quot;__main__&quot;:
+  try:
+    proj=get_projects()
+    del_repos_name=[]
+    if proj:
+      for i in proj:
+        repos=get_project_info(i[&quot;project_id&quot;])
+        if repos:
+          for repo in repos:
+            if repo[&quot;tags_count&quot;]:
+              print del_0_size_repos(repo['name'])
+              if repo[&quot;tags_count&quot;] &gt; 10:
+                print repo['name'],repo[&quot;tags_count&quot;]
+                print del_repos(repo['name'])
+             #  break
+        print &quot;+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++&quot;
+    print del_repos_name
+  except Exception as e:
+    print(str(e))
+Cd harbor
+ docker-compose stop
+docker run -it --name gc --rm --volumes-from registry vmware/registry:2.6.2-photon garbage-collect  /etc/registry/config.yml
+docker-compose start
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/k8s/harbor2/" data-title="K8s Harbor镜像清理" data-url="https://SomethingCM.github.io/k8s/harbor2/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

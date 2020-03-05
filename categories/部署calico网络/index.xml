@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署calico网络 on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2calico%E7%BD%91%E7%BB%9C/</link>
+    <description>Recent content in 部署calico网络 on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 11 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2calico%E7%BD%91%E7%BB%9C/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署7（部署calico网络）</title>
+      <link>https://SomethingCM.github.io/k8s/k8s7/</link>
+      <pubDate>Thu, 11 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/k8s7/</guid>
+      <description>1、为什么node节点处于not ready的状态呢？ 我们可以通过日志观察一下： [root@k8s-1 ~]# kubectl get nodes NAME STATUS ROLES AGE VERSION 10.200.46.39 Ready &amp;lt;none&amp;gt; 3h5m v1.15.0 10.200.46.40 Ready &amp;lt;none&amp;gt; 3h15m v1.15.0 10.200.46.41 Ready &amp;lt;none&amp;gt; 3h4m v1.15.0 10.200.46.42 Ready &amp;lt;none&amp;gt; 178m v1.15.0 10.200.46.43 Ready &amp;lt;none&amp;gt; 178m v1.15.0 [root@k8s-1 kubelet]# tail -f kubelet.WARNING Running on machine: k8s-1 Binary: Built with gc go1.12.5 for linux/amd64 Log line format: [IWEF]mmdd hh:mm:ss.uuuuuu threadid file:line] msg W0925 14:25:51.202678 3710 docker_service.go:561] Hairpin mode set to &amp;quot;promiscuous-bridge&amp;quot; but kubenet is not enabled, falling back to &amp;quot;hairpin-veth&amp;quot; W0925 14:25:51.</description>
+    </item>
+    
+  </channel>
+</rss>

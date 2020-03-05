@@ -1,0 +1,296 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="salt yum 安装 lnmp">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>salt yum 安装 lnmp &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/salt-yum-lnmp">salt yum lnmp</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/salt">salt</a>
+                    
+                         , 
+                        <a href="/tags/lnmp">lnmp</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h4 id="背景">背景</h4>
+
+<pre><code>以前安装lnmp都是手动安装，一个包一个包下然后再一个一个编译，源码安装的时候屏幕滚动，感觉很帅的样子，现在想起来可笑，费时费劲，前段时间试了下用salt安装，是yum版的，源码版的等有时间再弄，系统用的centos7，所以源码版的很多包要重新测。
+</code></pre>
+
+<h4 id="环境">环境</h4>
+
+<pre><code>master： centos7
+minion： centos7  node02
+</code></pre>
+
+<h6 id="master-状态文件目录讲解">master 状态文件目录讲解</h6>
+
+<pre><code>├── base                 #master配置文件中定义了三个状态文件目录，分别为base，prod，test
+│   └── top.sls          #top文件这里就不介绍了
+├── prod
+│   └── yum_lnmp        #自定义lnmp目录
+│       ├── epel_release.sls    #安装epel源
+│       ├── files               #各种配置文件
+│       │   ├── index.php
+│       │   ├── my.cnf
+│       │   ├── nginx.conf
+│       │   ├── nginx_default.conf
+│       │   ├── php-fpm.conf
+│       │   ├── php-fpm_www.conf
+│       │   └── php.ini
+│       ├── lnmp.sls        #我用的yum安装的，里面是所有包安装以及文件下发
+│       ├── service.sls     #各软件的启动
+│       └── www.sls         #用户添加
+└── test
+</code></pre>
+
+<h5 id="安装">安装</h5>
+
+<pre><code>[root@centos7Xnode1 base]# salt-key -L
+Accepted Keys:
+node01.cs1cloud.internal
+node02
+Denied Keys:
+Unaccepted Keys:
+Rejected Keys:
+这里用node02测试
+
+top文件制定node04安装lnmp
+[root@centos7Xnode1 base]# cat top.sls 
+prod:
+  'node02':
+    - yum_lnmp.service
+
+[root@centos7Xnode1 base]# salt '*' state.highstate
+
+返回状态太长，截不下来
+----------
+          ID: /etc/nginx/conf.d/default.conf
+    Function: file.managed
+      Result: True
+     Comment: File /etc/nginx/conf.d/default.conf updated
+     Started: 15:08:31.528143
+    Duration: 23.01 ms
+     Changes:   
+              ----------
+              diff:
+                  New file
+              mode:
+                  0644
+----------
+          ID: /var/log/nginx
+    Function: cmd.run
+        Name: mkdir -p /var/log/nginx
+      Result: True
+     Comment: unless execution succeeded
+     Started: 15:08:31.552299
+    Duration: 19.153 ms
+     Changes:   
+----------
+          ID: nginx-service
+    Function: service.running
+        Name: nginx
+      Result: True
+     Comment: Service nginx has been enabled, and is running
+     Started: 15:08:31.603447
+    Duration: 1585.717 ms
+     Changes:   
+              ----------
+              nginx:
+                  True
+----------
+          ID: mysql-service
+    Function: service.running
+        Name: mariadb
+      Result: True
+     Comment: Service mariadb has been enabled, and is running
+     Started: 15:08:33.190823
+    Duration: 19988.649 ms
+     Changes:   
+              ----------
+              mariadb:
+                  True
+----------
+          ID: php-service
+    Function: service.running
+        Name: php-fpm
+      Result: True
+     Comment: Service php-fpm has been enabled, and is running
+     Started: 15:08:53.180908
+    Duration: 2321.696 ms
+     Changes:   
+              ----------
+              php-fpm:
+                  True
+----------
+          ID: index_php
+    Function: file.managed
+        Name: /var/www/html/index.php
+      Result: True
+     Comment: File /var/www/html/index.php updated
+     Started: 15:08:55.504967
+    Duration: 31.213 ms
+     Changes:   
+              ----------
+              diff:
+                  New file
+              mode:
+                  0644
+
+Summary
+-------------
+Succeeded: 31 (changed=25)
+Failed:     0
+-------------
+Total states run:     31
+
+没有错误返回就可以了
+
+
+我下发了一个inde.php的文件，访问192.168.46.66如下
+</code></pre>
+
+<p><img src="/images/lnmp/yum01.png" alt="Alt text" /></p>
+
+<p>源码安装的嘛以后有时间再弄吧。</p>
+
+<p>状态文件在我的github上：<a href="https://github.com/SomethingCM/LNMP">https://github.com/SomethingCM/LNMP</a></p>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/salt_yum_lnmp/" data-title="salt yum 安装 lnmp" data-url="https://SomethingCM.github.io/target/salt_yum_lnmp/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

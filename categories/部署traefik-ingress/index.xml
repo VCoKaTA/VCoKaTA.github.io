@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署traefik ingress on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2traefik-ingress/</link>
+    <description>Recent content in 部署traefik ingress on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2traefik-ingress/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署8.4（部署 traefik ingress）</title>
+      <link>https://SomethingCM.github.io/k8s/k8s8.4/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/k8s8.4/</guid>
+      <description>设置节点标签 kubectl label nodes 10.200.46.42 edgenode=true kubectl get nodes --show-labels cat traefik-rbac.yaml kind: ClusterRole apiVersion: rbac.authorization.k8s.io/v1beta1 metadata: name: traefik-ingress-controller rules: - apiGroups: - &amp;quot;&amp;quot; resources: - services - endpoints - secrets verbs: - get - list - watch - apiGroups: - extensions resources: - ingresses verbs: - get - list - watch --- kind: ClusterRoleBinding apiVersion: rbac.authorization.k8s.io/v1beta1 metadata: name: traefik-ingress-controller roleRef: apiGroup: rbac.authorization.k8s.io kind: ClusterRole name: traefik-ingress-controller subjects: - kind: ServiceAccount name: traefik-ingress-controller namespace: kube-system cat traefik.</description>
+    </item>
+    
+  </channel>
+</rss>

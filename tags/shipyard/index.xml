@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>shipyard on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/shipyard/</link>
+    <description>Recent content in shipyard on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 30 Jul 2015 15:20:45 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/shipyard/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>shipyard安装</title>
+      <link>https://SomethingCM.github.io/target/shipyard/</link>
+      <pubDate>Thu, 30 Jul 2015 15:20:45 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/shipyard/</guid>
+      <description>shipyard github地址：https://github.com/shipyard/shipyard 控制节点ip：192.168.46.119 node节点ip：192.168.46.82 我的系统是centos7的 所有节点安装docker yum install -y docker 控制节点执行脚本 curl -s https://shipyard-project.com/deploy | bash -s 获取帮助 curl -s https://shipyard-project.com/deploy | bash -s -- -h node节点注册 curl -sSL https://shipyard-project.com/deploy | ACTION=node DISCOVERY=etcd://192.168.46.119:4001 bash -s 访问 http://192.168.46.119:8080 Username: admin Password: shipyard  </description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="gitlab &#43; jenkins&#43;salt持续集成">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>gitlab &#43; jenkins&#43;salt持续集成 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/gitlab">gitlab</a>
+                    
+                         , 
+                        <a href="/categories/jenkins">jenkins</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/gitlab">gitlab</a>
+                    
+                         , 
+                        <a href="/tags/jenkins">jenkins</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h2 id="目的">目的：</h2>
+
+<p>主要是了解持续集成方面的知识，分析gitlab的对于svn的优势，了解gitlab和jenkins的原理，再配合脚本和salt做一个简易的持续集成。</p>
+
+<h2 id="环境">环境</h2>
+
+<pre><code>我使用三台机器做测试：
+三台机器系统都是centos7，selinux disabled，iptables disabled
+192.168.46.66 jenkins  salt-master
+192.168.46.82 gitlab
+192.168.46.105 nginx    salt-minion
+</code></pre>
+
+<h2 id="该测试大致过程">该测试大致过程</h2>
+
+<blockquote>
+<p>通过提交代码到gitlab触发jenkins构建，jenkins调用脚本打包程序，通过salt分发包，并通过salt部署包</p>
+
+<h2 id="1-安装">1 安装</h2>
+</blockquote>
+
+<h3 id="1-1-安装jenkins">1.1 安装jenkins</h3>
+
+<pre><code>官网安装文档：https://wiki.jenkins-ci.org/display/JENKINS/Installing+Jenkins#InstallingJenkins-Unix%2FLinuxInstallation
+
+我装的稳定版本：
+1.1.1 添加Jenkins的源（repository）:
+wget -O /etc/yum.repos.d/jenkins.repo http://pkg.jenkins-ci.org/redhat-stable/jenkins.repo
+rpm --import https://jenkins-ci.org/redhat/jenkins-ci.org.key
+yum install jenkins
+
+1.1.2 安装/检查JDK
+[root@localhost jenkins]# yum install java -y
+[root@localhost jenkins]# java -version
+openjdk version &quot;1.8.0_71&quot;
+OpenJDK Runtime Environment (build 1.8.0_71-b15)
+OpenJDK 64-Bit Server VM (build 25.71-b15, mixed mode)
+
+1.1.3 安装Jenkins：
+[root@localhost jenkins]#yum install jenkins
+
+遇到错误
+Delta RPMs disabled because /usr/bin/applydeltarpm not installed.
+jenkins-1.653-1.1.noarch.rpm   FAILED                                         
+http://pkg.jenkins-ci.org/redhat-stable/jenkins-1.653-1.1.noarch.rpm: [Errno 14] HTTP Error 404 - Not Found     ]  0.0 B/s |    0 B  --:--:-- ETA
+Trying other mirror.
+[root@localhost ~]# yum install -y deltarpm
+继续安装jenkins
+[root@localhost jenkins]#yum install jenkins
+
+如果有防火墙
+firewall-cmd --zone=public --add-port=8080/tcp --permanent
+firewall-cmd --zone=public --add-service=http --permanent
+firewall-cmd --reload
+firewall-cmd --list-all
+
+/usr/lib/jenkins/：jenkins安装目录，WAR包会放在这里。
+/etc/sysconfig/jenkins：jenkins配置文件，“端口”，“JENKINS_HOME”等都可以在这里配置
+/var/lib/jenkins/：默认的JENKINS_HOME。
+/var/log/jenkins/jenkins.log：Jenkins日志文件。
+
+启动Jenkins
+[root@localhost jenkins]# /sbin/chkconfig jenkins on
+[root@localhost jenkins]# systemctl  start jenkins
+1.1.4 安装salt-master
+  1.1.4.1 导入key
+    rpm --import https://repo.saltstack.com/yum/redhat/7/x86_64/latest/SALTSTACK-GPG-KEY.pub
+  1.1.4.2 编辑源/etc/yum.repos.d/saltstack.repo
+    [saltstack-repo]
+    name=SaltStack repo for RHEL/CentOS $releasever
+    baseurl=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub
+  1.1.4.3 安装master
+    yum install salt-master -y
+  1.1.4.4 启动
+    systemctl enable salt-master
+    systemctl start salt-master
+</code></pre>
+
+<p>访问 192.168.46.66:8080
+<img style="zoom:70%" src="/images/git_jen/jen01.png"></p>
+
+<h3 id="1-2-gitlab安装">1.2 gitlab安装</h3>
+
+<pre><code>官网安装文档：https://www.elastic.co/guide/index.html
+
+1.2.1 安装相关软件
+yum install curl policycoreutils openssh-server openssh-clients
+systemctl enable sshd
+systemctl start sshd
+yum install postfix
+systemctl enable postfix
+systemctl start postfix
+firewall-cmd --permanent --add-service=http
+systemctl reload firewalld
+
+1.2.2 下载安装gitlab包
+curl -LJO https://packages.gitlab.com/gitlab/gitlab-ce/packages/el/7/gitlab-ce-8.5.5-ce.0.el7.x86_64.rpm/download
+rpm -i  gitlab-ce-8.5.5-ce.0.el7.x86_64.rpm
+
+1.2.3 配置启动gitlab
+gitlab-ctl reconfigure
+gitlab-ctl --help 查看帮助
+[root@localhost ~]# gitlab-ctl service-list
+gitlab-workhorse*
+logrotate*
+nginx*
+postgresql*
+redis*
+sidekiq*
+unicorn*
+
+1.2.4 登陆 192.168.46.82
+Username: root
+Password: 5iveL!fe
+第一次登陆会让你修改密码
+</code></pre>
+
+<p><img style="zoom:60%" src="/images/git_jen/git01.png"></p>
+
+<h3 id="1-3-nginx安装">1.3 nginx安装</h3>
+
+<pre><code>1.3.1 安装nginx
+    yum install -y nginx
+    启动nginx
+    nginx
+1.3.2 安装salt-minion
+  1.3.2.1 导入key
+    rpm --import https://repo.saltstack.com/yum/redhat/7/x86_64/latest/SALTSTACK-GPG-KEY.pub
+  1.3.2.2 编辑源/etc/yum.repos.d/saltstack.repo
+    [saltstack-repo]
+    name=SaltStack repo for RHEL/CentOS $releasever
+    baseurl=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest
+    enabled=1
+    gpgcheck=1
+    gpgkey=https://repo.saltstack.com/yum/redhat/$releasever/$basearch/latest/SALTSTACK-GPG-KEY.pub
+  1.3.2.3 安装master
+    yum install salt-master -y
+  1.3.2.4 启动
+    systemctl enable salt-minion
+    systemctl start salt-minion
+</code></pre>
+
+<h2 id="2-配置">2 配置</h2>
+
+<h3 id="2-1-配置46-105-nginx">2.1 配置46.105 nginx</h3>
+
+<pre><code>2.1.1 配置nginx
+    我的代码会发布到/usr/share/nginx/html/demo目录中
+    [root@nginx ~]# vim /etc/nginx/nginx.conf
+     server {
+    listen       80 default_server;
+    listen       [::]:80 default_server;
+    server_name  _;
+    root         /usr/share/nginx/html/demo;
+    # Load configuration files for the default server block.
+    include /etc/nginx/default.d/*.conf;
+    location / {
+    }
+    error_page 404 /404.html;
+        location = /40x.html {
+    }
+    error_page 500 502 503 504 /50x.html;
+        location = /50x.html {
+    }
+    }
+重启nginx
+nginx -s reload
+2.1.2 配置salt-minion
+    [root@nginx ~]# vim /etc/salt/minion
+    master: 192.168.46.66
+    id: nginx
+    重启minion
+    systemctl restart salt-minion
+
+    在46.66 salt-master 加入nginx
+    salt-key -a nginx
+</code></pre>
+
+<h3 id="2-2-配置46-82-gitlab">2.2 配置46.82 gitlab</h3>
+
+<pre><code>2.2.1 创建一个demo项目
+</code></pre>
+
+<p><img style="zoom:70%" src="/images/git_jen/git02.png"></p>
+
+<pre><code>2.2.2 在46.66上创建ssh key
+把公钥拷贝过来，私钥会拷到jenkins上，就可以无密码通信了
+</code></pre>
+
+<p><img style="zoom:50%" src="/images/git_jen/git03.png"></p>
+
+<pre><code>2.2.3 配置gitlab的web hooks
+当有push时会触发jenkins构建
+url为： http://192.168.46.66:8080/git/notifyCommit?url=git@192.168.46.82:root/demo.git
+/git/notifyCommit?url=前为jenkins的地址和端口
+/git/notifyCommit?url=后为git项目地址
+2.2.4 配置salt master
+vim /etc/salt/master
+file_roots:
+  base:
+    - /srv/salt
+重启salt-master
+systemctl restart salt-master
+</code></pre>
+
+<p><img style="zoom:60%" src="/images/git_jen/git04.png"></p>
+
+<h3 id="2-2-配置46-66-jenkins">2.2 配置46.66 jenkins</h3>
+
+<pre><code>2.2.1 配置jenkins
+系统设置
+</code></pre>
+
+<p><img style="zoom:50%;width:50%" src="/images/git_jen/en02.png">
+<img style="zoom:50%;width:50%" src="/images/git_jen/en03.png">
+<img style="zoom:70%" src="/images/git_jen/en04.png">
+    创建项目
+<img src="/images/git_jen/jen05.png" alt="Alt text" /></p>
+
+<pre><code>添加私钥
+</code></pre>
+
+<p><img src="/images/git_jen/jen06.png" alt="Alt text" />
+<img src="/images/git_jen/jen07.png" alt="Alt text" />
+<img src="/images/git_jen/jen08.png" alt="Alt text" /></p>
+
+<pre><code>脚本放在/project
+[root@jenkins01 project]# ls
+code  config  deploy.sh  package
+code 代码目录
+config 配置文件目录
+package 代码打包后存放目录
+
+deploy.sh  jenkins构建时调用脚本
+[root@jenkins01 project]# cat deploy.sh
+#!/usr/bin/bash
+##############
+#author:CM
+#mail:kakaximeng@163.com
+############
+##提前建立相应的目录
+LOCK_FILE=&quot;/project/lock&quot;
+CODE_PATH=&quot;/project/code&quot;
+DEMO_PATH=&quot;/project/code/demo&quot;
+PACKAGE_PATH=&quot;/srv/salt/package&quot;
+SALT_PACKAGE_PATH=&quot;package&quot;
+CONFIG_PATH=&quot;/project/config&quot;
+LOG_FILE=&quot;/project/deploy.log&quot;
+DEST_PROJECT=&quot;/project&quot;
+CTIME=$(date &quot;+%Y-%m-%d-%H-%M&quot;)
+
+
+Usage(){
+  echo &quot;Usage: $0 ( deploy | list | rollback edition)&quot;
+}
+
+
+Lock_judge(){
+  if [ -f $LOCK_FILE ];then
+    echo &quot;warnning !!! someone else must deploy new version or rollback old version! please wait.&quot;
+    exit 2
+  else
+    touch -f $LOCK_FILE
+  fi    
+}
+
+Delete_lock_file(){
+  if [ -f $LOCK_FILE ];then
+    rm -f  $LOCK_FILE
+  fi
+}
+
+Deploy_code(){
+  Lock_judge
+  tag=$?
+  echo $tag
+  if [ $tag == 0 ];then
+    cd $DEMO_PATH
+    git pull
+    Commit=$(git log|head -n 1|cut -d ' ' -f 2)
+    Com_ID=$(echo ${Commit:0:6})
+    cp -r $DEMO_PATH ${PACKAGE_PATH}/demo_${Com_ID}_${CTIME}
+    cp -r ${CONFIG_PATH}/* ${PACKAGE_PATH}/demo_${Com_ID}_${CTIME}/
+    cd $PACKAGE_PATH
+    tar -zcf demo_${Com_ID}_${CTIME}.tar.gz demo_${Com_ID}_${CTIME}
+    salt &quot;nginx&quot; cp.get_file  salt://${SALT_PACKAGE_PATH}/demo_${Com_ID}_${CTIME}.tar.gz ${DEST_PROJECT}/demo_${Com_ID}_${CTIME}.tar.gz
+    salt &quot;nginx&quot; cmd.run &quot;cd ${DEST_PROJECT} &amp;&amp; tar -zxf demo_${Com_ID}_${CTIME}.tar.gz &amp;&amp; rm -f /usr/share/nginx/html/demo &amp;&amp; ln -s ${DEST_PROJECT}/demo_${Com_ID}_${CTIME} /usr/share/nginx/html/demo &amp;&amp; nginx -s reload&quot;
+  fi
+  Delete_lock_file
+}
+
+Edition_list(){
+  salt 'nginx' cmd.run &quot;ls -l ${DEST_PROJECT}|grep ^d&quot;
+}
+
+Rollback_code(){
+  Lock_judge
+  salt 'nginx' cmd.run &quot;rm -f /usr/share/nginx/html/demo &amp;&amp; ln -s ${DEST_PROJECT}/$1 /usr/share/nginx/html/demo&quot;
+  Delete_lock_file
+}
+
+main(){
+  case $1 in
+    deploy)
+      Deploy_code
+      ;;
+    list)
+      Edition_list
+      ;;
+    rollback)
+      Rollback_code $2
+      ;;
+    *)
+      echo $1
+      Usage
+      ;;
+  esac
+}
+
+main $1 $2
+
+#脚本没有完善，没有写日志
+</code></pre>
+
+<h2 id="3-测试">3 测试</h2>
+
+<pre><code>我之前已经推上去代码
+</code></pre>
+
+<p><img src="/images/git_jen/jen09.png" alt="Alt text" />
+<img src="/images/git_jen/nginx01.png" alt="Alt text" /></p>
+
+<pre><code>vim index.html
+&lt;h1&gt;Adam Jensen&lt;/h1&gt;
+  &lt;h2&gt;今晚上吃&lt;/h2&gt;
+  &lt;h2&gt;西红柿鸡&lt;/h2&gt;
+  &lt;h2&gt;西红牛腩&lt;/h2&gt;
+git add index.html
+git commit -m &quot;牛腩&quot;
+git push origin master
+</code></pre>
+
+<p><img src="/images/git_jen/jen10.png" alt="Alt text" />
+<img src="/images/git_jen/nginx02.png" alt="Alt text" /></p>
+
+<pre><code>回滚
+[root@jenkins01 project]# ls
+code  config  deploy.sh  package
+[root@jenkins01 project]# sh deploy.sh list
+nginx:
+    drwxr-xr-x 7 root root     129 Mar 23 09:28 demo_205d03_2016-03-23-09-28
+    drwxr-xr-x 7 root root     129 Mar 23 17:04 demo_3c2a63_2016-03-23-17-04
+    drwxr-xr-x 7 root root     129 Mar 22 09:21 demo_43fabe_2016-03-22-09-21
+    drwxr-xr-x 7 root root     151 Mar 21 17:41 demo_4c5be1_2016-03-21-17-41
+    drwxr-xr-x 7 root root     151 Mar 21 17:48 demo_4c5be1_2016-03-21-17-48
+    drwxr-xr-x 7 root root     119 Mar 21 14:46 demo_574cdd_2016-03-21-14-46
+    drwxr-xr-x 7 root root     119 Mar 21 14:48 demo_574cdd_2016-03-21-14-48
+    drwxr-xr-x 7 root root     119 Mar 21 14:49 demo_574cdd_2016-03-21-14-49
+    drwxr-xr-x 7 root root     119 Mar 21 14:56 demo_574cdd_2016-03-21-14-56
+    drwxr-xr-x 7 root root     129 Mar 21 15:59 demo_8c7d37_2016-03-21-15-59
+    drwxr-xr-x 7 root root     129 Mar 23 17:22 demo_8cc9b4_2016-03-23-17-22
+    drwxr-xr-x 7 root root     129 Mar 21 15:41 demo_a2333d_2016-03-21-15-41
+    drwxr-xr-x 7 root root     129 Mar 23 17:03 demo_d5f4f3_2016-03-23-17-03
+
+[root@jenkins01 project]# sh deploy.sh rollback  demo_3c2a63_2016-03-23-17-04
+</code></pre>
+
+<p><img src="/images/git_jen/nginx03.jpg" alt="Alt text" /></p>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/git_jen/" data-title="gitlab &#43; jenkins&#43;salt持续集成" data-url="https://SomethingCM.github.io/target/git_jen/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>salt yum lnmp on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/salt-yum-lnmp/</link>
+    <description>Recent content in salt yum lnmp on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 02 Oct 2015 10:53:48 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/salt-yum-lnmp/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>salt yum 安装 lnmp</title>
+      <link>https://SomethingCM.github.io/target/salt_yum_lnmp/</link>
+      <pubDate>Fri, 02 Oct 2015 10:53:48 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/salt_yum_lnmp/</guid>
+      <description>背景 以前安装lnmp都是手动安装，一个包一个包下然后再一个一个编译，源码安装的时候屏幕滚动，感觉很帅的样子，现在想起来可笑，费时费劲，前段时间试了下用salt安装，是yum版的，源码版的等有时间再弄，系统用的centos7，所以源码版的很多包要重新测。  环境 master： centos7 minion： centos7 node02  master 状态文件目录讲解 ├── base #master配置文件中定义了三个状态文件目录，分别为base，prod，test │ └── top.sls #top文件这里就不介绍了 ├── prod │ └── yum_lnmp #自定义lnmp目录 │ ├── epel_release.sls #安装epel源 │ ├── files #各种配置文件 │ │ ├── index.php │ │ ├── my.cnf │ │ ├── nginx.conf │ │ ├── nginx_default.conf │ │ ├── php-fpm.conf │ │ ├── php-fpm_www.conf │ │ └── php.ini │ ├── lnmp.sls #我用的yum安装的，里面是所有包安装以及文件下发 │ ├── service.sls #各软件的启动 │ └── www.</description>
+    </item>
+    
+  </channel>
+</rss>

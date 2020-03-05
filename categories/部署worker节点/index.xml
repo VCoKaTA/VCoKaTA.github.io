@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署worker节点 on SomethingCM</title>
+    <link>https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2worker%E8%8A%82%E7%82%B9/</link>
+    <description>Recent content in 部署worker节点 on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 10 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/categories/%E9%83%A8%E7%BD%B2worker%E8%8A%82%E7%82%B9/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署6.1（部署worker节点）</title>
+      <link>https://SomethingCM.github.io/k8s/k8s6.1/</link>
+      <pubDate>Wed, 10 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/k8s6.1/</guid>
+      <description>初始化已安装 参考配置 cat &amp;gt; docker.service &amp;lt;&amp;lt;&amp;quot;EOF&amp;quot; [Unit] Description=Docker Application Container Engine Documentation=http://docs.docker.io [Service] WorkingDirectory=##DOCKER_DIR## ExecStart=/usr/bin/dockerd $DOCKER_NETWORK_OPTIONS ExecReload=/bin/kill -s HUP $MAINPID Restart=on-failure RestartSec=5 LimitNOFILE=infinity LimitNPROC=infinity LimitCORE=infinity Delegate=yes KillMode=process [Install] WantedBy=multi-user.target EOF # EOF 前后有双引号，这样 bash 不会替换文档中的变量，如 $DOCKER_NETWORK_OPTIONS (这些环境变量是 systemd 负责替换的。)； # dockerd 运行时会调用其它 docker 命令，如 docker-proxy，所以需要将 docker 命令所在的目录加到 PATH 环境变量中； # docker 需要以 root 用于运行； # docker 从 1.13 版本开始，可能将 iptables FORWARD chain的默认策略设置为DROP，从而导致 ping 其它 Node 上的 Pod IP 失败，遇到这种情况时，需要手动设置策略为 ACCEPT： iptables -P FORWARD ACCEPT 并且把以下命令写入 /etc/rc.</description>
+    </item>
+    
+    <item>
+      <title>K8s 二进制部署6（部署worker节点）</title>
+      <link>https://SomethingCM.github.io/k8s/k8s6/</link>
+      <pubDate>Wed, 10 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/k8s/k8s6/</guid>
+      <description>kubernetes worker 节点运行如下组件： * docker(初始化的时候部署过了) * kubelet * kube-proxy * calico/flanneld Node 节点 wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/kubernetes-node-linux-amd64.tar.gz tar -zxf kubernetes-node-linux-amd64.tar.gz cp kubernetes/node/bin/* /usr/bin/  </description>
+    </item>
+    
+  </channel>
+</rss>

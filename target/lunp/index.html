@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="lnmp 源码安装">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>lnmp 源码安装 &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/lnmp">lnmp</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/%E5%AD%A6%E4%B9%A0%E9%A1%B9%E7%9B%AE">学习项目</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<h2 id="安装环境">安装环境</h2>
+
+<pre><code>redhat6.0
+itables disabled
+selinux disabled
+</code></pre>
+
+<h4 id="1-安装myaql">1.安装MYAQL</h4>
+
+<p>[root@localhost mysql]# ls
+    mysql-5.6.10  mysql-5.6.10.tar.gz
+    [root@localhost mysql]# cd mysql-5.6.10</p>
+
+<pre><code>源码安装mysql（也可yum install）
+ yum install -y gcc gcc-c++ make ncurses-devel bison openssl-devel zlib-devel cmake -y
+
+[root@localhost 5.6.10]# cmake -DCMAKE_INSTALL_PREFIX=/usr/local/lnmp/mysql -DMYSQL_DATADIR=/usr/local/lnmp/mysql/data -DMYSQL_UNIX_ADDR=/usr/local/lnmp/mysql/data/mysql.sock -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DENABLED_LOCAL_INFILE=1 -DWITH_READLINE=1 -DWITH_SSL=yes -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DEXTRA_CHARSETS=all -DMYSQL_TCP_PORT=3306
+
+make &amp;&amp; make install
+
+cp support-files/my-medium.cnf /etc/my.cnf         # 复制配置文件，注意修改配置文件中的目录
+vi /etc/my.cnf
+# These are commonly set, remove the # and set as required.
+ basedir = /usr/local/lnmp/mysql
+ datadir = /usr/local/lnmp/mysql/data
+ port = 3306
+ server_id = 1
+ socket = /usr/local/lnmp/mysql/data/mysql.sock
+
+cp support-files/mysql.server /etc/init.d/mysqld   # 复制启动脚本
+chmod +x /etc/init.d/mysqld         # 给启动脚本执行权限
+
+useradd -M -s /sbin/nologin mysql 
+
+chown -R root.mysql /usr/local/lnmp/mysql/           # 更改安装目录属主为root,属组为mysql
+chown -R mysql.mysql /usr/local/lnmp/mysql/data      # 更改数据库目录属主和属组都为mysql
+
+#ln -s /usr/local/lnmp/mysql/bin/* /usr/local/bin/              # 为可执行的二进制文件做软连接
+
+yum install -y perl
+scripts/mysql_install_db --user=mysql --basedir=/usr/local/lnmp/mysql --datadir=/usr/local/lnmp/mysql/data
+# 用MySQL用户安装数据库
+
+service mysqld start
+chkconfig mysqld on
+vi ~/.bash_profile
+PATH=$PATH:$HOME/bin:/usr/local/lnmp/mysql/bin
+source ~/.bash_profile
+
+mysql_secure_installation #按提示完成 mysql 安全设置,生产环境推荐使用
+ln -s /usr/local/lnmp/mysql/lib /usr/local/lnmp/mysql/lib64 #不然 php 编译的时候找不到 mysql 的库文件
+</code></pre>
+
+<h4 id="2-nginx安装">2.nginx安装</h4>
+
+<pre><code>[root@server85 kernel]# tar zxf nginx-1.2.7.tar.gz
+[root@server85 kernel]# cd nginx-1.2.7
+[root@server85 nginx-1.2.7]# vim src/core/nginx.h
+#define NGINX_VER
+&quot;nginx&quot;
+(编译后外界无法获取程序的版本号)
+[root@server85 nginx-1.2.7]# vim auto/cc/gcc
+#CFLAGS=&quot;$CFLAGS -g&quot;(去掉 debug 模式编译,编译以后程序只有几百 k)
+
+[root@localhost nginx-1.7.6]# ./configure --prefix=/usr/local/lnmp/nginx --with-http_ssl_module --with-http_stub_status_module --with-pcre --with-http_stub_status_module
+
+./configure: error: the HTTP rewrite module requires the PCRE library.
+You can either disable the module by using --without-http_rewrite_module
+option, or install the PCRE library into the system, or build the PCRE library
+statically from the source with nginx by using --with-pcre=&lt;path&gt; option.
+
+[root@localhost nginx-1.7.6]#
+[root@localhost nginx-1.7.6]# yum install -y pcre-devel
+yum install -y pcre-devel
+ yum install openssl-devel
+[root@localhost nginx-1.7.6]# ./configure --prefix=/usr/local/lnmp/nginx\ # 指定安装目录
+ --with-http_ssl_module\启用ssl
+ --with-http_stub_status_module\ # 安装可以查看nginx状态的程序
+
+ --with-pcre \启用正规表达式
+
+[root@localhost nginx-1.7.6]# make &amp;&amp; make install
+useradd www
+[root@localhost nginx-1.7.6]# vi /usr/local/lnmp/nginx/conf/nginx.conf
+
+user  www www;
+worker_processes  4;
+
+events {
+    use epoll;
+    worker_connections  1024;
+}
+
+        location /status{
+                stub_status on;
+                access_log off;
+        }
+         location ~ \.php$ {
+            root           html;
+            fastcgi_pass   127.0.0.1:9000;
+            fastcgi_index  index.php;
+        #    fastcgi_param  SCRIPT_FILENAME  /scripts$fastcgi_script_name;
+            include        fastcgi.conf;
+        }
+
+[root@localhost nginx-1.7.6]# vim ~/.bash_profile
+PATH=$PATH:$HOME/bin:$PATH:/usr/local/lnmp/mysql/bin:
+$PATH:/usr/local/lnmp/nginx/sbin
+[root@localhost nginx-1.7.6] source ~/.bash_profile
+PATH=$PATH:$HOME/bin:$PATH:/usr/local/lnmp/mysql/bin:/usr/local/lnmp/nginx/sbin
+[root@localhost nginx-1.7.6]  source ~/.bash_profile
+nginx (启动 nginx)
+nginx -t ( 检测语法)
+nginx -s reload (重载主配置文件)
+nginx -s stop (关闭 nginx)
+</code></pre>
+
+<h4 id="3-安装php">3.安装PHP</h4>
+
+<pre><code>yum install net-snmp-devel curl-devel libxml2-devel libpng-devel libjpeg-devel freetype-devel gmp-devel openldap-devel -y
+
+libiconv               (加强系统对支持字符编码转换的功能)[root@localhost php]# tar -zxvf libiconv-1.14.tar.gz
+[root@localhost php]# cd libiconv-1.14
+root@localhost libiconv-1.14]# ./configure --libdir=/usr/local/lib64
+[root@localhost libiconv-1.14]# make &amp;&amp; make install
+
+libmcrypt (php 的加密算法扩展库) 
+[root@localhost php]# tar -zxvf libmcrypt-2.5.8.tar.gz
+[root@localhost php]# cd libmcrypt-2.5.8
+[root@localhost libmcrypt-2.5.8]# ./configure --libdir=/usr/local/lib64/
+[root@localhost libmcrypt-2.5.8]# make &amp;&amp; make install
+[root@localhost libmcrypt-2.5.8]# cd libltdl/
+./configure --libdir=/usr/local/lib64 --enable-ltdl-install
+make &amp;&amp; make install
+
+mhash (php 的加密算法扩展库) 
+root@localhost php]# tar -jxvf mhash-0.9.9.9.tar.bz2
+root@localhost mhash-0.9.9.9]# ./configure --libdir=/usr/local/lib64
+root@localhost mhash-0.9.9.9]# make &amp;&amp; make install
+
+mcrypt安装mcrypt之前先
+vi /etc/ld.so.conf
+include ld.so.conf.d/*.conf
+/usr/local/lib64 #添加该行
+
+ldconfig /usr/local/lib64
+tar zxvf mcrypt-2.6.8.tar.gz
+cd mcrypt-2.6.8/
+./configure --libdir=/usr/local/lib64
+make &amp;&amp; make install
+
+
+安装完php所需的插件及库后，安装php
+[root@localhost php]# tar -zxvf php-5.6.1.tar.g
+[root@localhost php]# cd php-5.6.1
+[root@localhost php-5.6.1]#ln -s /usr/local/lnmp/mysql/lib /usr/local/lnmp/mysql/lib64    #不然 php 编译的时候找不到mysql 的库文件
+
+[root@localhost php-5.6.1]# ./configure --prefix=/usr/local/lnmp/php --with-config-file-path=/usr/local/lnmp/php/etc --with-mysql=/usr/local/lnmp/mysql/ --with-openssl --with-snmp --with-gd --with-zlib --with-curl --with-libxml-dir --with-png-dir --with-jpeg-dir --with-freetype-dir --without-pear --with-gettext --with-gmp --enable-inline-optimization --enable-soap --enable-ftp --enable-sockets --enable-mbstring --with-mysqli=/usr/local/lnmp/mysql/bin/mysql_config --enable-fpm --with-fpm-user=www --with-fpm-group=www --with-libdir=lib64 --with-ldap --with-ldap-sasl --with-mcrypt --with-mhash
+
+[root@localhost php-5.6.1]#make ZEND_EXTRA_LIBS='-liconv'
+
+[root@localhost php-5.6.1]#make install
+
+[root@localhost php-5.6.1]# cp php.ini-production /usr/local/lnmp/php/etc/php.ini
+[root@localhost php-5.6.1]# cp sapi/fpm/init.d.php-fpm /etc/init.d/php-fpm
+[root@localhost php-5.6.1]# chmod +x /etc/init.d/php-fpm
+[root@localhost php-5.6.1]# cp /usr/local/lnmp/php/etc/php-fpm.conf.default /usr/local/lnmp/php/etc/php-fpm.conf
+[root@localhost php-5.6.1]# vim /usr/local/lnmp/php/etc/php-fpm.conf
+pid = run/php-fpm.pid
+/etc/init.d/php-fpm start（如果不行直接/etc/init.d/php-fpm）
+vi ~/.bash_profile
+PATH=$PATH:$HOME/bin:/usr/local/lnmp/mysql/bin:/usr/local/lnmp/nginx/sbin:/usr/local/lnmp/php/bin
+source ~/.bash_profile
+
+
+[root@localhost php-5.6.1]# vi /usr/local/lnmp/php/etc/php.ini
+date.timezone = Asia/Shanghai
+
+[root@localhost nginx]# cd /usr/local/lnmp/nginx/html/
+[root@localhost html]# vi index.php 
+&lt;?php
+phpinfo()
+?&gt;
+ 然后访问index页面测试
+</code></pre>
+
+<h4 id="4-测试发布-discuz-论坛">4.测试发布 Discuz 论坛</h4>
+
+<pre><code>yum install unzip
+unzip Discuz_X2.5_SC_UTF8.zip -d /usr/local/lnmp/nginx/html/
+cd /usr/local/lnmp/nginx/html/
+rm -rf readme/ utility/
+mv upload/ bbs
+
+vim /usr/local/lnmp/nginx/conf/nginx.conf
+location / {
+root
+html;
+index index.php index.html index.htm;
+}
+
+nginx -s reload
+</code></pre>
+
+<p><img src="/images/lnmp/01.png" alt="Alt text" />
+<img src="/images/lnmp/02.png" alt="Alt text" /></p>
+
+<pre><code>文件目录权限不够
+[root@localhost install]# chown www -R /usr/local/lnmp/nginx/html/bbs
+</code></pre>
+
+<p><img src="/images/lnmp/03.png" alt="Alt text" />
+<img src="/images/lnmp/04.png" alt="Alt text" />
+<img src="/images/lnmp/05.png" alt="Alt text" />
+<img src="/images/lnmp/06.png" alt="Alt text" />
+<img src="/images/lnmp/07.png" alt="Alt text" />
+<img src="/images/lnmp/08.png" alt="Alt text" /></p>
+
+<pre><code>可以开心的玩耍了
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/target/lunp/" data-title="lnmp 源码安装" data-url="https://SomethingCM.github.io/target/lunp/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

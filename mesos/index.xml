@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Mesos on SomethingCM</title>
+    <link>https://SomethingCM.github.io/mesos/</link>
+    <description>Recent content in Mesos on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 16 Jun 2019 01:52:58 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/mesos/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Mesos集群平滑迁移K8S</title>
+      <link>https://SomethingCM.github.io/mesos/mesostok8s/</link>
+      <pubDate>Sun, 16 Jun 2019 01:52:58 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/mesos/mesostok8s/</guid>
+      <description> 背景 公司使用mesos这套架构已经很长时间了，基本上很稳定。 鉴于各大公司都拥抱kubernetes，以及mesos这套架构已经不能满足我们的需求，公司决定要平滑过度到kubernetes  关键问题：平滑过度时期，两个集群的容器如何互访 我们通过测试，在两个集群上都装calico可以实现两个集群内容器互访（相当于把mesos集群当work节点部署了相应的服务，我们设置标签，让k8s不把任务调度到mesos集群上） 然后在两个集群上都部署应用，mesos集群应用慢慢减少，k8s集群应用慢慢扩大。  </description>
+    </item>
+    
+    <item>
+      <title>对比nginx和marathon信息，发送钉钉报警</title>
+      <link>https://SomethingCM.github.io/mesos/nginx2/</link>
+      <pubDate>Mon, 23 Apr 2018 02:21:07 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/mesos/nginx2/</guid>
+      <description>背景：有时候nginx所在的consul-template故障或其他原因导致nginx upstream信息不准确，所以我要抓取nginx upstream和marathon相应的工程信息，发现不对就钉钉报出来
+cat nginx_conf.sh #!/bin/bash if [ -d &amp;quot;/usr/local/nginx/conf/vhosts&amp;quot; ];then echo &amp;gt; /home/sh/nginx_marathon/nginx_conf for i in `ls /usr/local/nginx/conf/vhosts/*.conf`;do cat $i|grep &#39;^upstream&#39; -A 2 &amp;gt;&amp;gt;/home/sh/nginx_marathon/nginx_conf ;done elif [ -d &amp;quot;/usr/local/nginx-1.12.2/conf/vhosts&amp;quot; ];then echo &amp;gt; /home/sh/nginx_marathon/nginx_conf for i in `ls /usr/local/nginx-1.12.2/conf/vhosts/*.conf`;do cat $i|grep &#39;^upstream&#39; -A 2 &amp;gt;&amp;gt;/home/sh/nginx_marathon/nginx_conf ;done fi cat nginx_marathon_check.py #!/bin/python # -*- coding: utf-8 -*- import urllib2 import sys import subprocess import urllib import time import socket import os,re import requests,json import commands def get_host_ip(): try: s = socket.</description>
+    </item>
+    
+    <item>
+      <title>Nginx tcp自动添加模版</title>
+      <link>https://SomethingCM.github.io/mesos/nginx/</link>
+      <pubDate>Fri, 20 Apr 2018 02:07:13 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/mesos/nginx/</guid>
+      <description>背景：consul-template通consul集群获取应用节点的信息，根据相应的consul-template模版文件生成nginx配置文件，但是每次增加应用consul-template模版都需要手动添加相应的应用信息，此次我们通过脚本来生成这些模版信息。
+1、利用脚本调用marathon的api，获取所有应用信息，然后生成相应的模版文件 2、利用脚本对比新生成的模版文件与旧的模版文件是否不同，不同则替换 3、如果模版文件替换，则重启consul-template服务 抓取所有应用信息脚本： cat py_add_template.py #!/usr/bin/puthon env # -*- coding: utf-8 -*- import requests,json r = requests.Session() r.auth = (&#39;xxx&#39;,&#39;xxx&#39;) s = r.get(&#39;http://172.16.0.23:8080/v2/apps&#39;) try: f = open(&#39;/usr/local/nginx-1.12.2/conf/vhosts/py_add_template/tcp.conf.ctmpl&#39;, &#39;w&#39;) txt=&#39;stream {\nproxy_connect_timeout 30;\n&#39; for i in s.json()[&#39;apps&#39;]: txt=txt+&#39;#############&#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;\n&#39;+&#39;upstream &#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;{\n&#39;+&#39; {{range service &amp;quot;&#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;&amp;quot;}}server {{.Address}}:{{.Port}};{{else}}server 1.1.1.1:8000;{{end}}&#39;+&#39;\n}\n&#39;+&#39; server {\n&#39;+&#39; listen 0.0.0.0:&#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;).split(&#39;-&#39;)[-1]+&#39;;\n&#39;+&#39; proxy_pass &#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;;\n&#39;+&#39; }\n&#39; txt=txt+&#39;}&#39; f.write(txt) f.close() except Exception as e: print(str(e)) 验证脚本： cat modif_conf.sh #!/usr/bin/bash unalias cp timestamp=`date +%Y%m%d%H%M` diff /usr/local/nginx/conf/vhosts/tcp.conf.ctmpl /usr/local/nginx/conf/vhosts/py_add_template/tcp.conf.ctmpl &amp;gt; /dev/null if [ $?</description>
+    </item>
+    
+    <item>
+      <title>Consul集群排错</title>
+      <link>https://SomethingCM.github.io/mesos/consul/</link>
+      <pubDate>Wed, 21 Mar 2018 01:23:49 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/mesos/consul/</guid>
+      <description> 一、consul集群状态查询 1、查看集群状态 登陆server节点 consul members  2、测试集群可用性 curl http://192.168.111.210:8500/v1/health/service/dbos-yzprod-10285| python -m json.tool 看是否正常输出信息（注意访问slave节点ip，在server 端ip为127.0.0.1）  3、排查mesos slave节点 3.1、查看consul状态 systemctl status consul  3.2、查看consul数据是否异常 ll /tmp/consul/services/  3.3、查容器registrator是否异常（正常状态Up,不正常就restart容器） 4、排查nginx节点 4.1、排查模版状态是否正常  systemctl status consul-template-xxxx.service  4.2、查看模版配置文件配置的vip cat /etc/xxxx.cfg  4.3、测试vip是否可用 curl http://xxx.xxx.xxx.xxx:8500/v1/health/service/xxx-10285| python -m json.tool  二、consul集群升级故障总结 consul集群分server端和client端  升级版本有先后顺序，需要先升级server端（三台server要连续升，中间可能会报错，报错忽略）再升级client端  </description>
+    </item>
+    
+    <item>
+      <title>Mesos&#43;marathon&#43;zookeeper集群</title>
+      <link>https://SomethingCM.github.io/mesos/mesos/</link>
+      <pubDate>Mon, 18 Dec 2017 01:17:23 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/mesos/mesos/</guid>
+      <description>集群架构图:
+集群组件:
+consul服务发现:
+1、环境介绍 往下需要部署mesos + docker + marathon + resigtry + registrator + consul 的环境 10.200.21.13 - mesos-master - mesos-slave - docker - marathon - registry/registryweb - registrator - consul server ui - consul-template 10.200.21.14 - mesos-master - mesos-slave - docker - marathon - registrator - consul server ui - consul-template 10.200.21.15 - mesos-master - mesos-slave - docker - marathon - registrator - consul server ui - consul-template web-ui列表 - mesos (http://10.</description>
+    </item>
+    
+  </channel>
+</rss>

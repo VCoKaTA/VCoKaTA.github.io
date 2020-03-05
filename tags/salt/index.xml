@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>salt on SomethingCM</title>
+    <link>https://SomethingCM.github.io/tags/salt/</link>
+    <description>Recent content in salt on SomethingCM</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 02 Oct 2015 10:53:48 +0800</lastBuildDate>
+    
+	<atom:link href="https://SomethingCM.github.io/tags/salt/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>salt yum 安装 lnmp</title>
+      <link>https://SomethingCM.github.io/target/salt_yum_lnmp/</link>
+      <pubDate>Fri, 02 Oct 2015 10:53:48 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/salt_yum_lnmp/</guid>
+      <description>背景 以前安装lnmp都是手动安装，一个包一个包下然后再一个一个编译，源码安装的时候屏幕滚动，感觉很帅的样子，现在想起来可笑，费时费劲，前段时间试了下用salt安装，是yum版的，源码版的等有时间再弄，系统用的centos7，所以源码版的很多包要重新测。  环境 master： centos7 minion： centos7 node02  master 状态文件目录讲解 ├── base #master配置文件中定义了三个状态文件目录，分别为base，prod，test │ └── top.sls #top文件这里就不介绍了 ├── prod │ └── yum_lnmp #自定义lnmp目录 │ ├── epel_release.sls #安装epel源 │ ├── files #各种配置文件 │ │ ├── index.php │ │ ├── my.cnf │ │ ├── nginx.conf │ │ ├── nginx_default.conf │ │ ├── php-fpm.conf │ │ ├── php-fpm_www.conf │ │ └── php.ini │ ├── lnmp.sls #我用的yum安装的，里面是所有包安装以及文件下发 │ ├── service.sls #各软件的启动 │ └── www.</description>
+    </item>
+    
+    <item>
+      <title>saltstack基础知识</title>
+      <link>https://SomethingCM.github.io/target/salt02/</link>
+      <pubDate>Mon, 09 Mar 2015 09:40:15 +0800</pubDate>
+      
+      <guid>https://SomethingCM.github.io/target/salt02/</guid>
+      <description>基础阶段 客户端配置好master地址后重启服务，在master段查看 [root@centosXnode1 ~]# salt-key -L Accepted Keys: Denied Keys: Unaccepted Keys: node01.cs1cloud.internal node02.cs1cloud.internal Rejected Keys:  接受客户端node01，node02 [root@centosXnode1 ~]# salt-key -a node01.cs1cloud.internal （a指定node节点名添加，A添加所以） The following keys are going to be accepted: Unaccepted Keys: node01.cs1cloud.internal Proceed? [n/Y] y Key for minion node01.cs1cloud.internal accepted. [root@centosXnode1 ~]# salt-key -L Accepted Keys: node01.cs1cloud.internal Denied Keys: Unaccepted Keys: node02.cs1cloud.internal Rejected Keys: [root@centosXnode1 ~]# salt-key -A The following keys are going to be accepted: Unaccepted Keys: node02.</description>
+    </item>
+    
+  </channel>
+</rss>

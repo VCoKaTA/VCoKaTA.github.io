@@ -1,0 +1,603 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="K8s 二进制部署5.1（master节点部署apiserver）">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>K8s 二进制部署5.1（master节点部署apiserver） &middot; SomethingCM</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://SomethingCM.github.io//css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://SomethingCM.github.io//css/style.css">
+
+
+    
+    <script src="https://SomethingCM.github.io//js/jquery.min-2.1.4.js"></script>
+    <script src="https://SomethingCM.github.io//js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="SomethingCM" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://SomethingCM.github.io/">SomethingCM</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://SomethingCM.github.io//openstack/">Openstack</a></li>
+                    <li><a href="https://SomethingCM.github.io//ceph/">Ceph</a></li>
+                    <li><a href="https://SomethingCM.github.io//k8s/">Kubernetes</a></li>
+                    <li><a href="https://SomethingCM.github.io//mesos/">Mesos</a></li>
+                    <li><a href="https://SomethingCM.github.io//target/">Linux札记</a></li>
+                    <li><a href="https://SomethingCM.github.io//note/">Python &amp; Django</a></li>
+                                        <li><a href="https://SomethingCM.github.io//page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2apiserver">master节点部署apiserver</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%83%A8%E7%BD%B2">二进制部署</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<hr />
+
+<h3 id="1-创建apiserver证书">1、创建apiserver证书</h3>
+
+<pre><code>cd /root/cert
+cat &gt; kubernetes-csr.json &lt;&lt;EOF
+{
+  &quot;CN&quot;: &quot;kubernetes&quot;,
+  &quot;hosts&quot;: [
+    &quot;127.0.0.1&quot;,
+    &quot;10.200.46.44&quot;,
+    &quot;10.200.46.39&quot;,
+    &quot;10.200.46.40&quot;,
+    &quot;10.200.46.41&quot;,
+    &quot;10.68.0.1&quot;,
+    &quot;kubernetes&quot;,
+    &quot;kubernetes.default&quot;,
+    &quot;kubernetes.default.svc&quot;,
+    &quot;kubernetes.default.svc.cluster&quot;,
+    &quot;kubernetes.default.svc.cluster.local&quot;
+  ],
+  &quot;key&quot;: {
+    &quot;algo&quot;: &quot;rsa&quot;,
+    &quot;size&quot;: 2048
+  },
+  &quot;names&quot;: [
+    {
+      &quot;C&quot;: &quot;CN&quot;,
+      &quot;ST&quot;: &quot;Beijing&quot;,
+      &quot;L&quot;: &quot;XS&quot;,
+      &quot;O&quot;: &quot;k8s&quot;,
+      &quot;OU&quot;: &quot;System&quot;
+    }
+  ]
+}
+EOF
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem  -config=ca-config.json -profile=kubernetes kubernetes-csr.json | cfssljson -bare kubernetes
+cp kubernetes*.pem /etc/kubernetes/pki/  
+scp kubernetes*.pem  10.200.46.40:/etc/kubernetes/pki/
+scp kubernetes*.pem  10.200.46.41:/etc/kubernetes/pki/
+
+# hosts 字段指定授权使用该证书的 IP 和域名列表，这里列出了 master 节点 IP、kubernetes 服务的 IP 和域名；
+# kubernetes 服务 IP 是 apiserver 自动创建的，一般是 --service-cluster-ip-range 参数指定的网段的第一个IP，后续可以通过下面命令获取：
+kubectl get svc kubernetes
+</code></pre>
+
+<h2 id="2-创建加密配置文件">2、创建加密配置文件</h2>
+
+<pre><code>创建加密配置文件
+cat &gt; /etc/kubernetes/encryption-config.yaml &lt;&lt;EOF
+kind: EncryptionConfig
+apiVersion: v1
+resources:
+  - resources:
+      - secrets
+    providers:
+      - aescbc:
+          keys:
+            - name: key1
+              secret: a5d1a9ae50383d23bc71b425d1bf734c
+      - identity: {}
+EOF
+
+将加密配置文件拷贝到 master 节点的 /etc/kubernetes 目录下：
+scp /etc/kubernetes/encryption-config.yaml  10.200.46.40:/etc/kubernetes/
+scp /etc/kubernetes/encryption-config.yaml  10.200.46.41:/etc/kubernetes/
+</code></pre>
+
+<h2 id="3-创建审计策略文件">3、创建审计策略文件</h2>
+
+<pre><code>cat &gt; /etc/kubernetes/audit-policy.yaml &lt;&lt;EOF
+apiVersion: audit.k8s.io/v1beta1
+kind: Policy
+rules:
+  # The following requests were manually identified as high-volume and low-risk, so drop them.
+  - level: None
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - endpoints
+          - services
+          - services/status
+    users:
+      - 'system:kube-proxy'
+    verbs:
+      - watch
+
+  - level: None
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - nodes
+          - nodes/status
+    userGroups:
+      - 'system:nodes'
+    verbs:
+      - get
+
+  - level: None
+    namespaces:
+      - kube-system
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - endpoints
+    users:
+      - 'system:kube-controller-manager'
+      - 'system:kube-scheduler'
+      - 'system:serviceaccount:kube-system:endpoint-controller'
+    verbs:
+      - get
+      - update
+
+  - level: None
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - namespaces
+          - namespaces/status
+          - namespaces/finalize
+    users:
+      - 'system:apiserver'
+    verbs:
+      - get
+
+  # Don't log HPA fetching metrics.
+  - level: None
+    resources:
+      - group: metrics.k8s.io
+    users:
+      - 'system:kube-controller-manager'
+    verbs:
+      - get
+      - list
+
+  # Don't log these read-only URLs.
+  - level: None
+    nonResourceURLs:
+      - '/healthz*'
+      - /version
+      - '/swagger*'
+
+  # Don't log events requests.
+  - level: None
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - events
+
+  # node and pod status calls from nodes are high-volume and can be large, don't log responses for expected updates from nodes
+  - level: Request
+    omitStages:
+      - RequestReceived
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - nodes/status
+          - pods/status
+    users:
+      - kubelet
+      - 'system:node-problem-detector'
+      - 'system:serviceaccount:kube-system:node-problem-detector'
+    verbs:
+      - update
+      - patch
+
+  - level: Request
+    omitStages:
+      - RequestReceived
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - nodes/status
+          - pods/status
+    userGroups:
+      - 'system:nodes'
+    verbs:
+      - update
+      - patch
+
+  # deletecollection calls can be large, don't log responses for expected namespace deletions
+  - level: Request
+    omitStages:
+      - RequestReceived
+    users:
+      - 'system:serviceaccount:kube-system:namespace-controller'
+    verbs:
+      - deletecollection
+
+  # Secrets, ConfigMaps, and TokenReviews can contain sensitive &amp; binary data,
+  # so only log at the Metadata level.
+  - level: Metadata
+    omitStages:
+      - RequestReceived
+    resources:
+      - group: &quot;&quot;
+        resources:
+          - secrets
+          - configmaps
+      - group: authentication.k8s.io
+        resources:
+          - tokenreviews
+  # Get repsonses can be large; skip them.
+  - level: Request
+    omitStages:
+      - RequestReceived
+    resources:
+      - group: &quot;&quot;
+      - group: admissionregistration.k8s.io
+      - group: apiextensions.k8s.io
+      - group: apiregistration.k8s.io
+      - group: apps
+      - group: authentication.k8s.io
+      - group: authorization.k8s.io
+      - group: autoscaling
+      - group: batch
+      - group: certificates.k8s.io
+      - group: extensions
+      - group: metrics.k8s.io
+      - group: networking.k8s.io
+      - group: policy
+      - group: rbac.authorization.k8s.io
+      - group: scheduling.k8s.io
+      - group: settings.k8s.io
+      - group: storage.k8s.io
+    verbs:
+      - get
+      - list
+      - watch
+
+  # Default level for known APIs
+  - level: RequestResponse
+    omitStages:
+      - RequestReceived
+    resources:
+      - group: &quot;&quot;
+      - group: admissionregistration.k8s.io
+      - group: apiextensions.k8s.io
+      - group: apiregistration.k8s.io
+      - group: apps
+      - group: authentication.k8s.io
+      - group: authorization.k8s.io
+      - group: autoscaling
+      - group: batch
+      - group: certificates.k8s.io
+      - group: extensions
+      - group: metrics.k8s.io
+      - group: networking.k8s.io
+      - group: policy
+      - group: rbac.authorization.k8s.io
+      - group: scheduling.k8s.io
+      - group: settings.k8s.io
+      - group: storage.k8s.io
+
+  # Default level for all other requests.
+  - level: Metadata
+    omitStages:
+      - RequestReceived
+EOF
+分发审计策略文件：
+scp /etc/kubernetes/audit-policy.yaml  10.200.46.40:/etc/kubernetes/
+scp /etc/kubernetes/audit-policy.yaml  10.200.46.41:/etc/kubernetes/
+
+</code></pre>
+
+<h2 id="4-创建后续访问-metrics-server-使用的证书">4、创建后续访问 metrics-server 使用的证书</h2>
+
+<pre><code>cat &gt; proxy-client-csr.json &lt;&lt;EOF
+{
+  &quot;CN&quot;: &quot;aggregator&quot;,
+  &quot;hosts&quot;: [],
+  &quot;key&quot;: {
+    &quot;algo&quot;: &quot;rsa&quot;,
+    &quot;size&quot;: 2048
+  },
+  &quot;names&quot;: [
+    {
+      &quot;C&quot;: &quot;CN&quot;,
+      &quot;ST&quot;: &quot;BeiJing&quot;,
+      &quot;L&quot;: &quot;BeiJing&quot;,
+      &quot;O&quot;: &quot;k8s&quot;,
+      &quot;OU&quot;: &quot;System&quot;
+    }
+  ]
+}
+EOF
+CN 名称需要位于 kube-apiserver 的 --requestheader-allowed-names 参数中，否则后续访问 metrics 时会提示权限不足。
+
+cfssl gencert -ca=ca.pem -ca-key=ca-key.pem  -config=ca-config.json -profile=kubernetes proxy-client-csr.json | cfssljson -bare proxy-client
+cp proxy-client*.pem /etc/kubernetes/pki/  
+scp proxy-client*.pem  10.200.46.40:/etc/kubernetes/pki/
+scp proxy-client*.pem  10.200.46.41:/etc/kubernetes/pki/
+</code></pre>
+
+<h2 id="5-创建-apiserver-的-systemd-unit-文件">5、创建 apiserver 的 systemd unit 文件</h2>
+
+<pre><code>mkdir -p /var/log/kubernetes/kube-apiserver/
+注意不同节点ip
+节点39:
+export NODE_IP=10.200.46.39
+节点40:
+export NODE_IP=10.200.46.40
+节点41:
+export NODE_IP=10.200.46.41
+
+cat &gt; /etc/systemd/system/kube-apiserver.service &lt;&lt;EOF
+[Unit]
+Description=Kubernetes API Server
+Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+After=network.target
+
+[Service]
+ExecStart=/usr/bin/kube-apiserver \\
+  --advertise-address=${NODE_IP} \\
+  --default-not-ready-toleration-seconds=360 \\
+  --default-unreachable-toleration-seconds=360 \\
+  --feature-gates=DynamicAuditing=true \\
+  --max-mutating-requests-inflight=2000 \\
+  --max-requests-inflight=4000 \\
+  --default-watch-cache-size=200 \\
+  --delete-collection-workers=2 \\
+  --encryption-provider-config=/etc/kubernetes/encryption-config.yaml \\
+  --etcd-cafile=/etc/kubernetes/pki/ca.pem\\
+  --etcd-certfile=/etc/kubernetes/pki/kubernetes.pem \\
+  --etcd-keyfile=/etc/kubernetes/pki/kubernetes-key.pem \\
+  --etcd-servers=https://10.200.46.39:2379,https://10.200.46.40:2379,https://10.200.46.41:2379\\
+  --bind-address=${NODE_IP} \\
+  --secure-port=6443 \\
+  --tls-cert-file=/etc/kubernetes/pki/kubernetes.pem \\
+  --tls-private-key-file=/etc/kubernetes/pki/kubernetes-key.pem \\
+  --insecure-port=0 \\
+  --audit-dynamic-configuration \\
+  --audit-log-maxage=15 \\
+  --audit-log-maxbackup=3 \\
+  --audit-log-maxsize=100 \\
+  --audit-log-truncate-enabled \\
+  --audit-log-path=/var/logs/kubernetes/kube-apiserver/audit.log \\
+  --audit-policy-file=/etc/kubernetes/audit-policy.yaml \\
+  --profiling \\
+  --anonymous-auth=false \\
+  --client-ca-file=/etc/kubernetes/pki/ca.pem \\
+  --enable-bootstrap-token-auth \\
+  --requestheader-allowed-names=&quot;aggregator&quot; \\
+  --requestheader-client-ca-file=/etc/kubernetes/pki/ca.pem \\
+  --requestheader-extra-headers-prefix=&quot;X-Remote-Extra-&quot; \\
+  --requestheader-group-headers=X-Remote-Group \\
+  --requestheader-username-headers=X-Remote-User \\
+  --service-account-key-file=/etc/kubernetes/pki/ca.pem \\
+  --authorization-mode=Node,RBAC \\
+  --runtime-config=api/all=true \\
+  --enable-admission-plugins=NodeRestriction \\
+  --allow-privileged=true \\
+  --apiserver-count=3 \\
+  --event-ttl=168h \\
+  --kubelet-certificate-authority=/etc/kubernetes/pki/ca.pem \\
+  --kubelet-client-certificate=/etc/kubernetes/pki/kubernetes.pem \\
+  --kubelet-client-key=/etc/kubernetes/pki/kubernetes-key.pem \\
+  --kubelet-https=true \\
+  --kubelet-timeout=10s \\
+  --proxy-client-cert-file=/etc/kubernetes/pki/proxy-client.pem \\
+  --proxy-client-key-file=/etc/kubernetes/pki/proxy-client-key.pem \\
+  --service-cluster-ip-range=10.68.0.0/16 \\
+  --service-node-port-range=30000-50000 \\
+  --logtostderr=false \\
+  --log-dir=/var/log/kubernetes/kube-apiserver \\
+  --v=2
+Restart=on-failure
+RestartSec=10
+Type=notify
+LimitNOFILE=65536
+
+[Install]
+WantedBy=multi-user.target
+EOF
+
+systemctl daemon-reload &amp;&amp; systemctl enable kube-apiserver &amp;&amp; systemctl restart kube-apiserver
+
+# --advertise-address：apiserver 对外通告的 IP（kubernetes 服务后端节点 IP）；
+# --default-*-toleration-seconds：设置节点异常相关的阈值；
+# --max-*-requests-inflight：请求相关的最大阈值；
+# --etcd-*：访问 etcd 的证书和 etcd 服务器地址；
+# --experimental-encryption-provider-config：指定用于加密 etcd 中 secret 的配置；
+# --bind-address： https 监听的 IP，不能为 127.0.0.1，否则外界不能访问它的安全端口 6443；
+# --secret-port：https 监听端口；
+# --insecure-port=0：关闭监听 http 非安全端口(8080)；
+# --tls-*-file：指定 apiserver 使用的证书、私钥和 CA 文件；
+# --audit-*：配置审计策略和审计日志文件相关的参数；
+# --client-ca-file：验证 client (kue-controller-manager、kube-scheduler、kubelet、kube-proxy 等)请求所带的证书；
+# --enable-bootstrap-token-auth：启用 kubelet bootstrap 的 token 认证；
+# --requestheader-*：kube-apiserver 的 aggregator layer 相关的配置参数，proxy-client &amp; HPA 需要使用；
+# --requestheader-client-ca-file：用于签名 --proxy-client-cert-file 和 --proxy-client-key-file 指定的证书；在启用了 metric aggregator 时使用；
+# --requestheader-allowed-names：不能为空，值为逗号分割的 --proxy-client-cert-file 证书的 CN 名称，这里设置为 &quot;aggregator&quot;；
+# --service-account-key-file：签名 ServiceAccount Token 的公钥文件，kube-controller-manager 的 --service-account-private-key-file 指定私钥文件，两者配对使用；
+# --runtime-config=api/all=true： 启用所有版本的 APIs，如 autoscaling/v2alpha1；
+# --authorization-mode=Node,RBAC、--anonymous-auth=false： 开启 Node 和 RBAC 授权模式，拒绝未授权的请求；
+# --enable-admission-plugins：启用一些默认关闭的 plugins；
+# --allow-privileged：运行执行 privileged 权限的容器；
+# --apiserver-count=3：指定 apiserver 实例的数量；
+# --event-ttl：指定 events 的保存时间；
+# --kubelet-*：如果指定，则使用 https 访问 kubelet APIs；需要为证书对应的用户(上面 kubernetes*.pem 证书的用户为 kubernetes) 用户定义 RBAC 规则，否则访问 kubelet API 时提示未授权；
+# --proxy-client-*：apiserver 访问 metrics-server 使用的证书；
+# --service-cluster-ip-range： 指定 Service Cluster IP 地址段；
+# --service-node-port-range： 指定 NodePort 的端口范围；
+
+如果 kube-apiserver 机器没有运行 kube-proxy，则还需要添加 --enable-aggregator-routing=true 参数；
+关于 --requestheader-XXX 相关参数，参考：
+# https://github.com/kubernetes-incubator/apiserver-builder/blob/master/docs/concepts/auth.md
+# https://docs.bitnami.com/kubernetes/how-to/configure-autoscaling-custom-metrics/
+
+注意：
+1. requestheader-client-ca-file 指定的 CA 证书，必须具有 client auth and server auth；
+2. 如果 --requestheader-allowed-names 为空，或者 --proxy-client-cert-file 证书的 CN 名称不在 allowed-names 中，则后续查看 node 或 pods 的 metrics 失败
+
+打印 kube-apiserver 写入 etcd 的数据
+ETCDCTL_API=3 etcdctl \
+    --endpoints=https://10.200.46.39:2379,https://10.200.46.40:2379,https://10.200.46.41:2379 \
+    --cacert=/etc/kubernetes/pki/ca.pem \
+    --cert=/etc/kubernetes/pki/etcd/etcd.pem \
+    --key=/etc/kubernetes/pki/etcd/etcd-key.pem \
+    get /registry/ --prefix --keys-only
+
+</code></pre>
+
+<h2 id="6-检查集群信息">6、检查集群信息</h2>
+
+<pre><code>
+[root@k8s-1 cert]#kubectl cluster-info
+Kubernetes master is running at https://10.200.46.44:6443
+To further debug and diagnose cluster problems, use 'kubectl cluster-info dump’.
+
+[root@k8s-1 cert]#kubectl get all --all-namespaces
+NAMESPACE   NAME                 TYPE        CLUSTER-IP   EXTERNAL-IP   PORT(S)   AGE
+default     service/kubernetes   ClusterIP   10.68.0.1    &lt;none&gt;        443/TCP   3m50s
+
+[root@k8s-1 cert]# kubectl get componentstatuses
+NAME                 STATUS      MESSAGE                                                                                     ERROR
+scheduler            Unhealthy   Get http://127.0.0.1:10251/healthz: dial tcp 127.0.0.1:10251: connect: connection refused   
+controller-manager   Unhealthy   Get http://127.0.0.1:10252/healthz: dial tcp 127.0.0.1:10252: connect: connection refused   
+etcd-2               Healthy     {&quot;health&quot;:&quot;true&quot;}                                                                           
+etcd-0               Healthy     {&quot;health&quot;:&quot;true&quot;}                                                                           
+etcd-1               Healthy     {&quot;health&quot;:&quot;true&quot;}    
+
+[root@k8s-1 cert]# netstat -lnpt|grep kube
+tcp        0      0 10.200.46.39:6443       0.0.0.0:*               LISTEN      13378/kube-apiserve
+
+1. 如果执行 kubectl 命令式时输出如下错误信息，则说明使用的 ~/.kube/config 文件不对，请切换到正确的账户后再执行该命令：
+The connection to the server localhost:8080 was refused - did you specify the right host or port?
+2. 执行 kubectl get componentstatuses 命令时，apiserver 默认向 127.0.0.1 发送请求。当 controller-manager、scheduler 以集群模式运行时，有可能和 kube-apiserver 不在一台机器上，这时 controller-manager 或 scheduler 的状态为 Unhealthy，但实际上它们工作正常。
+
+授予 kube-apiserver 访问 kubelet API 的权限
+在执行 kubectl exec、run、logs 等命令时，apiserver 会将请求转发到 kubelet 的 https 端口。这里定义 RBAC 规则，授权 apiserver 使用的证书（kubernetes.pem）用户名（CN：kuberntes）访问 kubelet API 的权限：
+kubectl create clusterrolebinding kube-apiserver:kubelet-apis --clusterrole=system:kubelet-api-admin --user kubernetes
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/k8s/k8s5.1/" data-title="K8s 二进制部署5.1（master节点部署apiserver）" data-url="https://SomethingCM.github.io/k8s/k8s5.1/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://SomethingCM.github.io//css/zTreeStyle.css" type="text/css"><script src="https://SomethingCM.github.io//js/jquery.ztree.core-3.5.min.js"></script><script src="https://SomethingCM.github.io//js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://SomethingCM.github.io//license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/SomethingCM" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+
