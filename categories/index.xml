@@ -2,138 +2,138 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>Categories on VCoKaTA</title>
-    <link>VCoKaTA.github.io/categories/</link>
+    <link>https://vcokata.github.io/categories/</link>
     <description>Recent content in Categories on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 25 Feb 2016 15:44:06 +0800</lastBuildDate>
     
-	<atom:link href="VCoKaTA.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://vcokata.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>switch</title>
-      <link>VCoKaTA.github.io/categories/switch/</link>
+      <link>https://vcokata.github.io/categories/switch/</link>
       <pubDate>Thu, 25 Feb 2016 15:44:06 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/switch/</guid>
+      <guid>https://vcokata.github.io/categories/switch/</guid>
       <description></description>
     </item>
     
     <item>
       <title>gitlab</title>
-      <link>VCoKaTA.github.io/categories/gitlab/</link>
+      <link>https://vcokata.github.io/categories/gitlab/</link>
       <pubDate>Tue, 23 Feb 2016 10:27:29 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/gitlab/</guid>
+      <guid>https://vcokata.github.io/categories/gitlab/</guid>
       <description></description>
     </item>
     
     <item>
       <title>jenkins</title>
-      <link>VCoKaTA.github.io/categories/jenkins/</link>
+      <link>https://vcokata.github.io/categories/jenkins/</link>
       <pubDate>Tue, 23 Feb 2016 10:27:29 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/jenkins/</guid>
+      <guid>https://vcokata.github.io/categories/jenkins/</guid>
       <description></description>
     </item>
     
     <item>
       <title>docker</title>
-      <link>VCoKaTA.github.io/categories/docker/</link>
+      <link>https://vcokata.github.io/categories/docker/</link>
       <pubDate>Thu, 31 Dec 2015 13:25:08 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/docker/</guid>
+      <guid>https://vcokata.github.io/categories/docker/</guid>
       <description></description>
     </item>
     
     <item>
       <title>openstack</title>
-      <link>VCoKaTA.github.io/categories/openstack/</link>
+      <link>https://vcokata.github.io/categories/openstack/</link>
       <pubDate>Thu, 24 Dec 2015 16:41:00 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/openstack/</guid>
+      <guid>https://vcokata.github.io/categories/openstack/</guid>
       <description></description>
     </item>
     
     <item>
       <title>elk</title>
-      <link>VCoKaTA.github.io/categories/elk/</link>
+      <link>https://vcokata.github.io/categories/elk/</link>
       <pubDate>Wed, 11 Nov 2015 13:35:50 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/elk/</guid>
+      <guid>https://vcokata.github.io/categories/elk/</guid>
       <description></description>
     </item>
     
     <item>
       <title>salt yum lnmp</title>
-      <link>VCoKaTA.github.io/categories/salt-yum-lnmp/</link>
+      <link>https://vcokata.github.io/categories/salt-yum-lnmp/</link>
       <pubDate>Fri, 02 Oct 2015 10:53:48 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/salt-yum-lnmp/</guid>
+      <guid>https://vcokata.github.io/categories/salt-yum-lnmp/</guid>
       <description></description>
     </item>
     
     <item>
       <title>KVM</title>
-      <link>VCoKaTA.github.io/categories/kvm/</link>
+      <link>https://vcokata.github.io/categories/kvm/</link>
       <pubDate>Fri, 02 Oct 2015 09:40:15 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/kvm/</guid>
+      <guid>https://vcokata.github.io/categories/kvm/</guid>
       <description></description>
     </item>
     
     <item>
       <title>shipyard</title>
-      <link>VCoKaTA.github.io/categories/shipyard/</link>
+      <link>https://vcokata.github.io/categories/shipyard/</link>
       <pubDate>Thu, 30 Jul 2015 15:20:45 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/shipyard/</guid>
+      <guid>https://vcokata.github.io/categories/shipyard/</guid>
       <description></description>
     </item>
     
     <item>
       <title>saltstack</title>
-      <link>VCoKaTA.github.io/categories/saltstack/</link>
+      <link>https://vcokata.github.io/categories/saltstack/</link>
       <pubDate>Mon, 20 Jul 2015 14:56:05 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/saltstack/</guid>
+      <guid>https://vcokata.github.io/categories/saltstack/</guid>
       <description></description>
     </item>
     
     <item>
       <title>salt</title>
-      <link>VCoKaTA.github.io/categories/salt/</link>
+      <link>https://vcokata.github.io/categories/salt/</link>
       <pubDate>Mon, 09 Mar 2015 09:40:15 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/salt/</guid>
+      <guid>https://vcokata.github.io/categories/salt/</guid>
       <description></description>
     </item>
     
     <item>
       <title>mysql</title>
-      <link>VCoKaTA.github.io/categories/mysql/</link>
+      <link>https://vcokata.github.io/categories/mysql/</link>
       <pubDate>Thu, 22 May 2014 10:04:16 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/mysql/</guid>
+      <guid>https://vcokata.github.io/categories/mysql/</guid>
       <description></description>
     </item>
     
     <item>
       <title>lnmp</title>
-      <link>VCoKaTA.github.io/categories/lnmp/</link>
+      <link>https://vcokata.github.io/categories/lnmp/</link>
       <pubDate>Tue, 29 Apr 2014 09:40:15 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/lnmp/</guid>
+      <guid>https://vcokata.github.io/categories/lnmp/</guid>
       <description></description>
     </item>
     
     <item>
       <title>samba</title>
-      <link>VCoKaTA.github.io/categories/samba/</link>
+      <link>https://vcokata.github.io/categories/samba/</link>
       <pubDate>Sun, 23 Mar 2014 09:40:15 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/categories/samba/</guid>
+      <guid>https://vcokata.github.io/categories/samba/</guid>
       <description></description>
     </item>
     

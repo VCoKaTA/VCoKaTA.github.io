@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>openstack on VCoKaTA</title>
-    <link>VCoKaTA.github.io/categories/openstack/</link>
+    <link>https://vcokata.github.io/categories/openstack/</link>
     <description>Recent content in openstack on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Thu, 24 Dec 2015 16:41:00 +0800</lastBuildDate>
     
-	<atom:link href="VCoKaTA.github.io/categories/openstack/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://vcokata.github.io/categories/openstack/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>openstack 学习安装</title>
-      <link>VCoKaTA.github.io/openstack/easy_install/</link>
+      <link>https://vcokata.github.io/openstack/easy_install/</link>
       <pubDate>Thu, 24 Dec 2015 16:41:00 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/openstack/easy_install/</guid>
+      <guid>https://vcokata.github.io/openstack/easy_install/</guid>
       <description>Openstack不是经常安装，过一段时间就会忘记，所以做个安装笔记，以后忘记通过笔记可以快速记起来  1 openstack环境介绍 官方文档： http://docs.openstack.org  1.1 openstack各个服务的功能详解：    服务名称 项目名称 描述     Dashbiard Horizon 基于openstack API接口使用diango开发的web管理   compute Nova 通过虚拟化技术提供计算资源池   Networking Neutron 实现了虚拟机的网络资源管理   storage(存储)     Object Storage Swift 对象存储，适用于&amp;rdquo;一次写入，多次读取&amp;rdquo;   Block Storage Cinder 块存储，提供存储资源池   Shared Services(共享服务)     Identity Service Keystone 认证管理   Image Service Glance 提供虚拟镜像的注册和存储管理   Telemetry Ceilometer 提供监控和数据采集、计量服务   Higher-level services(高层服务)     Orchestration Heat 自动化部署的组件   Database Service Trove 提供数据库应用服务    2 环境： 两台centos7.</description>
     </item>
     

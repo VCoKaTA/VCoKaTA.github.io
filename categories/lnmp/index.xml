@@ -2,21 +2,21 @@
 <rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
   <channel>
     <title>lnmp on VCoKaTA</title>
-    <link>VCoKaTA.github.io/categories/lnmp/</link>
+    <link>https://vcokata.github.io/categories/lnmp/</link>
     <description>Recent content in lnmp on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
     <lastBuildDate>Tue, 29 Apr 2014 09:40:15 +0800</lastBuildDate>
     
-	<atom:link href="VCoKaTA.github.io/categories/lnmp/index.xml" rel="self" type="application/rss+xml" />
+	<atom:link href="https://vcokata.github.io/categories/lnmp/index.xml" rel="self" type="application/rss+xml" />
     
     
     <item>
       <title>lnmp 源码安装</title>
-      <link>VCoKaTA.github.io/target/lunp/</link>
+      <link>https://vcokata.github.io/target/lunp/</link>
       <pubDate>Tue, 29 Apr 2014 09:40:15 +0800</pubDate>
       
-      <guid>VCoKaTA.github.io/target/lunp/</guid>
+      <guid>https://vcokata.github.io/target/lunp/</guid>
       <description>安装环境 redhat6.0 itables disabled selinux disabled  1.安装MYAQL [root@localhost mysql]# ls mysql-5.6.10 mysql-5.6.10.tar.gz [root@localhost mysql]# cd mysql-5.6.10
 源码安装mysql（也可yum install） yum install -y gcc gcc-c++ make ncurses-devel bison openssl-devel zlib-devel cmake -y [root@localhost 5.6.10]# cmake -DCMAKE_INSTALL_PREFIX=/usr/local/lnmp/mysql -DMYSQL_DATADIR=/usr/local/lnmp/mysql/data -DMYSQL_UNIX_ADDR=/usr/local/lnmp/mysql/data/mysql.sock -DWITH_MYISAM_STORAGE_ENGINE=1 -DWITH_INNOBASE_STORAGE_ENGINE=1 -DWITH_ARCHIVE_STORAGE_ENGINE=1 -DWITH_BLACKHOLE_STORAGE_ENGINE=1 -DWITH_PARTITION_STORAGE_ENGINE=1 -DENABLED_LOCAL_INFILE=1 -DWITH_READLINE=1 -DWITH_SSL=yes -DDEFAULT_CHARSET=utf8 -DDEFAULT_COLLATION=utf8_general_ci -DEXTRA_CHARSETS=all -DMYSQL_TCP_PORT=3306 make &amp;amp;&amp;amp; make install cp support-files/my-medium.cnf /etc/my.cnf # 复制配置文件，注意修改配置文件中的目录 vi /etc/my.cnf # These are commonly set, remove the # and set as required.</description>
     </item>
