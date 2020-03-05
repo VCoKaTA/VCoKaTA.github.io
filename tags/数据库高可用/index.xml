@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>数据库高可用 on VCoKaTA</title>
+    <link>https://vcokata.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%AB%98%E5%8F%AF%E7%94%A8/</link>
+    <description>Recent content in 数据库高可用 on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Sun, 13 Mar 2016 17:22:29 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/tags/%E6%95%B0%E6%8D%AE%E5%BA%93%E9%AB%98%E5%8F%AF%E7%94%A8/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Openstack集群之数据库</title>
+      <link>https://vcokata.github.io/openstack/ha2/</link>
+      <pubDate>Sun, 13 Mar 2016 17:22:29 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/openstack/ha2/</guid>
+      <description>官方推荐数据库mariadb 1、环境 系统centos7.2 三台主机 firewalld disable selinux disable 192.168.173.24 192.168.173.22 192.168.173.23 vim /etc/yum.repos.d/Galera.repo [mariadb] name = MariaDB Galera Cluster baseurl = http://yum.mariadb.org/5.5.50/centos7-amd64/ gpgkey = https://yum.mariadb.org/RPM-GPG-KEY-MariaDB gpgcheck = 1 skip_if_unavailable = 1  2、安装MariaDB yum -y install MariaDB-Galera-server galera MariaDB-client rsync 配置文件 vim /etc/my.cnf [mysqld] datadir=/var/lib/mysql socket=/var/lib/mysql/mysql.sock user=mysql binlog_format=ROW bind-address=192.168.173.22 # InnoDB Configuration default_storage_engine=innodb innodb_autoinc_lock_mode=2 innodb_flush_log_at_trx_commit=0 innodb_buffer_pool_size=122M # # # Galera Cluster Configuration wsrep_provider= /usr/lib64/galera/libgalera_smm.so wsrep_provider_options=&amp;quot;pc.recovery=TRUE;gcache.size=300M&amp;quot; wsrep_cluster_name=&amp;quot;openstack_cluster&amp;quot; wsrep_cluster_address=&amp;quot;gcomm://192.168.173.23,192.168.173.24&amp;quot; wsrep_sst_method=rsync 其他两台也做相应的配置 初始化只能在一台机器上执行，其他机器后期启动数据库就可以了 service mysql start --wsrep-new-cluster 日志 tail -f /var/lib/mysql/host-192-168-173-22.</description>
+    </item>
+    
+  </channel>
+</rss>

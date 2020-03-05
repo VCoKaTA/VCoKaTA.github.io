@@ -6,10 +6,208 @@
     <description>Recent content in Categories on VCoKaTA</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>en-us</language>
-    <lastBuildDate>Thu, 25 Feb 2016 15:44:06 +0800</lastBuildDate>
+    <lastBuildDate>Fri, 19 Oct 2018 01:19:14 +0800</lastBuildDate>
     
 	<atom:link href="https://vcokata.github.io/categories/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>镜像清理</title>
+      <link>https://vcokata.github.io/categories/%E9%95%9C%E5%83%8F%E6%B8%85%E7%90%86/</link>
+      <pubDate>Fri, 19 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%95%9C%E5%83%8F%E6%B8%85%E7%90%86/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署coredns</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2coredns/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2coredns/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署Dashboard</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2dashboard/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2dashboard/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署EFK</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2efk/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2efk/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署metrics-server</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2metrics-server/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2metrics-server/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署Prometheus-operator监控</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2prometheus-operator%E7%9B%91%E6%8E%A7/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2prometheus-operator%E7%9B%91%E6%8E%A7/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署traefik ingress</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2traefik-ingress/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2traefik-ingress/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署calico网络</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2calico%E7%BD%91%E7%BB%9C/</link>
+      <pubDate>Thu, 11 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2calico%E7%BD%91%E7%BB%9C/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署集群插件</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4%E6%8F%92%E4%BB%B6/</link>
+      <pubDate>Thu, 11 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2%E9%9B%86%E7%BE%A4%E6%8F%92%E4%BB%B6/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署kube-proxy组件</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2kube-proxy%E7%BB%84%E4%BB%B6/</link>
+      <pubDate>Wed, 10 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2kube-proxy%E7%BB%84%E4%BB%B6/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署kubelet组件</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2kubelet%E7%BB%84%E4%BB%B6/</link>
+      <pubDate>Wed, 10 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2kubelet%E7%BB%84%E4%BB%B6/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署worker节点</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2worker%E8%8A%82%E7%82%B9/</link>
+      <pubDate>Wed, 10 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2worker%E8%8A%82%E7%82%B9/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>master节点部署apiserver</title>
+      <link>https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2apiserver/</link>
+      <pubDate>Tue, 02 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2apiserver/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>master节点部署kube-controller-manager</title>
+      <link>https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2kube-controller-manager/</link>
+      <pubDate>Tue, 02 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2kube-controller-manager/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>master节点部署kube-schedule</title>
+      <link>https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2kube-schedule/</link>
+      <pubDate>Tue, 02 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2kube-schedule/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署master节点</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2master%E8%8A%82%E7%82%B9/</link>
+      <pubDate>Tue, 02 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2master%E8%8A%82%E7%82%B9/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署 kubectl</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2-kubectl/</link>
+      <pubDate>Mon, 01 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2-kubectl/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>证书创建</title>
+      <link>https://vcokata.github.io/categories/%E8%AF%81%E4%B9%A6%E5%88%9B%E5%BB%BA/</link>
+      <pubDate>Wed, 12 Sep 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E8%AF%81%E4%B9%A6%E5%88%9B%E5%BB%BA/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>部署-etcd</title>
+      <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2-etcd/</link>
+      <pubDate>Mon, 10 Sep 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2-etcd/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>Harbor集群部署</title>
+      <link>https://vcokata.github.io/categories/harbor%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</link>
+      <pubDate>Sat, 08 Sep 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/harbor%E9%9B%86%E7%BE%A4%E9%83%A8%E7%BD%B2/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>初始化</title>
+      <link>https://vcokata.github.io/categories/%E5%88%9D%E5%A7%8B%E5%8C%96/</link>
+      <pubDate>Sat, 08 Sep 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E5%88%9D%E5%A7%8B%E5%8C%96/</guid>
+      <description></description>
+    </item>
+    
+    <item>
+      <title>本地yum源</title>
+      <link>https://vcokata.github.io/categories/%E6%9C%AC%E5%9C%B0yum%E6%BA%90/</link>
+      <pubDate>Tue, 01 Mar 2016 04:15:04 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/categories/%E6%9C%AC%E5%9C%B0yum%E6%BA%90/</guid>
+      <description></description>
+    </item>
     
     <item>
       <title>switch</title>

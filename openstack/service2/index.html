@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Openstack之扩缩容迁移">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>Openstack之扩缩容迁移 &middot; VCoKaTA</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://vcokata.github.io/css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://vcokata.github.io/css/style.css">
+
+
+    
+    <script src="https://vcokata.github.io/js/jquery.min-2.1.4.js"></script>
+    <script src="https://vcokata.github.io/js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="VCoKaTA" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://vcokata.github.io">VCoKaTA</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://vcokata.github.io/openstack/">Openstack</a></li>
+                    <li><a href="https://vcokata.github.io/ceph/">Ceph</a></li>
+                    <li><a href="https://vcokata.github.io/k8s/">Kubernetes</a></li>
+                    <li><a href="https://vcokata.github.io/mesos/">Mesos</a></li>
+                    <li><a href="https://vcokata.github.io/target/">Linux札记</a></li>
+                    <li><a href="https://vcokata.github.io/note/">Python &amp; Django</a></li>
+                                        <li><a href="https://vcokata.github.io/page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                     using tags
+                    
+                        
+                        <a href="/tags/%E6%89%A9%E7%BC%A9%E8%BF%81%E7%A7%BB">扩缩迁移</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                <hr />
+
+<p><font color=#DC143C size=5 face="黑体">问题：虚拟机扩缩容或迁移的时候失败！</font></p>
+
+<pre><code>执行的大致过程
+1.向nova-api发送请求
+2.nova-api发送消息（nova-api发送消息，迁移这个instance，执行的方法是resize_instance，而非是migrate，migrate实际上是由resize操作实现的）
+3.nova-scheduler执行调度
+4.nova-scheduler发送消息
+5.nova-compute执行操作
+</code></pre>
+
+<p><font color=#DC143C size=5 face="黑体">热迁移需要shared storage，冷迁移不要求源和目标节点必须共享存储，如果有共享存储也可以，但需要计算节点之间需要配置nova用户无密码访问</font></p>
+
+<pre><code>$ usermod -s /bin/bash nova
+$ su - nova
+nova@compute01:~$ mkdir -p -m 700 .ssh
+nova@compute01:~$ cat &gt; .ssh/config &lt;&lt;EOF
+Host *
+StrictHostKeyChecking no
+UserKnownHostsFile=/dev/null
+ EOF
+nova@compute01:~$ ssh-keygen -f id_rsa -b 1024 -P &quot;&quot;
+nova@compute01:~$ scp /var/lib/nova/.ssh/id_rsa.pub root@compute01:/var/lib/nova/.ssh/authorized_keys
+nova@compute01:~$ scp /var/lib/nova/.ssh/id_rsa.pub root@{其他计算节点}:/var/lib/nova/.ssh/authorized_keys
+nova@compute01:~$ scp /var/lib/nova/.ssh/* root@{其他计算节点}:/var/lib/nova/.ssh/
+
+所有计算节点上执行
+sudo chown -R nova:nova /var/lib/nova/
+sudo chmod 700 /var/lib/nova/.ssh
+sudo chmod 600 /var/lib/nova/.ssh/authorized_keys
+chmod 600  /var/lib/nova/.ssh/config
+
+</code></pre>
+
+<p><font color=#DC143C size=5 face="黑体">同时要注意libvirt和nova的配置</font></p>
+
+<pre><code>libvirt:
+cat /etc/libvirt/libvirtd.conf |grep -v '^#'|grep -v '^$'
+listen_tls = 0
+listen_tcp = 1
+tcp_port = &quot;16509&quot;
+auth_tcp = &quot;none&quot;
+修改/etc/sysconfig/libvirtd 添加如下参数
+LIBVIRTD_ARGS=&quot;--listen&quot;
+
+nova:
+vim /etc/nova/nova.conf
+[default]
+allow_resize_to_same_host=True
+[libvirt]
+virt_type=kvm
+inject_password=true
+block_migration=true
+live_migration_flag=VIR_MIGRATE_UNDEFINE_SOURCE, VIR_MIGRATE_PEER2PEER, VIR_MIGRATE_LIVE, VIR_MIGRATE_TUNNELLED
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/openstack/service2/" data-title="Openstack之扩缩容迁移" data-url="https://vcokata.github.io/openstack/service2/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://vcokata.github.io/css/zTreeStyle.css" type="text/css"><script src="https://vcokata.github.io/js/jquery.ztree.core-3.5.min.js"></script><script src="https://vcokata.github.io/js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://vcokata.github.io/license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/VCoKaTA" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

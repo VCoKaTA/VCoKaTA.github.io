@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署 kubectl on VCoKaTA</title>
+    <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2-kubectl/</link>
+    <description>Recent content in 部署 kubectl on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Mon, 01 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2-kubectl/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署4（部署 kubectl）</title>
+      <link>https://vcokata.github.io/k8s/k8s4/</link>
+      <pubDate>Mon, 01 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/k8s/k8s4/</guid>
+      <description>1、部署 kubectl 命令行工具 下载和分发 kubectl 二进制文件 部署相关二进制文件 server端下载： wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/kubernetes-server-linux-amd64.tar.gz tar -zxf kubernetes-node-linux-amd64.tar.gz cp kubernetes/server/bin/{apiextensions-apiserver,cloud-controller-manager,hyperkube,kube-apiserver,kube-controller-manager,kube-scheduler,kubelet,kubectl,kube-proxy,mounter} /usr/bin/ 本次要用的是kubelet  2、创建 admin 证书和私钥 cat admin-csr.json { &amp;quot;CN&amp;quot;: &amp;quot;admin&amp;quot;, &amp;quot;hosts&amp;quot;: [], &amp;quot;key&amp;quot;: { &amp;quot;algo&amp;quot;: &amp;quot;rsa&amp;quot;, &amp;quot;size&amp;quot;: 2048 }, &amp;quot;names&amp;quot;: [ { &amp;quot;C&amp;quot;: &amp;quot;CN&amp;quot;, &amp;quot;ST&amp;quot;: &amp;quot;Beijing&amp;quot;, &amp;quot;L&amp;quot;: &amp;quot;XS&amp;quot;, &amp;quot;O&amp;quot;: &amp;quot;system:masters&amp;quot;, &amp;quot;OU&amp;quot;: &amp;quot;System&amp;quot; } ] } cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes admin-csr.json | cfssljson -bare admin cp admin* /etc/kubernetes/pki/ scp admin* 10.200.46.40:/etc/kubernetes/pki/ scp admin* 10.</description>
+    </item>
+    
+  </channel>
+</rss>

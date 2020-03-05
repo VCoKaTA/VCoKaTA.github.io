@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Openstack利用ceph备份恢复">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>Openstack利用ceph备份恢复 &middot; VCoKaTA</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://vcokata.github.io/css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://vcokata.github.io/css/style.css">
+
+
+    
+    <script src="https://vcokata.github.io/js/jquery.min-2.1.4.js"></script>
+    <script src="https://vcokata.github.io/js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="VCoKaTA" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://vcokata.github.io">VCoKaTA</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://vcokata.github.io/openstack/">Openstack</a></li>
+                    <li><a href="https://vcokata.github.io/ceph/">Ceph</a></li>
+                    <li><a href="https://vcokata.github.io/k8s/">Kubernetes</a></li>
+                    <li><a href="https://vcokata.github.io/mesos/">Mesos</a></li>
+                    <li><a href="https://vcokata.github.io/target/">Linux札记</a></li>
+                    <li><a href="https://vcokata.github.io/note/">Python &amp; Django</a></li>
+                                        <li><a href="https://vcokata.github.io/page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                     using tags
+                    
+                        
+                        <a href="/tags/%E5%88%A9%E7%94%A8ceph%E5%A4%87%E4%BB%BD%E6%81%A2%E5%A4%8D">利用ceph备份恢复</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<hr />
+
+<p><font color=#DC143C size=5 face="黑体">背景：</font></p>
+
+<p><font color=#DC143C size=5 face="黑体">最初ceph集群全是sas盘，没有设置bucket区分，使用的默认bucket。后期又加了一批ssd的盘，分出sas和ssd bucket。那么问题来了，最初的虚拟机和volume都建在默认的bucket，当我迁移老的instaces或者操作老的volumes时报错，最后发现是ceph新建bucket引起的，所以我们需要利用ceph的备份倒入功能实现迁移</font></p>
+
+<hr />
+
+<h2 id="1-备份恢复系统盘">1、备份恢复系统盘</h2>
+
+<pre><code>[root@controller2 ~]# nova list --all-tenants|grep 10.200.41.35
+| 574da876-89bd-463c-90eb-cc65ea0c8977 | zookeeper-01             | 4f93d0bc683d484d9c1f01fd14c0c7e3 | ACTIVE  | -          | Running     | vlan241=10.200.41.35                        |
+
+[root@contorller2 ceph]# rbd ls vms|grep 574da876-89bd-463c-90eb-cc65ea0c8977
+574da876-89bd-463c-90eb-cc65ea0c8977_disk
+
+倒出系统盘
+rbd export -p vms 574da876-89bd-463c-90eb-cc65ea0c8977_disk /tmp/vm1.bk
+
+新建一个虚拟机zookeeper-01new，查询的uid为26bb3815-3cb1-425a-aa96-2dc6fc9fcefe
+使用备份的vm1.bk覆盖关机的26bb3815-3cb1-425a-aa96-2dc6fc9fcefe
+
+rbd rm -p volumes 26bb3815-3cb1-425a-aa96-2dc6fc9fcefe_disk    #删除新建机器的文件
+rbd import -p  vms /tmp/vm1.bk 26bb3815-3cb1-425a-aa96-2dc6fc9fcefe_disk  #恢复备份的vm到新建的机器文件
+</code></pre>
+
+<h2 id="2-备份恢复volumes">2、备份恢复volumes</h2>
+
+<pre><code>[root@controller2 ~]# nova show 574da876-89bd-463c-90eb-cc65ea0c8977
++--------------------------------------+----------------------------------------------------------+
+| Property                             | Value                                                    |
++--------------------------------------+----------------------------------------------------------+
+| OS-DCF:diskConfig                    | AUTO                                                     |
+| OS-EXT-AZ:availability_zone          | nova                                                     |
+| OS-EXT-SRV-ATTR:host                 | compute8                                                 |
+| OS-EXT-SRV-ATTR:hypervisor_hostname  | compute8                                                 |
+| OS-EXT-SRV-ATTR:instance_name        | instance-00000074                                        |
+| OS-EXT-STS:power_state               | 1                                                        |
+| OS-EXT-STS:task_state                | -                                                        |
+| OS-EXT-STS:vm_state                  | active                                                   |
+| OS-SRV-USG:launched_at               | 2016-07-05T01:27:26.000000                               |
+| OS-SRV-USG:terminated_at             | -                                                        |
+| accessIPv4                           |                                                          |
+| accessIPv6                           |                                                          |
+| config_drive                         |                                                          |
+| created                              | 2016-07-05T01:27:19Z                                     |
+| flavor                               | 2C-4G-30G (f6bafa51-387e-4a3f-9492-ecbf3460715a)         |
+| hostId                               | 8317cfbf9feda76a34de3718f451c204aeeae6ed6d18f4a82bed6df8 |
+| id                                   | 574da876-89bd-463c-90eb-cc65ea0c8977                     |
+| image                                | centos7-base (96ce7978-fbba-411f-acb2-3b1ac26f9cad)      |
+| key_name                             | -                                                        |
+| metadata                             | {}                                                       |
+| name                                 | zookeeper-01                                             |
+| os-extended-volumes:volumes_attached | [2ccd04fd-3a28-4d40-b226-cab0af159257]                   |
+| progress                             | 0                                                        |
+| security_groups                      | default                                                  |
+| status                               | ACTIVE                                                   |
+| tenant_id                            | 4f93d0bc683d484d9c1f01fd14c0c7e3                         |
+| updated                              | 2018-07-08T06:36:19Z                                     |
+| user_id                              | 023b3c35523f45608adf52b3d24e4a15                         |
+| vlan241 network                      | 10.200.41.35                                             |
++--------------------------------------+----------------------------------------------------------+
+[root@contorller2 ceph]# rbd ls volumes | grep 2ccd04fd-3a28-4d40-b226-cab0af159257
+volume-2ccd04fd-3a28-4d40-b226-cab0af159257
+
+导出虚拟机到一个位置
+[root@contorller ~]# rbd export -p volumes volume-2ccd04fd-3a28-4d40-b226-cab0af159257 /tmp/volume1.bk
+Exporting image: 100% complete...done.
+[root@contorller ~]# ll /tmp/volume1.bk -h
+-rw-r--r--. 1 root root 100.0G Jun 26 10:39 /tmp/volume1.bk
+
+可以看到虚拟机已经导出了，并且大小也是100G
+我们新建一个volume关联到新建虚拟机zookeeper-01new，同样的方法查到volume id cc9c8141-c70c-4a72-91d5-5fa9e15e21d8
+
+nova show 1aed363d-a591-4e81-99e4-1160f7ec9949
++--------------------------------------+----------------------------------------------------------+
+| Property                             | Value                                                    |
++--------------------------------------+----------------------------------------------------------+
+| OS-DCF:diskConfig                    | AUTO                                                     |
+| OS-EXT-AZ:availability_zone          | wanlinzone                                               |
+| OS-EXT-SRV-ATTR:host                 | compute14-wanlin-yunzongnet                              |
+| OS-EXT-SRV-ATTR:hypervisor_hostname  | compute14-wanlin-yunzongnet                              |
+| OS-EXT-SRV-ATTR:instance_name        | instance-00000fcf                                        |
+| OS-EXT-STS:power_state               | 1                                                        |
+| OS-EXT-STS:task_state                | -                                                        |
+| OS-EXT-STS:vm_state                  | active                                                   |
+| OS-SRV-USG:launched_at               | 2018-08-23T02:47:35.000000                               |
+| OS-SRV-USG:terminated_at             | -                                                        |
+| accessIPv4                           |                                                          |
+| accessIPv6                           |                                                          |
+| config_drive                         |                                                          |
+| created                              | 2018-08-23T02:47:29Z                                     |
+| flavor                               | 2C-4G-80G (6df18436-4dd5-49d1-9c7a-0c5f213fd8c2)         |
+| hostId                               | 2ac2344f86ebd3a0b3852f60737a5ee4c3da01f6747b5d58c4265bd7 |
+| id                                   | 1aed363d-a591-4e81-99e4-1160f7ec9949                     |
+| image                                | centos7-base (d2449e0d-e1e8-4618-830a-161eb665adba)      |
+| key_name                             | ansible-key                                              |
+| metadata                             | {}                                                       |
+| name                                 | yxh-db-caofuzhi                                          |
+| os-extended-volumes:volumes_attached | [cc9c8141-c70c-4a72-91d5-5fa9e15e21d8]                   |
+| progress                             | 0                                                        |
+| security_groups                      | default                                                  |
+| status                               | ACTIVE                                                   |
+| tenant_id                            | 4f93d0bc683d484d9c1f01fd14c0c7e3                         |
+| updated                              | 2018-08-23T02:47:35Z                                     |
+| user_id                              | 023b3c35523f45608adf52b3d24e4a15                         |
+| vlan241 network                      | 10.200.41.107                                            |
++--------------------------------------+----------------------------------------------------------+
+[root@contorller2 ~]# rbd ls volumes | grep cc9c8141-c70c-4a72-91d5-5fa9e15e21d8
+volume-cc9c8141-c70c-4a72-91d5-5fa9e15e21d8
+下面对虚拟机进行关机（必须关机），并删除pool中的内容
+[root@contorller2 ~]# rbd rm -p volumes volume-cc9c8141-c70c-4a72-91d5-5fa9e15e21d8
+Removing image: 100% complete...done.
+把刚刚备份的虚拟机上传到这个虚拟机中
+[root@contorller2 ~]# rbd import -p  volumes /tmp/volume1.bk volume-cc9c8141-c70c-4a72-91d5-5fa9e15e21d8
+Importing image: 100% complete...
+还原完成！
+
+登入虚拟机查看有无异常
+虚拟机可以上网！在此还原完成
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/openstack/service5/" data-title="Openstack利用ceph备份恢复" data-url="https://vcokata.github.io/openstack/service5/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://vcokata.github.io/css/zTreeStyle.css" type="text/css"><script src="https://vcokata.github.io/js/jquery.ztree.core-3.5.min.js"></script><script src="https://vcokata.github.io/js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://vcokata.github.io/license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/VCoKaTA" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

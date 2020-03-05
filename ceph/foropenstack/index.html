@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Openstack存储之Ceph">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>Openstack存储之Ceph &middot; VCoKaTA</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://vcokata.github.io/css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://vcokata.github.io/css/style.css">
+
+
+    
+    <script src="https://vcokata.github.io/js/jquery.min-2.1.4.js"></script>
+    <script src="https://vcokata.github.io/js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="VCoKaTA" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://vcokata.github.io">VCoKaTA</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://vcokata.github.io/openstack/">Openstack</a></li>
+                    <li><a href="https://vcokata.github.io/ceph/">Ceph</a></li>
+                    <li><a href="https://vcokata.github.io/k8s/">Kubernetes</a></li>
+                    <li><a href="https://vcokata.github.io/mesos/">Mesos</a></li>
+                    <li><a href="https://vcokata.github.io/target/">Linux札记</a></li>
+                    <li><a href="https://vcokata.github.io/note/">Python &amp; Django</a></li>
+                                        <li><a href="https://vcokata.github.io/page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                     using tags
+                    
+                        
+                        <a href="/tags/ceph-for-openstack">ceph for openstack</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<hr />
+
+<h2 id="1-创建池">1、创建池</h2>
+
+<pre><code>默认情况下，Ceph块设备使用该rbd池。您可以使用任何可用的池。我们建议为Cinder创建一个池，为Glance创建一个池。确保您的Ceph集群正在运行，然后创建池
+ceph osd pool create volumes
+ceph osd pool create images
+ceph osd pool create backups
+ceph osd pool create vms
+新创建的池必须在使用之前进行初始化。使用该rbd工具初始化池：
+rbd pool init volumes
+rbd pool init images
+rbd pool init backups
+rbd pool init vms
+</code></pre>
+
+<h2 id="2-配置openstack-ceph客户端">2、配置OPENSTACK CEPH客户端</h2>
+
+<pre><code>安装CEPH客户端软件包
+在glance-api节点上，您将需要以下Python绑定librbd：
+yum install python-rbd
+在nova-compute，cinder-backup和上cinder-volume节点，同时使用Python绑定和客户端的命令行工具：
+yum install ceph-common
+</code></pre>
+
+<h2 id="3-设置ceph客户端身份验证">3、设置CEPH客户端身份验证</h2>
+
+<pre><code>为Nova / Cinder和Glance创建一个新用户。执行以下命令：
+ceph auth get-or-create client.glance mon 'profile rbd' osd 'profile rbd pool=images'
+ceph auth get-or-create client.cinder mon 'profile rbd' osd 'profile rbd pool=volumes, profile rbd pool=vms, profile rbd-read-only pool=images'
+ceph auth get-or-create client.cinder-backup mon 'profile rbd' osd 'profile rbd pool=backups'
+
+该key添加client.cinder，client.glance和 client.cinder-backup到适当的节点，改变他们的所有权：
+ceph auth get-or-create client.glance | ssh {controller1,2,3} sudo tee /etc/ceph/ceph.client.glance.keyring
+ssh {controller1,2,3} sudo chown glance:glance /etc/ceph/ceph.client.glance.keyring
+ceph auth get-or-create client.cinder | ssh {controller1,2,3} sudo tee /etc/ceph/ceph.client.cinder.keyring
+ssh {controller1,2,3} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder.keyring
+ceph auth get-or-create client.cinder-backup | ssh {controller1,2,3} sudo tee /etc/ceph/ceph.client.cinder-backup.keyring
+ssh {controller1,2,3} sudo chown cinder:cinder /etc/ceph/ceph.client.cinder-backup.keyring
+
+nova-compute、libvirt在计算节点需要密钥文件：
+ceph auth get-or-create client.cinder | ssh {compute[1-7]} sudo tee /etc/ceph/ceph.client.cinder.keyring
+
+然后，在计算节点上，将密钥添加到libvirt，并删除密钥的临时副本：
+uuidgen
+6077c2ee-d8dc-4c6b-8dbf-6b55b6327229
+
+cat &gt; secret.xml &lt;&lt;EOF
+&lt;secret ephemeral='no' private='no'&gt;
+  &lt;uuid&gt;6077c2ee-d8dc-4c6b-8dbf-6b55b6327229&lt;/uuid&gt;
+  &lt;usage type='ceph'&gt;
+        &lt;name&gt;client.cinder secret&lt;/name&gt;
+  &lt;/usage&gt;
+&lt;/secret&gt;
+EOF
+
+svirsh secret-define --file secret.xml
+virsh secret-set-value --secret 6077c2ee-d8dc-4c6b-8dbf-6b55b6327229 --base64 AQA67LtXBjVCFBAAZrO9iPP/dtWKP7TlbADByQ==
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/ceph/foropenstack/" data-title="Openstack存储之Ceph" data-url="https://vcokata.github.io/ceph/foropenstack/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://vcokata.github.io/css/zTreeStyle.css" type="text/css"><script src="https://vcokata.github.io/js/jquery.ztree.core-3.5.min.js"></script><script src="https://vcokata.github.io/js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://vcokata.github.io/license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/VCoKaTA" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

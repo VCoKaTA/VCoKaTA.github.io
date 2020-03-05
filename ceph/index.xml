@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>Cephs on VCoKaTA</title>
+    <link>https://vcokata.github.io/ceph/</link>
+    <description>Recent content in Cephs on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Wed, 13 Apr 2016 21:51:55 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/ceph/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Openstack存储之Ceph</title>
+      <link>https://vcokata.github.io/ceph/foropenstack/</link>
+      <pubDate>Wed, 13 Apr 2016 21:51:55 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/ceph/foropenstack/</guid>
+      <description>1、创建池 默认情况下，Ceph块设备使用该rbd池。您可以使用任何可用的池。我们建议为Cinder创建一个池，为Glance创建一个池。确保您的Ceph集群正在运行，然后创建池 ceph osd pool create volumes ceph osd pool create images ceph osd pool create backups ceph osd pool create vms 新创建的池必须在使用之前进行初始化。使用该rbd工具初始化池： rbd pool init volumes rbd pool init images rbd pool init backups rbd pool init vms  2、配置OPENSTACK CEPH客户端 安装CEPH客户端软件包 在glance-api节点上，您将需要以下Python绑定librbd： yum install python-rbd 在nova-compute，cinder-backup和上cinder-volume节点，同时使用Python绑定和客户端的命令行工具： yum install ceph-common  3、设置CEPH客户端身份验证 为Nova / Cinder和Glance创建一个新用户。执行以下命令： ceph auth get-or-create client.glance mon &#39;profile rbd&#39; osd &#39;profile rbd pool=images&#39; ceph auth get-or-create client.</description>
+    </item>
+    
+    <item>
+      <title>Ceph部署</title>
+      <link>https://vcokata.github.io/ceph/install/</link>
+      <pubDate>Sun, 10 Apr 2016 18:07:42 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/ceph/install/</guid>
+      <description>硬件环境
+10台机器，每台7块1.2Tsas osd数据盘 2块128G ssd日志盘（分区每块osd分10G的日志盘） 因为系统盘和数据盘在一个raid卡上，所以osd做单盘raid0，日志盘做raid1  官网： https://docs.ceph.com/docs/master/
+1、系统环境 centos7 iptable selinux disabled systemctl disable firewalld vim /etc/sysconfig/selinux SELINUX=disabled hosts 修改主机名hostnamectl set-hostname xxx controller1 controller2 controller3 compute1 compute2 compute3 compute4 compute6 compute5 compute7 compute8 compute9 compute10 所有几点安装基础包 yum install ntp ntpdate ntp-doc openssh-server -y 需要配置时间同步 ntpdate 1.cn.pool.ntp.org 监控节点部署在openstack的控制节点，计算节点部署osd  2、安装部署 添加ceph源 yum -y install epel-release rpm --import https://download.ceph.com/keys/release.asc rpm -Uvh --replacepkgs https://download.ceph.com/rpm-jewel/el7/noarch/ceph-release-1-0.el7.noarch.rpm cat /etc/yum.repos.d/ceph.repo [Ceph] name=Ceph packages for $basearch baseurl=http://download.</description>
+    </item>
+    
+  </channel>
+</rss>

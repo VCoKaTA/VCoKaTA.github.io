@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Openstack命令指定ip创建虚拟机">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>Openstack命令指定ip创建虚拟机 &middot; VCoKaTA</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://vcokata.github.io/css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://vcokata.github.io/css/style.css">
+
+
+    
+    <script src="https://vcokata.github.io/js/jquery.min-2.1.4.js"></script>
+    <script src="https://vcokata.github.io/js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="VCoKaTA" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://vcokata.github.io">VCoKaTA</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://vcokata.github.io/openstack/">Openstack</a></li>
+                    <li><a href="https://vcokata.github.io/ceph/">Ceph</a></li>
+                    <li><a href="https://vcokata.github.io/k8s/">Kubernetes</a></li>
+                    <li><a href="https://vcokata.github.io/mesos/">Mesos</a></li>
+                    <li><a href="https://vcokata.github.io/target/">Linux札记</a></li>
+                    <li><a href="https://vcokata.github.io/note/">Python &amp; Django</a></li>
+                                        <li><a href="https://vcokata.github.io/page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                     using tags
+                    
+                        
+                        <a href="/tags/%E5%88%9B%E5%BB%BAinstance">创建instance</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                <hr />
+
+<pre><code>用户环境变量
+[root@controller1 ~]# . hjhd
+1.先查询已有的子网，确定哪个是要分配固定ip的子网
+[root@controller1 ~]# neutron subnet-list
++--------------------------------------+------+--------------+-----------------------------------------------+
+| id                                   | name | cidr         | allocation_pools                              |
++--------------------------------------+------+--------------+-----------------------------------------------+
+| 053276b0-8ac8-404c-855e-4f69ad444f82 | 81   | 10.8.81.0/24 | {&quot;start&quot;: &quot;10.8.81.10&quot;, &quot;end&quot;: &quot;10.8.81.250&quot;} |
+| 13adf1b0-79da-452a-8b0a-5bae98020e0c | 80   | 10.8.80.0/25 | {&quot;start&quot;: &quot;10.8.80.2&quot;, &quot;end&quot;: &quot;10.8.80.126&quot;}  |
++--------------------------------------+------+--------------+-----------------------------------------------+
+使用哪个镜像
+[root@controller1 ~]# openstack image list
++--------------------------------------+----------------------+--------+
+| ID                                   | Name                 | Status |
++--------------------------------------+----------------------+--------+
+| 5fda0890-c1bc-4a0b-ba03-a5eb6c6c7ca2 | Ubuntu-16.04-desktop | active |
+| 5535faf5-7625-45d4-a074-39a3746445b3 | CentOS-6.8_64        | active |
+| 9ac9d53b-b328-4683-bb86-81db9734f25c | CentOS-6.8           | active |
+| bb7c0ff0-4e53-4159-9ec9-5ce764296b03 | CentOS-7-x86-64-1511 | active |
+| 4957ba5e-d313-4f94-a342-5fa9ba041b58 | Image-centos7        | active |
+| 12a4a1d8-0110-4fa6-8ed5-fdce74c093b9 | Centos6.5_64         | active |
+| 185e130e-697c-493b-8381-8bede7cd00f3 | Windows2008-R2       | active |
+| 47aceb22-b5ec-4b34-8929-7437223e5f22 | CentOS-7-x86_64      | active |
++--------------------------------------+----------------------+--------+
+使用配额
+[root@controller1 ~]# openstack flavor list
++--------------------------------------+-------------------+-------+------+-----------+-------+-----------+
+| ID                                   | Name              |   RAM | Disk | Ephemeral | VCPUs | Is Public |
++--------------------------------------+-------------------+-------+------+-----------+-------+-----------+
+| 009dd9ba-c548-4957-985a-b7aa6049cd43 | Win16core-32G-80G | 32768 |   80 |         0 |    16 | True      |
+| 14e1d8b9-7c3c-4446-bf2f-ce2a06356b95 | 4core-4G-50G      |  4096 |   50 |         0 |     4 | True      |
+| 1b0123ed-ed7f-4ec9-9f2f-6bc12014b1f5 | 8core-8G-50G      |  8192 |   50 |         0 |     8 | True      |
+| 1fa74941-f92e-42b1-a508-72d490a6cbab | 4core-16G-120G    | 16384 |  120 |         0 |     4 | True      |
+| 2d525d3e-104b-4f35-bdda-6678ebe91bba | 4core-8G-50G      |  8192 |   50 |         0 |     4 | True      |
+| 30803413-456b-463a-bcda-824d86d51b0e | 8core-16G-50G     | 16384 |   50 |         0 |     8 | True      |
+| 3e8feb86-f736-4f63-9f59-b3c07ed49918 | 4core-8G-100G     |  8192 |  100 |         0 |     4 | True      |
+| 4bc629ec-1e51-457c-90e8-b3194e667b30 | Win-4core-4G-80G  |  4096 |   80 |         0 |     4 | True      |
+| 56de28aa-0271-404b-ac9c-57d0f1693110 | Win4core-8G-80G   |  8192 |   80 |         0 |     4 | True      |
+| 9a7ccc49-1fdd-4f8b-b2a1-c97a383337e8 | 2core-4G-50G      |  4096 |   50 |         0 |     2 | True      |
+| a4bc3d9e-7b8c-421a-bc1e-2fa3394fc0ec | 16core-32G-50G    | 32768 |   50 |         0 |    16 | True      |
+| bc77853d-4d67-4ee4-92e6-9d1d4abe1210 | 4core-16G-80G     | 16384 |   80 |         0 |     4 | True      |
+| bd0106dd-342b-433a-ae34-41f7f59a5b42 | 1core-2G-50G      |  2048 |   50 |         0 |     1 | True      |
+| cb0ee96c-775a-400b-98d7-2a4e2984f6c2 | 4core-16G-50G     | 16384 |   50 |         0 |     4 | True      |
+| d53ae1e4-37d0-4310-a680-1e684539af34 | Win8core-8G-80G   |  8192 |   80 |         0 |     8 | True      |
+| de67f6ac-435b-407f-bdaa-ab9dca7e6db8 | 2core-2G-50G      |  2048 |   50 |         0 |     2 | True      |
+| e0aa4c47-1de5-405c-9892-8b7c16fce986 | Xlarge            | 16384 |  120 |         0 |     8 | True      |
++--------------------------------------+-------------------+-------+------+-----------+-------+-----------+
+查询子网信息
+[root@controller1 ~]# neutron subnet-show  13adf1b0-79da-452a-8b0a-5bae98020e0c
++-------------------+----------------------------------------------+
+| Field             | Value                                        |
++-------------------+----------------------------------------------+
+| allocation_pools  | {&quot;start&quot;: &quot;10.8.80.2&quot;, &quot;end&quot;: &quot;10.8.80.126&quot;} |
+| cidr              | 10.8.80.0/25                                 |
+| created_at        | 2016-08-25T09:17:53                          |
+| description       |                                              |
+| dns_nameservers   | 202.106.0.20                                 |
+| enable_dhcp       | True                                         |
+| gateway_ip        | 10.8.80.1                                    |
+| host_routes       |                                              |
+| id                | 13adf1b0-79da-452a-8b0a-5bae98020e0c         |
+| ip_version        | 4                                            |
+| ipv6_address_mode |                                              |
+| ipv6_ra_mode      |                                              |
+| name              | 80                                           |
+| network_id        | 58865cb8-17ac-469c-a7b3-2ebfc37d99b8         |
+| subnetpool_id     |                                              |
+| tenant_id         | 3d0af930a1964ee7a84b8f7d0488be83             |
+| updated_at        | 2016-08-25T09:17:53                          |
++-------------------+----------------------------------------------+
+1.创建一个和指定子网相关联的端口，并为该端口配置一个固定ip，具体命令格式：
+neutron port-create --fixed-ip subnet_id=SUBNET_ID,ip_address=IP_FROM_POOL --name PORT_NAME NETWORK_ID
+固定ip由自己决定分配哪一个ip，只要这个ip在子网的可用ip范围内，且该ip还未被使用即可。PORT_NAME自行命名，NETWORK_ID可在前面的neutron subnet-show命令的执行结果中找到。
+[root@controller1 ~]# neutron port-create --fixed-ip subnet_id=13adf1b0-79da-452a-8b0a-5bae98020e0c,ip_address=10.8.80.27 --name test-port2 58865cb8-17ac-469c-a7b3-2ebfc37d99b8
+Created a new port:
++-----------------------+-----------------------------------------------------------------------------------+
+| Field                 | Value                                                                             |
++-----------------------+-----------------------------------------------------------------------------------+
+| admin_state_up        | True                                                                              |
+| allowed_address_pairs |                                                                                   |
+| binding:vnic_type     | normal                                                                            |
+| created_at            | 2016-10-31T03:56:49                                                               |
+| description           |                                                                                   |
+| device_id             |                                                                                   |
+| device_owner          |                                                                                   |
+| dns_name              |                                                                                   |
+| extra_dhcp_opts       |                                                                                   |
+| fixed_ips             | {&quot;subnet_id&quot;: &quot;13adf1b0-79da-452a-8b0a-5bae98020e0c&quot;, &quot;ip_address&quot;: &quot;10.8.80.27&quot;} |
+| id                    | feee3192-449b-4bd2-b324-4fb1e6cf2be0                                              |
+| mac_address           | fa:16:3e:5e:f3:0d                                                                 |
+| name                  | test-port2                                                                        |
+| network_id            | 58865cb8-17ac-469c-a7b3-2ebfc37d99b8                                              |
+| port_security_enabled | True                                                                              |
+| security_groups       | cb6ede7d-44ac-48da-bbd3-16a76a9e2cd5                                              |
+| status                | DOWN                                                                              |
+| tenant_id             | 3d0af930a1964ee7a84b8f7d0488be83                                                  |
+| updated_at            | 2016-10-31T03:56:49                                                               |
++-----------------------+-----------------------------------------------------------------------------------+
+2.启动虚拟机，并在参数中指定要将虚拟机绑定到刚创建的port上，这样虚拟机就会被自动配置port已设置的ip，具体命令格式：
+nova boot --flavor FLAVOR_ID --image IMAGE_ID --nic port-id=PORT_ID INSTANCE_NAME
+[root@controller1 ~]# nova boot --flavor 4core-4G-50G  --image CentOS-6.8_64  --nic port-id=feee3192-449b-4bd2-b324-4fb1e6cf2be0    BJ-deploy-1
++--------------------------------------+------------------------------------------------------+
+| Property                             | Value                                                |
++--------------------------------------+------------------------------------------------------+
+| OS-DCF:diskConfig                    | MANUAL                                               |
+| OS-EXT-AZ:availability_zone          |                                                      |
+| OS-EXT-STS:power_state               | 0                                                    |
+| OS-EXT-STS:task_state                | scheduling                                           |
+| OS-EXT-STS:vm_state                  | building                                             |
+| OS-SRV-USG:launched_at               | -                                                    |
+| OS-SRV-USG:terminated_at             | -                                                    |
+| accessIPv4                           |                                                      |
+| accessIPv6                           |                                                      |
+| adminPass                            | dAX5KGcWR9iq                                         |
+| config_drive                         |                                                      |
+| created                              | 2016-10-31T03:57:45Z                                 |
+| description                          | -                                                    |
+| flavor                               | 4core-4G-50G (14e1d8b9-7c3c-4446-bf2f-ce2a06356b95)  |
+| hostId                               |                                                      |
+| id                                   | bd23aaf1-6a37-41b3-a00f-ccf2eb1497fc                 |
+| image                                | CentOS-6.8_64 (5535faf5-7625-45d4-a074-39a3746445b3) |
+| key_name                             | -                                                    |
+| locked                               | False                                                |
+| metadata                             | {}                                                   |
+| name                                 | BJ-deploy-1                                          |
+| os-extended-volumes:volumes_attached | []                                                   |
+| progress                             | 0                                                    |
+| security_groups                      | default                                              |
+| status                               | BUILD                                                |
+| tenant_id                            | 3d0af930a1964ee7a84b8f7d0488be83                     |
+| updated                              | 2016-10-31T03:57:45Z                                 |
+| user_id                              | 89b42bdab76c4b74af5339b7bba7a572                     |
++--------------------------------------+------------------------------------------------------+
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/openstack/service1/" data-title="Openstack命令指定ip创建虚拟机" data-url="https://vcokata.github.io/openstack/service1/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://vcokata.github.io/css/zTreeStyle.css" type="text/css"><script src="https://vcokata.github.io/js/jquery.ztree.core-3.5.min.js"></script><script src="https://vcokata.github.io/js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://vcokata.github.io/license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/VCoKaTA" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

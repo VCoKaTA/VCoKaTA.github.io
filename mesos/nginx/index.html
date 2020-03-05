@@ -1,0 +1,190 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="Nginx tcp自动添加模版">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>Nginx tcp自动添加模版 &middot; VCoKaTA</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://vcokata.github.io/css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://vcokata.github.io/css/style.css">
+
+
+    
+    <script src="https://vcokata.github.io/js/jquery.min-2.1.4.js"></script>
+    <script src="https://vcokata.github.io/js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="VCoKaTA" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://vcokata.github.io">VCoKaTA</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://vcokata.github.io/openstack/">Openstack</a></li>
+                    <li><a href="https://vcokata.github.io/ceph/">Ceph</a></li>
+                    <li><a href="https://vcokata.github.io/k8s/">Kubernetes</a></li>
+                    <li><a href="https://vcokata.github.io/mesos/">Mesos</a></li>
+                    <li><a href="https://vcokata.github.io/target/">Linux札记</a></li>
+                    <li><a href="https://vcokata.github.io/note/">Python &amp; Django</a></li>
+                                        <li><a href="https://vcokata.github.io/page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                     using tags
+                    
+                        
+                        <a href="/tags/%E8%84%9A%E6%9C%AC%E6%B7%BB%E5%8A%A0%E4%BF%AE%E6%94%B9%E6%A8%A1%E7%89%88">脚本添加修改模版</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                <hr />
+
+<p><font color=#DC143C size=5 face="黑体">背景：consul-template通consul集群获取应用节点的信息，根据相应的consul-template模版文件生成nginx配置文件，但是每次增加应用consul-template模版都需要手动添加相应的应用信息，此次我们通过脚本来生成这些模版信息。</font></p>
+
+<pre><code>1、利用脚本调用marathon的api，获取所有应用信息，然后生成相应的模版文件
+2、利用脚本对比新生成的模版文件与旧的模版文件是否不同，不同则替换
+3、如果模版文件替换，则重启consul-template服务
+
+抓取所有应用信息脚本：
+cat py_add_template.py
+#!/usr/bin/puthon env
+# -*- coding: utf-8 -*-
+import requests,json
+r = requests.Session()
+r.auth = ('xxx','xxx')
+s = r.get('http://172.16.0.23:8080/v2/apps')
+try:
+    f = open('/usr/local/nginx-1.12.2/conf/vhosts/py_add_template/tcp.conf.ctmpl', 'w')
+    txt='stream {\nproxy_connect_timeout 30;\n'
+    for i in  s.json()['apps']:
+        txt=txt+'#############'+i['env']['container_uuid'].encode('utf8')+'\n'+'upstream '+i['env']['container_uuid'].encode('utf8')+'{\n'+'        {{range service &quot;'+i['env']['container_uuid'].encode('utf8')+'&quot;}}server {{.Address}}:{{.Port}};{{else}}server 1.1.1.1:8000;{{end}}'+'\n}\n'+'    server {\n'+'        listen 0.0.0.0:'+i['env']['container_uuid'].encode('utf8').split('-')[-1]+';\n'+'        proxy_pass '+i['env']['container_uuid'].encode('utf8')+';\n'+'    }\n'
+    txt=txt+'}'
+    f.write(txt)
+    f.close()
+except Exception as e:
+    print(str(e))
+
+验证脚本：
+cat modif_conf.sh
+#!/usr/bin/bash
+unalias cp
+timestamp=`date +%Y%m%d%H%M`
+diff /usr/local/nginx/conf/vhosts/tcp.conf.ctmpl /usr/local/nginx/conf/vhosts/py_add_template/tcp.conf.ctmpl &gt; /dev/null
+if [ $? != 0 ]; then
+  cp -f /usr/local/nginx/conf/vhosts/tcp.conf.ctmpl /data/backup/tcp.conf.ctmpl-$timestamp
+  cp -f  /usr/local/nginx/conf/vhosts/py_add_template/tcp.conf.ctmpl /usr/local/nginx/conf/vhosts/tcp.conf.ctmpl
+  echo &quot;change template&quot;
+  systemctl restart consul-template
+fi
+
+定时任务：
+*/1 * * * *  /usr/bin/python /usr/local/nginx-1.12.2/conf/vhosts/py_add_template/py_add_template.py
+*/1 * * * *  /usr/bin/sh /usr/local/nginx-1.12.2/conf/vhosts/py_add_template/modif_conf.sh
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/mesos/nginx/" data-title="Nginx tcp自动添加模版" data-url="https://vcokata.github.io/mesos/nginx/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://vcokata.github.io/css/zTreeStyle.css" type="text/css"><script src="https://vcokata.github.io/js/jquery.ztree.core-3.5.min.js"></script><script src="https://vcokata.github.io/js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://vcokata.github.io/license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/VCoKaTA" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>master节点部署kube-schedule on VCoKaTA</title>
+    <link>https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2kube-schedule/</link>
+    <description>Recent content in master节点部署kube-schedule on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Tue, 02 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/categories/master%E8%8A%82%E7%82%B9%E9%83%A8%E7%BD%B2kube-schedule/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署5.3（master节点部署kube-schedule）</title>
+      <link>https://vcokata.github.io/k8s/k8s5.3/</link>
+      <pubDate>Tue, 02 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/k8s/k8s5.3/</guid>
+      <description>1、创建 kube-scheduler 证书和私钥 该集群包含 3 个节点，启动后将通过竞争选举机制产生一个 leader 节点，其它节点为阻塞状态。当 leader 节点不可用后，剩余节点将再次进行选举产生新的 leader 节点，从而保证服务的可用性。 为保证通信安全，本文档先生成 x509 证书和私钥，kube-scheduler 在如下两种情况下使用该证书： 1. 与 kube-apiserver 的安全端口通信; 2. 在安全端口(https，10251) 输出 prometheus 格式的 metrics； 创建 kube-scheduler 证书和私钥 cat &amp;gt; kube-scheduler-csr.json &amp;lt;&amp;lt;EOF { &amp;quot;CN&amp;quot;: &amp;quot;system:kube-scheduler&amp;quot;, &amp;quot;hosts&amp;quot;: [ &amp;quot;127.0.0.1&amp;quot;, &amp;quot;10.200.46.44&amp;quot;, &amp;quot;10.200.46.39&amp;quot;, &amp;quot;10.200.46.40&amp;quot;, &amp;quot;10.200.46.41&amp;quot; ], &amp;quot;key&amp;quot;: { &amp;quot;algo&amp;quot;: &amp;quot;rsa&amp;quot;, &amp;quot;size&amp;quot;: 2048 }, &amp;quot;names&amp;quot;: [ { &amp;quot;C&amp;quot;: &amp;quot;CN&amp;quot;, &amp;quot;ST&amp;quot;: &amp;quot;BeiJing&amp;quot;, &amp;quot;L&amp;quot;: &amp;quot;BeiJing&amp;quot;, &amp;quot;O&amp;quot;: &amp;quot;system:kube-scheduler&amp;quot;, &amp;quot;OU&amp;quot;: &amp;quot;System&amp;quot; } ] } EOF # hosts 列表包含所有 kube-scheduler 节点 IP； # CN 和 O 均为 system:kube-scheduler，kubernetes 内置的 ClusterRoleBindings system:kube-scheduler 将赋予 kube-scheduler 工作所需的权限 cfssl gencert -ca=ca.</description>
+    </item>
+    
+  </channel>
+</rss>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署metrics-server on VCoKaTA</title>
+    <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2metrics-server/</link>
+    <description>Recent content in 部署metrics-server on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2metrics-server/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署8.3（部署 metrics-server 插件）</title>
+      <link>https://vcokata.github.io/k8s/k8s8.3/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/k8s/k8s8.3/</guid>
+      <description>集群部署好后，如果我们想知道集群中每个节点及节点上的pod资源使用情况，命令行下可以直接使用kubectl top node/pod来查看资源使用情况，默认此命令不能正常使用，需要我们部署对应api资源才可以使用此命令。从 Kubernetes 1.8 开始，资源使用指标（如容器 CPU 和内存使用率）通过 Metrics API 在 Kubernetes 中获取, metrics-server 替代了heapster。Metrics Server 实现了Resource Metrics API，Metrics Server 是集群范围资源使用数据的聚合器。 Metrics Server 从每个节点上的 Kubelet 公开的 Summary API 中采集指标信息。heapster从1.13版本开始被废弃，官方推荐使用Metrics Server+Prometheus方案进行集群监控。 metrics-server 通过 kube-apiserver 发现所有节点，然后调用 kubelet APIs（通过 https 接口）获得各节点（Node）和 Pod 的 CPU、Memory 等资源使用情况。
+1、安装 metrics-server 下载资源清单配置文件(6个) 官方项目地址：https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/metrics-server 生产稳定版 https://github.com/kubernetes-incubator/metrics-server/tree/master/deploy/1.8%2B [root@k8s-1 ~]# mkdir metrics-server [root@k8s-1 ~]# cd metrics-server [root@k8s-1 metrics-server]#for file in auth-delegator.yaml auth-reader.yaml metrics-apiservice.yaml metrics-server-deployment.yaml metrics-server-service.yaml resource-reader.yaml;do wget https://raw.githubusercontent.com/kubernetes/kubernetes/release-1.15/cluster/addons/metrics-server/$file;done 本次使用生产稳定版 [root@k8s-1 metrics-server]# for file in auth-delegator.</description>
+    </item>
+    
+  </channel>
+</rss>

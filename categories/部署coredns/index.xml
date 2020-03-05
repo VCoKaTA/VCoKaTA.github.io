@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署coredns on VCoKaTA</title>
+    <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2coredns/</link>
+    <description>Recent content in 部署coredns on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2coredns/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署8.1（部署 coredns 插件）</title>
+      <link>https://vcokata.github.io/k8s/k8s8.1/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/k8s/k8s8.1/</guid>
+      <description>修改配置文件 将下载的 kubernetes-server-linux-amd64.tar.gz 解压后，再解压其中的 kubernetes-src.tar.gz 文件。 cd kubernetes/ tar -xzvf kubernetes-src.tar.gz coredns 目录是 cluster/addons/dns： cd cluster/addons/dns/coredns cp coredns.yaml.base coredns.yaml export CLUSTER_DNS_DOMAIN=&amp;quot;cluster.local&amp;quot; export CLUSTER_DNS_SVC_IP=10.68.0.2 sed -i -e &amp;quot;s/__PILLAR__DNS__DOMAIN__/${CLUSTER_DNS_DOMAIN}/&amp;quot; -e &amp;quot;s/__PILLAR__DNS__SERVER__/${CLUSTER_DNS_SVC_IP}/&amp;quot; coredns.yaml 镜像用国内的： image: registry.aliyuncs.com/google_containers/coredns:1.3.1 内存资源限制自定义 resources: limits: memory: 200Mi 我起了3副本 replicas: 3 [root@k8s-1 coredns]# cat coredns.yaml # __MACHINE_GENERATED_WARNING__ apiVersion: v1 kind: ServiceAccount metadata: name: coredns namespace: kube-system labels: kubernetes.io/cluster-service: &amp;quot;true&amp;quot; addonmanager.kubernetes.io/mode: Reconcile --- apiVersion: rbac.authorization.k8s.io/v1 kind: ClusterRole metadata: labels: kubernetes.io/bootstrapping: rbac-defaults addonmanager.</description>
+    </item>
+    
+  </channel>
+</rss>

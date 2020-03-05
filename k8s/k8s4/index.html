@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html class="no-js" lang="en-us" xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en-us">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta name="description" content="K8s 二进制部署4（部署 kubectl）">
+    <meta name="author" content="">
+
+    <meta name="keyword" content="">
+    <link rel="shortcut icon" href="/favicon.ico">
+
+    <title>K8s 二进制部署4（部署 kubectl） &middot; VCoKaTA</title>
+
+   	
+    
+        <link rel="stylesheet" href="https://vcokata.github.io/css/theme/flatly.css">
+    
+
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/solid.js" integrity="sha384-F4BRNf3onawQt7LDHDJm/hwm3wBtbLIfGk1VSB/3nn3E+7Rox1YpYcKJMsmHBJIl" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/regular.js" integrity="sha384-V+AkgA1cZ+p3DRK63AHCaXvO68V7B5eHoxl7QVN21zftbkFn/sGAIVR7vmQL3Zhp" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/brands.js" integrity="sha384-VLgz+MgaFCnsFLiBwE3ItNouuqbWV2ZnIqfsA6QRHksEAQfgbcoaQ4PP0ZeS0zS5" crossorigin="anonymous"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.6.3/js/fontawesome.js" integrity="sha384-treYPdjUrP4rW5q82SnECO7TPVAz4bpas16yuE9F5o7CeBn2YYw1yr5oC8s8Mf8t" crossorigin="anonymous"></script>
+
+   	
+   	<link rel="stylesheet" href="https://vcokata.github.io/css/style.css">
+
+
+    
+    <script src="https://vcokata.github.io/js/jquery.min-2.1.4.js"></script>
+    <script src="https://vcokata.github.io/js/bootstrap.min-3.3.5.js"></script>
+<script src="http://cdn.bootcss.com/highlight.js/9.0.0/highlight.min.js"></script><link href="http://cdn.bootcss.com/highlight.js/9.0.0/styles/default.min.css" rel="stylesheet"><script>hljs.initHighlightingOnLoad();</script>
+    
+    <link href="" rel="alternate" type="application/rss+xml" title="VCoKaTA" />
+</head>
+<body lang="en">
+    
+    <div class="container">
+    <div class="row">
+        <div class="navbar navbar-default navbar-inverse" role="navigation">
+            <div class="navbar-header">
+                <a class="navbar-brand" href="https://vcokata.github.io">VCoKaTA</a>
+            </div>
+            <div class="navbar-collapse collapse navbar-responsive-collapse">
+                <ul class="nav navbar-nav navbar-right">
+                    <li><a href="https://vcokata.github.io/openstack/">Openstack</a></li>
+                    <li><a href="https://vcokata.github.io/ceph/">Ceph</a></li>
+                    <li><a href="https://vcokata.github.io/k8s/">Kubernetes</a></li>
+                    <li><a href="https://vcokata.github.io/mesos/">Mesos</a></li>
+                    <li><a href="https://vcokata.github.io/target/">Linux札记</a></li>
+                    <li><a href="https://vcokata.github.io/note/">Python &amp; Django</a></li>
+                                        <li><a href="https://vcokata.github.io/page/">个人</a></li>
+                    
+                </ul>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<div>
+    <div class="container col-md-9 ">
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                    
+                        
+                        <a href="/categories/%E9%83%A8%E7%BD%B2-kubectl">部署 kubectl</a>
+                     using tags
+                    
+                        
+                        <a href="/tags/%E4%BA%8C%E8%BF%9B%E5%88%B6%E9%83%A8%E7%BD%B2">二进制部署</a>
+                    
+                </small>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-offset-1 col-md-10">
+                
+
+                
+
+<hr />
+
+<h3 id="1-部署-kubectl-命令行工具">1、部署 kubectl 命令行工具</h3>
+
+<pre><code>下载和分发 kubectl 二进制文件
+部署相关二进制文件
+server端下载：
+wget https://storage.googleapis.com/kubernetes-release/release/v1.15.0/kubernetes-server-linux-amd64.tar.gz
+tar -zxf  kubernetes-node-linux-amd64.tar.gz
+cp kubernetes/server/bin/{apiextensions-apiserver,cloud-controller-manager,hyperkube,kube-apiserver,kube-controller-manager,kube-scheduler,kubelet,kubectl,kube-proxy,mounter} /usr/bin/
+
+本次要用的是kubelet
+</code></pre>
+
+<h2 id="2-创建-admin-证书和私钥">2、创建 admin 证书和私钥</h2>
+
+<pre><code>cat admin-csr.json
+{
+  &quot;CN&quot;: &quot;admin&quot;,
+  &quot;hosts&quot;: [],
+  &quot;key&quot;: {
+    &quot;algo&quot;: &quot;rsa&quot;,
+    &quot;size&quot;: 2048
+  },
+  &quot;names&quot;: [
+    {
+      &quot;C&quot;: &quot;CN&quot;,
+      &quot;ST&quot;: &quot;Beijing&quot;,
+      &quot;L&quot;: &quot;XS&quot;,
+      &quot;O&quot;: &quot;system:masters&quot;,
+      &quot;OU&quot;: &quot;System&quot;
+    }
+  ]
+}
+ cfssl gencert -ca=ca.pem -ca-key=ca-key.pem  -config=ca-config.json -profile=kubernetes admin-csr.json | cfssljson -bare admin
+cp admin* /etc/kubernetes/pki/
+scp admin*  10.200.46.40:/etc/kubernetes/pki/
+scp admin*  10.200.46.41:/etc/kubernetes/pki/
+</code></pre>
+
+<h2 id="3-创建-kubeconfig-文件">3、创建 kubeconfig 文件</h2>
+
+<pre><code>kubeconfig 为 kubectl 的配置文件，包含访问 apiserver 的所有信息，如 apiserver 地址、CA 证书和自身使用的证书；
+# 设置集群参数
+kubectl config set-cluster kubernetes \
+  --certificate-authority=/etc/kubernetes/pki/ca.pem  \
+  --embed-certs=true \
+  --server=https://10.200.46.44:6443 \
+  --kubeconfig=kubectl.kubeconfig
+# 设置客户端认证参数
+kubectl config set-credentials admin \
+  --client-certificate=/etc/kubernetes/pki/admin.pem \
+  --client-key=/etc/kubernetes/pki/admin-key.pem \
+  --embed-certs=true \
+  --kubeconfig=kubectl.kubeconfig
+# 设置上下文参数
+kubectl config set-context kubernetes \
+  --cluster=kubernetes \
+  --user=admin \
+  --kubeconfig=kubectl.kubeconfig
+# 设置默认上下文
+
+kubectl config use-context kubernetes --kubeconfig=kubectl.kubeconfig
+
+生成配置文件kubectl.kubeconfig
+cat kubectl.kubeconfig
+apiVersion: v1
+clusters:
+- cluster:
+    certificate-authority-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUR2akNDQXFhZ0F3SUJBZ0lVVVljcms1RFQwdjVUb29Xc01ONElXTk9aTkRvd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1pURUxNQWtHQTFVRUJoTUNRMDR4RURBT0JnTlZCQWdUQjBKbGFVcHBibWN4RURBT0JnTlZCQWNUQjBKbAphVXBwYm1jeEREQUtCZ05WQkFvVEEyczRjekVQTUEwR0ExVUVDeE1HVTNsemRHVnRNUk13RVFZRFZRUURFd3ByCmRXSmxjbTVsZEdWek1CNFhEVEU1TURrd09UQXlNemd3TUZvWERUSTBNRGt3TnpBeU16Z3dNRm93WlRFTE1Ba0cKQTFVRUJoTUNRMDR4RURBT0JnTlZCQWdUQjBKbGFVcHBibWN4RURBT0JnTlZCQWNUQjBKbGFVcHBibWN4RERBSwpCZ05WQkFvVEEyczRjekVQTUEwR0ExVUVDeE1HVTNsemRHVnRNUk13RVFZRFZRUURFd3ByZFdKbGNtNWxkR1Z6Ck1JSUJJakFOQmdrcWhraUc5dzBCQVFFRkFBT0NBUThBTUlJQkNnS0NBUUVBdDYzSlFLV0J2Y3p4TEdoY0NxY00KTUNmWGdvZXFac09iQ244ZXRJMVVDMFMvM0syYUlRMWFDNVp3bGRlblZManEwU0xCV3VGMkJPM0xEYS9GMXZvTQpoRlhoZkw3RzdoSmRXTmZYUEswT0FsUGpIQ0szSUlWc3lFSGMrOXh4cXBTbnAzREN2eHFuWFVnUm1zc0hFdHFCCnNzNm0xSHlSRVA2bTBLeURTdkN3QVEwL0o2STZDdUsrb201S3E4MUNOVWx2cHVhTWtHNnRRRUF4S3hCMHhoRzYKYlRKQU1OWVRUVENtb1FlRVpVUFdoWG1OK1lqUE91ME9UcGoyallPdVZLOU9peXdhQXJpaCt0OFJnVURrV04yMQp2ZEFMMXF2RFZWcVdSeVRhRVZuYlpLTStIZjF0c2NqaGp2Z1pEdUN5NmtBM1Y0VEsrS2g1MkIrbHpZb01HRStUCkx3SURBUUFCbzJZd1pEQU9CZ05WSFE4QkFmOEVCQU1DQVFZd0VnWURWUjBUQVFIL0JBZ3dCZ0VCL3dJQkFqQWQKQmdOVkhRNEVGZ1FVdUdEcTFpSTVKRno2cStPOE44TXcycWJtSzZZd0h3WURWUjBqQkJnd0ZvQVV1R0RxMWlJNQpKRno2cStPOE44TXcycWJtSzZZd0RRWUpLb1pJaHZjTkFRRUxCUUFEZ2dFQkFFSGVuM3AvZjRiTW5YQ0lOd3R4CmZGQWFOUHg3djkrV2NYc25uMytoVVVBZTdyWFo5N1BMQ1d1Q0pMSm80RFFua0dxeG04TVZEVzk0RFhDNC8xSHkKVWdtNnBwY2FVVVhDSFo2cnQrZEFlZFg1UmhRQWxrUjdUQ3BFc1FEbzQ5ZnZVM1NsV0QwNmlWWC9rT0RsMlltZgozL0RIVjdWVTdxMEhDbW1HNGJ2VDJLSVhoRXZ1UnZzRUY0ZzlwdTg4OW5OQWozaDRHRDcwSXZwU08zVis5SGVyCnRWN2hES3dxdEVkZTA5eTBqMmU5d2oybXVHR3JSVVpYTW9pL3ROczR3dFUzWlc4T0FleUVmUnM0MTUzSVhMWTEKd0hMY2E0Z2diODBiUnJ1bWpycjdxanVTR21lZDNBMkM1L3hvNllNeE9kSkwrbEVJYTZaNkh5TEo5WjJhUW5CZgpwWkU9Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    server: https://10.200.46.44:6443
+  name: kubernetes
+contexts:
+- context:
+    cluster: kubernetes
+    user: admin
+  name: kubernetes
+current-context: kubernetes
+kind: Config
+preferences: {}
+users:
+- name: admin
+  user:
+    client-certificate-data: LS0tLS1CRUdJTiBDRVJUSUZJQ0FURS0tLS0tCk1JSUQyRENDQXNDZ0F3SUJBZ0lVU0xlU1ptaHE2TzZTVG03QzZkU2Z3OWNzUVRVd0RRWUpLb1pJaHZjTkFRRUwKQlFBd1pURUxNQWtHQTFVRUJoTUNRMDR4RURBT0JnTlZCQWdUQjBKbGFVcHBibWN4RURBT0JnTlZCQWNUQjBKbAphVXBwYm1jeEREQUtCZ05WQkFvVEEyczRjekVQTUEwR0ExVUVDeE1HVTNsemRHVnRNUk13RVFZRFZRUURFd3ByCmRXSmxjbTVsZEdWek1CNFhEVEU1TURreE1EQTVOVEV3TUZvWERUSTVNRGt3TnpBNU5URXdNRm93WmpFTE1Ba0cKQTFVRUJoTUNRMDR4RURBT0JnTlZCQWdUQjBKbGFXcHBibWN4Q3pBSkJnTlZCQWNUQWxoVE1SY3dGUVlEVlFRSwpFdzV6ZVhOMFpXMDZiV0Z6ZEdWeWN6RVBNQTBHQTFVRUN4TUdVM2x6ZEdWdE1RNHdEQVlEVlFRREV3VmhaRzFwCmJqQ0NBU0l3RFFZSktvWklodmNOQVFFQkJRQURnZ0VQQURDQ0FRb0NnZ0VCQU1PbTk2WW1aaVp5alZ1YzhrVzkKMVVNRU5yQ1doUjFDcUtPcjFyMTBjMzZic1l0UnRvci9oRWhDWGNZQlExekdJbU55UFp0dUt3a2I1Y0JrK2dyZApOdXRyL0Rqb2xCYUFxTVBGWXdIVWlRUmJiUlY1czBKa1RWamIrWFhFdW12UlF2YXR3a0xmSHNUdUpQQUlacEo4ClpFcWEzOTY5RmFJNnFpZENKNkhHZ1ZuK3lNdTQveGdvcGFacUxQcmx2NFZSVWdGZFgreEd1Z2Z3Zi8yN2FEWXcKRWNRMVNCRmpob0FpZjFIOS9YQlpyZ0xyM1NYOVFNaWdpeGxSak1ockw2NldmQ3JscnBuSitRcnc0eVd4UkxTRApWSDBSMXd1YURSb3JqQlYwdHhETXpTUkc3cVltTHhHNjl3b1dmRFlDQi96d2t6ZnRIVFU3RkZBK0VCcE1RdHU1CmQvTUNBd0VBQWFOL01IMHdEZ1lEVlIwUEFRSC9CQVFEQWdXZ01CMEdBMVVkSlFRV01CUUdDQ3NHQVFVRkJ3TUIKQmdnckJnRUZCUWNEQWpBTUJnTlZIUk1CQWY4RUFqQUFNQjBHQTFVZERnUVdCQlRPc0U3YnNWdWZCc2cwNEJRWApraUpkdkp6dStEQWZCZ05WSFNNRUdEQVdnQlM0WU9yV0lqa2tYUHFyNDd3M3d6RGFwdVlycGpBTkJna3Foa2lHCjl3MEJBUXNGQUFPQ0FRRUFqSjY3elMxVlhxdGtSb1RRYzV0QnZqL2p3YzNnTGNiNFZZY2JYS205NHl1TkdDcXYKL04xZlBHWE8xbUtzVURuSEc1WUNVZFRXeXR5U2tjWFlwVHBMaTdZdkpLKzh2V01pZGVSYUlBbEtVb2F0SFVpSAo2WmJOeWEzUUt0L2loTktwQWlZd0VKZjlKZm1BQzNqODB4L3NFVXZPSi9VUDIxcVVFNnUxVVNXQWYrd1hSYVMrCndRMTVFQVMwUHo1RmZndU1jMmdrbmtoOUxaL1JNNHFvUm5jZTFLSXk4NElkdlNvNTMzekxGTmd2Y0I5YkpzcjAKSkZZQXBNWU9oM25leXFxdExiRjFPSnNRK1NwM1MrVGI2TWtmemtoeTRxdjFQNmJ4dzdoUXF4UEg0dzEwc3UwRwpVdS9uRU5MRWt2RVBRQ2t5di9oSWZsbzFDK1EwQWYxUzdLak04Zz09Ci0tLS0tRU5EIENFUlRJRklDQVRFLS0tLS0K
+    client-key-data: LS0tLS1CRUdJTiBSU0EgUFJJVkFURSBLRVktLS0tLQpNSUlFcFFJQkFBS0NBUUVBdzZiM3BpWm1KbktOVzV6eVJiM1ZRd1Eyc0phRkhVS29vNnZXdlhSemZwdXhpMUcyCml2K0VTRUpkeGdGRFhNWWlZM0k5bTI0ckNSdmx3R1Q2Q3QwMjYydjhPT2lVRm9Db3c4VmpBZFNKQkZ0dEZYbXoKUW1STldOdjVkY1M2YTlGQzlxM0NRdDhleE80azhBaG1rbnhrU3ByZjNyMFZvanFxSjBJbm9jYUJXZjdJeTdqLwpHQ2lscG1vcyt1Vy9oVkZTQVYxZjdFYTZCL0IvL2J0b05qQVJ4RFZJRVdPR2dDSi9VZjM5Y0ZtdUF1dmRKZjFBCnlLQ0xHVkdNeUdzdnJwWjhLdVd1bWNuNUN2RGpKYkZFdElOVWZSSFhDNW9OR2l1TUZYUzNFTXpOSkVidXBpWXYKRWJyM0NoWjhOZ0lIL1BDVE4rMGROVHNVVUQ0UUdreEMyN2wzOHdJREFRQUJBb0lCQUV6T3YybjZxUjl1MlErZQpEWDVUaCtWSFFqRVE1akVXZWgzRzJBYUlNTThEVUMvaFpFZ3RCMEZXekhsdkJZTG1SWm5FdjJyRlZSKytVL096CnNIV1RZbndKYUhydTB6UUNUajZNdnRGNUhsRVhrenRiQzRTRTI5aUdndWc0MHZhQXNFa203WnhTKzBGVVBDdi8KSUVWaGovMjV6eWtpRWR3ZUs2NDl5bEU0SEkrM1JoYU5CbGIrUi9kT0txc3FnMU9lVEM2WFV0dzc4NHlJQm9PTwpUTUVQOGZoL0ppN1ZvWnlzbW85TlhLM1RFSEkxTmhqUjNnUi8vd2NneG9ubUNsT0NVTjdCckxlNFI1c1czTS84CjZPZEsrNk9NcVRRR3VIcUE0K0hMY2UxNHl5cFhkRUZKSm5sUTNwS25YRHh5NlcvOHFLNURGellKcTRiaWtUQjMKU1lpTHJBRUNnWUVBN1dKN0tpUXVZcW1UcURIR3FCSmJIRUhMV01YMi9LUkgvZFBidEJueXRxT2QxTXNRZU5URQp4Zmcxa1RDK1B4ZUdYRHZ6OXNHQ3VkWGZyZ1JZK2J1NXdNN3QrRVg5L3Z0MUZ1M2lLYXRjc095bTFzck00MExYCnY0N3Y4SGRMUFpCTW1ka1hSTkNlUkVFMkFMWS9NK08zMVJzYzJYVmZMUFIrY1BSNndFT2ExYmNDZ1lFQTB2NnoKL2Z6WTF0VWltVHJtbHRTeVpCdU9NVTJsallzdlV1eUlUQ2dOdVVyRS91cXFJaThMcVhpVzgwMGtYYXhMb1VDUQpZcVFjZ2pvMmdxUEphWmhPL3l0aWxVZFVReG9CbkJIN0hkd091cW5PMnF5VlVVL0FaR0VjeDA2UzFBRXFiTUQ4CkRVRXl2ODNwa1c1cWtpakRVck5OcWJWWHY3WUpRTFduaWp6WUQ2VUNnWUVBNjFQS3Q0OGdzTXhkUmNyNm5obDgKV3ZuYXBZbXkvT2U3T3FWdzB3MDZNTmJvbTFBblp6RytWR2RvYXlQQUpmbWpTQUpqS3diUkduc3NnRzFzNnoydgp1clVvOGd3bzdVTEk0ODgxZW91WG13a3ZxQlZwb2czY3Bka0VnZ1V4QUxueFJqOFJNellBLzdjSjJ4RFFmUmROCllhUzhKOU9VWTVPSldWN3o1Vy9mcWVjQ2dZRUFqc3BRaFZMWWJJdFJIdUg5cTVYR0pIbUJnVnhLN2IrRUIxcUwKNHY0NFMyMk9ZL1hycmJhbzdjZnVZRG1Vb3RBM1hxbVREUzZESEo3SXhTQ1M3aU5sVXNySnJMelpDWkJRQm84awpvdENLSjBsRDlEbFgwKzlsQkltME1DMjhzRDBadVAvaGxCYkxnWUtZenhNcWpEK0o4QzNvSVRIWWNLV0JIWW5TCkdIdVV2UUVDZ1lFQWtGUFhONmQ5UzlWZGxGUzhFWEhGWHFBOHJLK1kzVE5jUzV5aG5EdnVwaDY4SzRCQkZGWWMKTTdhSHFDbFYzTmpzNzZzV0xQTFZWK1ZCSWh1TUFia3BpZzE0RFIzcW11NXM4bjJONWJIUklUZUFIc25MY1ZUWApxaklvcWNXZEJzM0owcllJOTQ4T3N2Qy93QmVzTHBUek96dy9lb3JHVFBSd1hPbEhRQzYzWDRNPQotLS0tLUVORCBSU0EgUFJJVkFURSBLRVktLS0tLQo=
+# --certificate-authority：验证 kube-apiserver 证书的根证书；
+# --client-certificate、--client-key：刚生成的 admin 证书和私钥，连接 kube-apiserver 时使用；
+# --embed-certs=true：将 ca.pem 和 admin.pem 证书内容嵌入到生成的 kubectl.kubeconfig 文件中(不加时，写入的是证书文件路径，后续拷贝 kubeconfig 到其它机器时，还需要单独拷贝证书文件，不方便。)；
+</code></pre>
+
+<h2 id="4-分发-kubeconfig-文件">4、分发 kubeconfig 文件</h2>
+
+<pre><code>分发到所有使用 kubectl 命令的节点：
+cp kubectl.kubeconfig  ~/.kube/config
+ssh root@10.200.46.40 &quot;mkdir -p ~/.kube&quot;
+scp kubectl.kubeconfig root@10.200.46.40:~/.kube/config
+ssh root@10.200.46.41 &quot;mkdir -p ~/.kube&quot;
+scp kubectl.kubeconfig root@10.200.46.41:~/.kube/config
+
+保存的文件名为 ~/.kube/config；
+
+</code></pre>
+
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <hr>
+            </div>
+        </div>
+        <section id="comments" class="themeform">
+<div class="ds-thread" data-thread-key="/k8s/k8s4/" data-title="K8s 二进制部署4（部署 kubectl）" data-url="https://vcokata.github.io/k8s/k8s4/"></div>
+<script type="text/javascript">
+var duoshuoQuery = {short_name:"Zen"};
+    (function() {
+        var ds = document.createElement('script');
+        ds.type = 'text/javascript';ds.async = true;
+        ds.src = (document.location.protocol == 'https:' ? 'https:' : 'http:') + '//static.duoshuo.com/embed.js';
+        ds.charset = 'UTF-8';
+        (document.getElementsByTagName('head')[0] 
+         || document.getElementsByTagName('body')[0]).appendChild(ds);
+    })();
+</script>
+</section>
+    </div>
+    <div class="col-md-3 panel panel-success">
+         <ul id="tree" class="ztree" style="list-style-type:none"></ul>
+    </div>
+</div>
+<link rel="stylesheet" href="https://vcokata.github.io/css/zTreeStyle.css" type="text/css"><script src="https://vcokata.github.io/js/jquery.ztree.core-3.5.min.js"></script><script src="https://vcokata.github.io/js/ztree_toc.js"></script><script>
+$(document).ready(function(){
+    $('#tree').ztree_toc({
+        is_posion_top:false,
+        is_expand_all: true
+    });
+});
+</script>
+    <div class="container">
+        <div class="row col-md-12">
+            <footer>
+                <div class="pull-left">
+                    <p>
+                        &copy;  ~ Powered By <a href="http://hugo.spf13.com">Hugo</a> - version: 0.58.3 ~ <a href="https://vcokata.github.io/license">License</a>
+                    </p>
+                </div>
+
+                
+                <div class="pull-right">
+                    
+                    
+                    
+                    
+                        <a href="https://github.com/VCoKaTA" target="_blank">
+                        <span class="sr-only">GitHub profile</span>
+                        <i class="fab fa-github-square fa-2x"></i></a>
+                    
+                    
+                    
+                    
+                    
+                </div>
+            </footer>
+        </div>
+    </div>
+
+    
+    </body>
+</html>
+
+

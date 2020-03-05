@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>脚本添加修改模版 on VCoKaTA</title>
+    <link>https://vcokata.github.io/tags/%E8%84%9A%E6%9C%AC%E6%B7%BB%E5%8A%A0%E4%BF%AE%E6%94%B9%E6%A8%A1%E7%89%88/</link>
+    <description>Recent content in 脚本添加修改模版 on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Fri, 20 Apr 2018 02:07:13 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/tags/%E8%84%9A%E6%9C%AC%E6%B7%BB%E5%8A%A0%E4%BF%AE%E6%94%B9%E6%A8%A1%E7%89%88/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>Nginx tcp自动添加模版</title>
+      <link>https://vcokata.github.io/mesos/nginx/</link>
+      <pubDate>Fri, 20 Apr 2018 02:07:13 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/mesos/nginx/</guid>
+      <description>背景：consul-template通consul集群获取应用节点的信息，根据相应的consul-template模版文件生成nginx配置文件，但是每次增加应用consul-template模版都需要手动添加相应的应用信息，此次我们通过脚本来生成这些模版信息。
+1、利用脚本调用marathon的api，获取所有应用信息，然后生成相应的模版文件 2、利用脚本对比新生成的模版文件与旧的模版文件是否不同，不同则替换 3、如果模版文件替换，则重启consul-template服务 抓取所有应用信息脚本： cat py_add_template.py #!/usr/bin/puthon env # -*- coding: utf-8 -*- import requests,json r = requests.Session() r.auth = (&#39;xxx&#39;,&#39;xxx&#39;) s = r.get(&#39;http://172.16.0.23:8080/v2/apps&#39;) try: f = open(&#39;/usr/local/nginx-1.12.2/conf/vhosts/py_add_template/tcp.conf.ctmpl&#39;, &#39;w&#39;) txt=&#39;stream {\nproxy_connect_timeout 30;\n&#39; for i in s.json()[&#39;apps&#39;]: txt=txt+&#39;#############&#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;\n&#39;+&#39;upstream &#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;{\n&#39;+&#39; {{range service &amp;quot;&#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;&amp;quot;}}server {{.Address}}:{{.Port}};{{else}}server 1.1.1.1:8000;{{end}}&#39;+&#39;\n}\n&#39;+&#39; server {\n&#39;+&#39; listen 0.0.0.0:&#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;).split(&#39;-&#39;)[-1]+&#39;;\n&#39;+&#39; proxy_pass &#39;+i[&#39;env&#39;][&#39;container_uuid&#39;].encode(&#39;utf8&#39;)+&#39;;\n&#39;+&#39; }\n&#39; txt=txt+&#39;}&#39; f.write(txt) f.close() except Exception as e: print(str(e)) 验证脚本： cat modif_conf.sh #!/usr/bin/bash unalias cp timestamp=`date +%Y%m%d%H%M` diff /usr/local/nginx/conf/vhosts/tcp.conf.ctmpl /usr/local/nginx/conf/vhosts/py_add_template/tcp.conf.ctmpl &amp;gt; /dev/null if [ $?</description>
+    </item>
+    
+  </channel>
+</rss>

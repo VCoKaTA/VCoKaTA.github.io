@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8" standalone="yes" ?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">
+  <channel>
+    <title>部署EFK on VCoKaTA</title>
+    <link>https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2efk/</link>
+    <description>Recent content in 部署EFK on VCoKaTA</description>
+    <generator>Hugo -- gohugo.io</generator>
+    <language>en-us</language>
+    <lastBuildDate>Thu, 18 Oct 2018 01:19:14 +0800</lastBuildDate>
+    
+	<atom:link href="https://vcokata.github.io/categories/%E9%83%A8%E7%BD%B2efk/index.xml" rel="self" type="application/rss+xml" />
+    
+    
+    <item>
+      <title>K8s 二进制部署8.6（部署 EFK 日志系统）</title>
+      <link>https://vcokata.github.io/k8s/k8s8.6/</link>
+      <pubDate>Thu, 18 Oct 2018 01:19:14 +0800</pubDate>
+      
+      <guid>https://vcokata.github.io/k8s/k8s8.6/</guid>
+      <description>1、下载配置 官方：
+https://github.com/kubernetes/kubernetes/tree/master/cluster/addons/fluentd-elasticsearch 1：fluentd-es.ds.yaml配置中pod有对node的label进行选择调度，而我们集群中的node 是没有这个label，所以需要我们手工添加每个节点的label来保证调度的成功，执行如下命令： kubectl label nodes 节点名称 beta.kubernetes.io/fluentd-ds-ready=true 节点名可以通过 kubectl get nodes --show-labels 来获取  2、调整配置 kibana-deployment.yaml中的指定资源使用的api和的路劲和我这个版本的api的路径不一样，导致后面访问不了ui（kibana）的界面，不知道的可以执行如下命令来获取自己相应版本的大致路径,然后修改下就可以了(看了下官方现在默认的是和我k8s是对的上的) [root@k8s-1 ~]# kubectl cluster-info Kubernetes master is running at https://10.200.46.44:6443 CoreDNS is running at https://10.200.46.44:6443/api/v1/namespaces/kube-system/services/kube-dns:dns/proxy kubernetes-dashboard is running at https://10.200.46.44:6443/api/v1/namespaces/kube-system/services/https:kubernetes-dashboard:/proxy Metrics-server is running at https://10.200.46.44:6443/api/v1/namespaces/kube-system/services/https:metrics-server:/proxy 直接注释掉可以直接访问kibana  3、安装EFK kubectl apply -f fluentd-es-configmap.yaml kubectl apply -f fluentd-es-ds.yaml kubectl apply -f es-statefulset.yaml kubectl apply -f es-service.yaml kubectl apply -f kibana-deployment.yaml kubectl apply -f kibana-service.</description>
+    </item>
+    
+  </channel>
+</rss>
